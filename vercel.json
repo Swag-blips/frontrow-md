@@ -7,13 +7,7 @@
   "rewrites": [
     {
       "source": "/frontrowmd/(.*)",
-      "destination": "https://frontrow-md001.vercel.app/api/$1",
-      "has": [
-        {
-          "type": "host",
-          "value": "frontrow-md-wbbc.vercel.app"
-        }
-      ]
+      "destination": "https://frontrow-md001.vercel.app/api/$1"
     },
     {
       "source": "/(.*)",
@@ -24,7 +18,7 @@
     {
       "source": "/(.*)",
       "headers": [
-        { "key": "Access-Control-Allow-Origin", "value": "https://frontrow-md-wbbc.vercel.app" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
         { "key": "Access-Control-Allow-Methods", "value": "GET,OPTIONS,PATCH,DELETE,POST,PUT" },
         { "key": "Access-Control-Allow-Headers", "value": "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version" }
       ]

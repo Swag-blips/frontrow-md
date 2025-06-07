@@ -11,7 +11,7 @@ interface Product {
     created_time: number;
 }
 
-const API_BASE_URL = ''; // Use relative URLs to avoid CORS issues
+const API_BASE_URL = ''; // Use relative URLs to let Vercel handle routing
 
 const ProductInput: React.FC = () => {
     const [url, setUrl] = useState('');
@@ -25,7 +25,12 @@ const ProductInput: React.FC = () => {
     // Function to fetch products
     const fetchProducts = async () => {
         try {
-            const response = await fetch(`${API_BASE_URL}/frontrowmd/products`);
+            const response = await fetch('/frontrowmd/products', {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            });
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -97,7 +102,7 @@ const ProductInput: React.FC = () => {
             console.log('Submitting URL:', validatedUrl); // Debug log
 
             // First, try to extract product metadata
-            const response = await fetch(`${API_BASE_URL}/frontrowmd/extract_product_metadata`, {
+            const response = await fetch('/frontrowmd/extract_product_metadata', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
