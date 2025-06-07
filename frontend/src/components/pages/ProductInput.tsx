@@ -25,9 +25,9 @@ const ProductInput: React.FC = () => {
     // Function to fetch products
     const fetchProducts = async () => {
         try {
-            const url = '/frontrowmd/products';
-            console.log('Fetching products from:', url);
-            const response = await fetch(url, {
+            const apiUrl = '/frontrowmd/products';
+            console.log('Fetching products from:', apiUrl);
+            const response = await fetch(apiUrl, {
                 method: 'GET',
                 mode: 'cors',
                 headers: {
@@ -93,7 +93,8 @@ const ProductInput: React.FC = () => {
 
         try {
             // Validate URL format
-            let validatedUrl = url.trim();
+            const inputUrl = url.trim();
+            let validatedUrl = inputUrl;
             try {
                 const urlObj = new URL(validatedUrl);
                 // Ensure URL has http/https protocol
@@ -107,9 +108,9 @@ const ProductInput: React.FC = () => {
             console.log('Submitting URL:', validatedUrl); // Debug log
 
             // First, try to extract product metadata
-            const url = '/frontrowmd/extract_product_metadata';
-            console.log('Submitting URL to:', url);
-            const response = await fetch(url, {
+            const apiUrl = '/frontrowmd/extract_product_metadata';
+            console.log('Submitting URL to:', apiUrl);
+            const response = await fetch(apiUrl, {
                 method: 'POST',
                 mode: 'cors',
                 headers: {
