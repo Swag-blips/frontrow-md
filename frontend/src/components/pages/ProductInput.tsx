@@ -6,7 +6,7 @@ import '../styling/ProductInput.css';
 interface Product {
     product_id: string;
     product_name: string;
-    product_url?: string; // Make URL optional as it's not always present
+    product_url?: string;
     product_image_url?: string;
     created_time: number;
 }
@@ -15,91 +15,129 @@ const ProductInput: React.FC = () => {
     const [url, setUrl] = useState('');
     const navigate = useNavigate();
     const [products, setProducts] = useState<Product[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(true); // For products fetch
+    const [isSubmitting, setIsSubmitting] = useState(false); // For form submission
     const [error, setError] = useState<string | null>(null);
     const [searchParams] = useSearchParams();
 
-    useEffect(() => {
-        const shouldFetch = searchParams.get('fetch') === 'true';
-
-        if (shouldFetch) {
-            const fetchProducts = async () => {
-                setIsLoading(true);
-                setError(null);
-                try {
-                    // Add a small delay to ensure backend has processed the new product
-                    await new Promise(resolve => setTimeout(resolve, 1000));
-                    
-                    const response = await fetch('/frontrowmd/products');
-                    if (!response.ok) {
-                        throw new Error('Failed to fetch products');
-                    }
-                    const data = await response.json();
-                    const productsArray: Product[] = data.products || [];
-                    
-                    // Ensure created_time is a number and sort by most recent first
-                    const sortedData = productsArray
-                        .map(product => ({
-                            ...product,
-                            created_time: typeof product.created_time === 'string' 
-                                ? new Date(product.created_time).getTime() 
-                                : product.created_time
-                        }))
-                        .sort((a, b) => b.created_time - a.created_time)
-                        .slice(0, 6);
-                    
-                    setProducts(sortedData);
-
-                } catch (err: any) {
-                    setError(err.message);
-                } finally {
-                    setIsLoading(false);
-                }
-            };
-
-            fetchProducts();
-        }
-    }, [searchParams]);
-
-    // Add a separate effect to fetch products periodically when on the page
-    useEffect(() => {
-        const fetchProductsPeriodically = async () => {
-            try {
-                const response = await fetch('/frontrowmd/products');
-                if (!response.ok) return;
-                
-                const data = await response.json();
-                const productsArray: Product[] = data.products || [];
-                
-                const sortedData = productsArray
-                    .map(product => ({
-                        ...product,
-                        created_time: typeof product.created_time === 'string' 
-                            ? new Date(product.created_time).getTime() 
-                            : product.created_time
-                    }))
-                    .sort((a, b) => b.created_time - a.created_time)
-                    .slice(0, 6);
-                
-                setProducts(sortedData);
-            } catch (err) {
-                console.error('Error fetching products:', err);
+    // Function to fetch products
+    const fetchProducts = async () => {
+        try {
+            const response = await fetch('/frontrowmd/products');
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
-        };
+            const data = await response.json();
+            const productsArray: Product[] = data.products || [];
+            
+            // Ensure created_time is a number and sort by most recent first
+            const sortedData = productsArray
+                .map(product => ({
+                    ...product,
+                    created_time: typeof product.created_time === 'string' 
+                        ? new Date(product.created_time).getTime() 
+                        : product.created_time
+                }))
+                .sort((a, b) => b.created_time - a.created_time)
+                .slice(0, 6);
+            
+            setProducts(sortedData);
+            setError(null);
+        } catch (err: any) {
+            console.error('Error fetching products:', err);
+            setError(err.message || 'Failed to fetch products');
+        } finally {
+            setIsLoading(false);
+        }
+    };
 
-        // Fetch immediately when component mounts
-        fetchProductsPeriodically();
+    // Initial fetch when component mounts
+    useEffect(() => {
+        fetchProducts();
+    }, []); // Empty dependency array means this runs once on mount
 
-        // Then fetch every 5 seconds
-        const intervalId = setInterval(fetchProductsPeriodically, 5000);
-
+    // Periodic fetch every 5 seconds
+    useEffect(() => {
+        const intervalId = setInterval(fetchProducts, 5000);
         return () => clearInterval(intervalId);
     }, []); // Empty dependency array means this runs once on mount
 
-    const handleSubmit = (e: React.FormEvent) => {
+    // Additional fetch when URL parameter changes
+    useEffect(() => {
+        const shouldFetch = searchParams.get('fetch') === 'true';
+        if (shouldFetch) {
+            // Add a small delay to ensure backend has processed the new product
+            const timeoutId = setTimeout(fetchProducts, 1000);
+            return () => clearTimeout(timeoutId);
+        }
+    }, [searchParams]);
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (url) {
-            navigate(`/processing?url=${encodeURIComponent(url)}`);
+        if (!url) return;
+
+        setIsSubmitting(true); // Use isSubmitting instead of isLoading
+        setError(null);
+
+        try {
+            // Validate URL format
+            let validatedUrl = url.trim();
+            try {
+                const urlObj = new URL(validatedUrl);
+                // Ensure URL has http/https protocol
+                if (!urlObj.protocol.startsWith('http')) {
+                    validatedUrl = `https://${validatedUrl}`;
+                }
+            } catch (err) {
+                throw new Error('Please enter a valid URL (e.g., https://www.example.com/product)');
+            }
+
+            console.log('Submitting URL:', validatedUrl); // Debug log
+
+            // First, try to extract product metadata
+            const response = await fetch('/frontrowmd/extract_product_metadata', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    product_url: validatedUrl,
+                    timestamp: new Date().toISOString()
+                }),
+            });
+
+            console.log('Response status:', response.status); // Debug log
+
+            if (!response.ok) {
+                let errorMessage = `Failed to process URL (${response.status})`;
+                try {
+                    const errorData = await response.json();
+                    console.log('Error response:', errorData); // Debug log
+                    if (errorData.message) {
+                        errorMessage = errorData.message;
+                    } else if (errorData.error) {
+                        errorMessage = errorData.error;
+                    }
+                } catch (parseError) {
+                    console.error('Error parsing error response:', parseError);
+                }
+                throw new Error(errorMessage);
+            }
+
+            const data = await response.json();
+            console.log('Success response:', data); // Debug log
+            
+            // If successful, navigate to processing page with the product ID
+            if (data.product_id) {
+                navigate(`/processing?url=${encodeURIComponent(validatedUrl)}&productId=${data.product_id}`);
+            } else {
+                navigate(`/processing?url=${encodeURIComponent(validatedUrl)}`);
+            }
+        } catch (err: any) {
+            console.error('Error submitting URL:', err);
+            setError(err.message || 'Failed to process URL. Please try again.');
+            setIsSubmitting(false); // Use isSubmitting instead of isLoading
         }
     };
 
@@ -128,34 +166,52 @@ const ProductInput: React.FC = () => {
                                     value={url}
                                     onChange={(e) => setUrl(e.target.value)}
                                     required
+                                    disabled={isSubmitting} // Use isSubmitting instead of isLoading
                                 />
-                                <button type="submit" className="generate-btn">Generate Reviews</button>
+                                <button 
+                                    type="submit" 
+                                    className="generate-btn"
+                                    disabled={isSubmitting} // Use isSubmitting instead of isLoading
+                                >
+                                    {isSubmitting ? 'Processing...' : 'Generate Reviews'}
+                                </button>
                             </form>
+                            {error && <p className="error-message">{error}</p>}
                         </div>
                     </section>
 
                     <section className="recents-section">
                         <h2 className="recents-section__title">Recent Analyses</h2>
                         <div className="recents-grid">
-                           
-                            {error && <p className="error-message">{error}</p>}
-                            {!isLoading && !error && products.map(product => (
-                                <div key={product.product_id} className="product-card">
-                                    <div className="product-card__image">
-                                        {/* Use a placeholder if no image is available from API */}
-                                        <img src={product.product_image_url || 'https://images.pexels.com/photos/3683074/pexels-photo-3683074.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'} alt={product.product_name} />
+                            {!isLoading && error && products.length === 0 ? (
+                                <p className="error-message">{error}</p>
+                            ) : !isLoading && products.length === 0 ? (
+                                <p className="no-products-message">No recent analyses found.</p>
+                            ) : (
+                                products.map(product => (
+                                    <div key={product.product_id} className="product-card">
+                                        <div className="product-card__image">
+                                            <img 
+                                                src={product.product_image_url || 'https://images.pexels.com/photos/3683074/pexels-photo-3683074.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'} 
+                                                alt={product.product_name}
+                                                onError={(e) => {
+                                                    const target = e.target as HTMLImageElement;
+                                                    target.src = 'https://images.pexels.com/photos/3683074/pexels-photo-3683074.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2';
+                                                }}
+                                            />
+                                        </div>
+                                        <div className="product-card__content">
+                                            <h3 className="product-card__title">{product.product_name}</h3>
+                                            {product.product_url && (
+                                                <>
+                                                    <p className="product-card__url">{new URL(product.product_url).hostname}</p>
+                                                    <p className="product-card__full-url">{product.product_url}</p>
+                                                </>
+                                            )}
+                                        </div>
                                     </div>
-                                    <div className="product-card__content">
-                                        <h3 className="product-card__title">{product.product_name}</h3>
-                                        {product.product_url && (
-                                            <>
-                                                <p className="product-card__url">{new URL(product.product_url).hostname}</p>
-                                                <p className="product-card__full-url">{product.product_url}</p>
-                                            </>
-                                        )}
-                                    </div>
-                                </div>
-                            ))}
+                                ))
+                            )}
                         </div>
                     </section>
                 </div>

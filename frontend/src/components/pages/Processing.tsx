@@ -2,41 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import '../styling/Processing.css';
 
-type Status = 'idle' | 'initializing' | 'analyzing' | 'complete' | 'error';
-
-const statusMap = {
-    idle: { title: 'Preparing...', text: 'Getting ready to analyze.', step: 0 },
-    initializing: { title: 'Analyzing Product', text: 'Initializing analysis...', step: 1 },
-    analyzing: { title: 'Analyzing Product', text: 'Extracting clinician reviews...', step: 2 },
-    complete: { title: 'Request Sent', text: 'Your request has been sent. The product analysis will appear on Homepage.', step: 3 },
-    error: { title: 'Error', text: 'Something went wrong.', step: 0 },
-};
+type Status = 'analyzing' | 'complete' | 'request_sent' | 'error';
 
 const Processing: React.FC = () => {
     const [searchParams] = useSearchParams();
     const url = searchParams.get('url') || '';
+    const productId = searchParams.get('productId');
     
-    const [status, setStatus] = useState<Status>('idle');
+    const [status, setStatus] = useState<Status>('analyzing');
     const [error, setError] = useState<string | null>(null);
-    const [showCompletionScreen, setShowCompletionScreen] = useState(false);
-    const [showGreenCircle, setShowGreenCircle] = useState(false);
-
-    useEffect(() => {
-        if (status === 'complete') {
-            // First show the green circle
-            setShowGreenCircle(true);
-            
-            // After 1.5 seconds, transition to completion screen
-            const timer = setTimeout(() => {
-                setShowCompletionScreen(true);
-            }, 1500);
-
-            return () => clearTimeout(timer);
-        } else {
-            setShowGreenCircle(false);
-            setShowCompletionScreen(false);
-        }
-    }, [status]);
+    const [showSuccessTick, setShowSuccessTick] = useState(false);
 
     useEffect(() => {
         if (!url) {
@@ -47,8 +22,10 @@ const Processing: React.FC = () => {
 
         const processFlow = async () => {
             try {
-                // -> Step 1: Request Sent
-                setStatus('initializing');
+                // Start with analyzing state
+                setStatus('analyzing');
+
+                // Make the API call
                 const response = await fetch('/frontrowmd/extract_product_metadata', {
                     method: 'POST',
                     headers: {
@@ -67,14 +44,16 @@ const Processing: React.FC = () => {
                     throw new Error('Analysis task was not created successfully.');
                 }
 
-                // -> Step 2: Analyzing
-                setStatus('analyzing');
-                // Give the backend time to process before declaring completion.
-                // A more robust solution would be to poll a status endpoint.
-                await new Promise(resolve => setTimeout(resolve, 10000)); 
+                // Show success tick under URL
+                setShowSuccessTick(true);
 
-                // -> Step 3: Complete
+                // After successful API call, show complete state
                 setStatus('complete');
+
+                // After 1 second, transition to request_sent state
+                setTimeout(() => {
+                    setStatus('request_sent');
+                }, 1000);
 
             } catch (err: any) {
                 setStatus('error');
@@ -83,65 +62,75 @@ const Processing: React.FC = () => {
         };
 
         processFlow();
-
     }, [url]);
 
-    const { title, text, step } = statusMap[status];
+    const renderScreen = () => {
+        switch (status) {
+            case 'analyzing':
+                return (
+                    <div className="processing-screen analyzing-screen">
+                        <h1 className="processing-title">Analyzing Product</h1>
+                        <p className="processing-subtitle">Extracting clinician reviews...</p>
+                        <div className="url-container">
+                            <p className="processing-url">{url}</p>
+                            {showSuccessTick && (
+                                <div className="success-tick">
+                                    <span className="tick-icon">✓</span>
+                                    <span className="tick-text">Analysis successful</span>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                );
+
+            case 'complete':
+                return (
+                    <div className="processing-screen complete-screen">
+                        <h1 className="processing-title">Complete</h1>
+                        <p className="processing-subtitle">Your product has been successfully analyzed.</p>
+                    </div>
+                );
+
+            case 'request_sent':
+                return (
+                    <div className="processing-screen request-sent-screen">
+                        <h1 className="processing-title">Request Sent</h1>
+                        <p className="processing-subtitle">
+                            Your request has been sent. The product analysis will appear on Homepage.
+                        </p>
+                        <Link to="/product-input?fetch=true" className="button-primary orange">
+                            Return to Homepage
+                        </Link>
+                    </div>
+                );
+
+            case 'error':
+                return (
+                    <div className="processing-screen error-screen">
+                        <h1 className="processing-title">Error</h1>
+                        <p className="processing-subtitle">{error || 'Something went wrong.'}</p>
+                        <Link to="/product-input" className="button-primary orange">
+                            Try Again
+                        </Link>
+                    </div>
+                );
+        }
+    };
 
     return (
         <>
             <header className="header">
                 <div className="container header__container">
-                    <a href="/" className="logo">
+                    <Link to="/" className="logo">
                         <span className="logo__icon">+</span>
                         <span>FrontrowMD</span>
-                    </a>
+                    </Link>
                 </div>
             </header>
 
             <main className="main-content">
-                <div className="processing-card">
-                    {!showCompletionScreen && (
-                        <>
-                            {status !== 'complete' && status !== 'error' && <div className="spinner"></div>}
-                            
-                            <h1 className="processing-card__title">{title}</h1>
-                            
-                            <p className="processing-card__url-label">Analyzing URL</p>
-                            <p className="processing-card__url">{url}</p>
-                            
-                            <div className="status-steps">
-                                <div className={`step ${step >= 1 ? 'completed' : ''}`}>
-                                    <div className="step__icon"></div>
-                                    <span>Request Sent</span>
-                                </div>
-                                <div className={`step ${step >= 2 ? (step === 2 ? 'active' : 'completed') : ''}`}>
-                                    <div className="step__icon"></div>
-                                    <span>Analyzing</span>
-                                </div>
-                                <div className={`step ${step >= 3 ? 'completed' : ''}`}>
-                                    <div className="step__icon"></div>
-                                    <span>Complete</span>
-                                </div>
-                            </div>
-
-                            <p className="status-text">
-                                {error ? error : text}
-                            </p>
-                        </>
-                    )}
-
-                    {showCompletionScreen && (
-                        <>
-                            <h1 className="processing-card__title">Request Sent</h1>
-                            <p className="status-text">
-                                Your request has been sent. The product analysis will appear on Homepage.
-                            </p>
-                            <Link to="/product-input?fetch=true" className="button-primary">
-                                Back to Homepage
-                            </Link>
-                        </>
-                    )}
+                <div className="processing-container">
+                    {renderScreen()}
                 </div>
             </main>
 
