@@ -5,7 +5,7 @@
   "framework": "vite",
   "headers": [
     {
-      "source": "/frontrowmd/(.*)",
+      "source": "/(.*)",
       "headers": [
         { "key": "Access-Control-Allow-Origin", "value": "*" },
         { "key": "Access-Control-Allow-Methods", "value": "GET,OPTIONS,PATCH,DELETE,POST,PUT" },
@@ -16,8 +16,12 @@
   ],
   "rewrites": [
     {
-      "source": "/frontrowmd/(.*)",
-      "destination": "https://frontrow-md001.vercel.app/api/$1"
+      "source": "/frontrowmd/products",
+      "destination": "http://157.180.29.221:5001/frontrowmd/products"
+    },
+    {
+      "source": "/frontrowmd/extract_product_metadata",
+      "destination": "http://157.180.29.221:5001/frontrowmd/extract_product_metadata"
     },
     {
       "source": "/(.*)",
