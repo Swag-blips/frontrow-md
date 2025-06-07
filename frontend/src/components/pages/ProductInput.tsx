@@ -40,7 +40,13 @@ const ProductInput: React.FC = () => {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             const data = await response.json();
-            const productsArray: Product[] = data.products || [];
+            
+            // Check if products array exists and is not empty
+            if (!data.products || !Array.isArray(data.products)) {
+                throw new Error('No products found in the database. The database may have been cleared.');
+            }
+            
+            const productsArray: Product[] = data.products;
             
             // Ensure created_time is a number and sort by most recent first
             const sortedData = productsArray
@@ -58,6 +64,7 @@ const ProductInput: React.FC = () => {
         } catch (err: any) {
             console.error('Error fetching products:', err);
             setError(err.message || 'Failed to fetch products');
+            setProducts([]); // Clear products on error
         } finally {
             setIsLoading(false);
         }
@@ -156,6 +163,10 @@ const ProductInput: React.FC = () => {
         }
     };
 
+    const handleProductClick = (productId: string) => {
+        navigate(`/product-data/${productId}`);
+    };
+
     return (
         <>
             <header className="header">
@@ -196,15 +207,35 @@ const ProductInput: React.FC = () => {
                     </section>
 
                     <section className="recents-section">
-                        <h2 className="recents-section__title">Recent Analyses</h2>
+                        <h2 className="recents-section__title">Recent Products</h2>
                         <div className="recents-grid">
-                            {!isLoading && error && products.length === 0 ? (
-                                <p className="error-message">{error}</p>
-                            ) : !isLoading && products.length === 0 ? (
-                                <p className="no-products-message">No recent analyses found.</p>
+                            {isLoading ? (
+                                <div className="loading-state">
+                                    <div className="loading-spinner"></div>
+                                    <p>Loading recent products...</p>
+                                </div>
+                            ) : error ? (
+                                <div className="error-state">
+                                    <p className="error-message">{error}</p>
+                                    {error.includes('database') || error.includes('cleared') ? (
+                                        <p className="error-help">
+                                            The database has been cleared. Start by generating new reviews for a product.
+                                        </p>
+                                    ) : null}
+                                </div>
+                            ) : products.length === 0 ? (
+                                <div className="empty-state">
+                                    <p className="no-products-message">No recent analyses found.</p>
+                                    <p className="empty-state-help">Start by entering a product URL above to generate reviews.</p>
+                                </div>
                             ) : (
                                 products.map(product => (
-                                    <div key={product.product_id} className="product-card">
+                                    <div 
+                                        key={product.product_id} 
+                                        className="product-card"
+                                        onClick={() => handleProductClick(product.product_id)}
+                                        style={{ cursor: 'pointer' }}
+                                    >
                                         <div className="product-card__image">
                                             <img 
                                                 src={product.product_image_url || 'https://images.pexels.com/photos/3683074/pexels-photo-3683074.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'} 

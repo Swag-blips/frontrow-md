@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useRef, useEffect } from 'react';
+import { Link, useParams } from 'react-router-dom';
 import '@/components/styling/Review.css';
 
 // Define interfaces for our data structures
@@ -7,89 +7,104 @@ interface ClinicianReview {
     review_text: string;
     reviewer_name: string;
     reviewer_title: string;
-    research_citations?: ResearchCitation[];
-    methodology?: string;
-    prompt?: string;
 }
 
-interface ResearchCitation {
-    title: string;
-    source: string;
-    source_url: string;
-    excerpt: string;
+interface GeneratedReview {
+    highlights: string[];
+    rating: number;
+    review_text: string;
+    review_title: string;
+    reviewer_name: string;
+    reviewer_title: string;
 }
 
 interface Product {
     product_id: string;
     product_name: string;
     product_description: string;
+    product_image_url: string;
+    product_url?: string;
     clinician_reviews: ClinicianReview[];
+    generated_reviews: GeneratedReview[];
     created_time: number;
 }
 
-// Placeholder data
-const placeholderProduct: Product = {
-    product_id: "placeholder-1",
-    product_name: "Example Medical Product",
-    product_description: "A revolutionary medical device designed to improve patient outcomes.",
-    created_time: Date.now(),
-    clinician_reviews: [
-        {
-            reviewer_name: "Dr. Sarah Johnson",
-            reviewer_title: "Cardiologist",
-            review_text: "This innovative product represents a significant advancement in patient care. The clinical trials demonstrate remarkable efficacy, with a 40% improvement in patient outcomes compared to standard treatments. The safety profile is excellent, and the ease of use makes it particularly valuable in clinical settings. I've observed consistent positive results in my practice, especially in cases where traditional approaches were limited.",
-            research_citations: [
-                {
-                    title: "Clinical Efficacy Study 2023",
-                    source: "Journal of Medical Innovation",
-                    source_url: "#",
-                    excerpt: "A comprehensive study involving 500 patients showed significant improvement in treatment outcomes..."
-                },
-                {
-                    title: "Safety Analysis Report",
-                    source: "Medical Device Safety Journal",
-                    source_url: "#",
-                    excerpt: "Long-term safety analysis over 24 months demonstrated excellent tolerability..."
-                }
-            ],
-            methodology: "The review was generated using a comprehensive analysis of clinical trial data, real-world evidence, and expert clinical experience. The methodology included evaluation of safety profiles, efficacy metrics, and practical implementation considerations.",
-            prompt: "Generate a detailed clinical review of [Product Name] focusing on efficacy, safety, and practical applications in clinical settings. Include specific data points from recent studies and real-world experience."
-        },
-        {
-            reviewer_name: "Dr. Michael Chen",
-            reviewer_title: "Neurologist",
-            review_text: "As a practicing neurologist, I find this product to be a game-changer in our field. The precision and reliability it offers have transformed how we approach certain conditions. The integration of advanced technology with clinical practice has been seamless, and patient feedback has been overwhelmingly positive. The supporting research is robust, with multiple studies confirming its effectiveness.",
-            research_citations: [
-                {
-                    title: "Neurological Applications Study",
-                    source: "Neurology Today",
-                    source_url: "#",
-                    excerpt: "Study of 300 neurological cases showed improved diagnostic accuracy and treatment outcomes..."
-                }
-            ],
-            methodology: "This review was developed through analysis of peer-reviewed studies, clinical trial data, and practical implementation experience. Special attention was given to neurological applications and patient outcomes.",
-            prompt: "Create a clinical review of [Product Name] from a neurological perspective, emphasizing practical applications and patient outcomes in neurological care."
-        }
-    ]
-};
-
 const Review: React.FC = () => {
+    const { productId } = useParams<{ productId: string }>();
     const [activeIndex, setActiveIndex] = useState(0);
-    const [selectedReview, setSelectedReview] = useState<ClinicianReview | null>(null);
+    const [selectedReview, setSelectedReview] = useState<ClinicianReview | GeneratedReview | null>(null);
+    const [product, setProduct] = useState<Product | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [activeTab, setActiveTab] = useState<'clinician' | 'generated'>('clinician');
     const trackRef = useRef<HTMLDivElement>(null);
     
-    const product = placeholderProduct;
-    const reviews = product.clinician_reviews;
+    useEffect(() => {
+        const fetchProduct = async () => {
+            if (!productId) return;
+
+            try {
+                console.log('Fetching all products to find product:', productId);
+                const allProductsResponse = await fetch('/frontrowmd/products', {
+                    method: 'GET',
+                    mode: 'cors',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!allProductsResponse.ok) {
+                    throw new Error(`Failed to fetch products: ${allProductsResponse.status}`);
+                }
+                
+                const allProductsData = await allProductsResponse.json();
+                console.log('All products data:', allProductsData);
+                
+                // Check if products array exists and is not empty
+                if (!allProductsData.products || !Array.isArray(allProductsData.products) || allProductsData.products.length === 0) {
+                    throw new Error('No products found in the database. The database may have been cleared.');
+                }
+                
+                // Find the specific product
+                const product = allProductsData.products.find((p: any) => p.product_id === productId);
+                if (product) {
+                    console.log('Found product:', product);
+                    console.log('Clinician reviews:', product.clinician_reviews);
+                    console.log('Generated reviews:', product.generated_reviews);
+                    setProduct(product);
+                    setError(null);
+                } else {
+                    throw new Error(`Product with ID ${productId} not found. It may have been removed from the database.`);
+                }
+            } catch (err: any) {
+                console.error('Error fetching product:', err);
+                setError(err.message || 'Failed to load product data');
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        if (productId) {
+            fetchProduct();
+        }
+    }, [productId]);
 
     const handlePrev = () => {
-        setActiveIndex((prev) => (prev > 0 ? prev - 1 : reviews.length - 1));
+        const reviewsLength = activeTab === 'clinician' 
+            ? product?.clinician_reviews?.length || 0
+            : product?.generated_reviews?.length || 0;
+        setActiveIndex((prev) => (prev > 0 ? prev - 1 : reviewsLength - 1));
     };
 
     const handleNext = () => {
-        setActiveIndex((prev) => (prev < reviews.length - 1 ? prev + 1 : 0));
+        const reviewsLength = activeTab === 'clinician'
+            ? product?.clinician_reviews?.length || 0
+            : product?.generated_reviews?.length || 0;
+        setActiveIndex((prev) => (prev < reviewsLength - 1 ? prev + 1 : 0));
     };
 
-    const openModal = (review: ClinicianReview) => {
+    const openModal = (review: ClinicianReview | GeneratedReview) => {
         setSelectedReview(review);
     };
 
@@ -98,13 +113,70 @@ const Review: React.FC = () => {
     };
 
     // Update carousel position when active index changes
-    React.useEffect(() => {
+    useEffect(() => {
         if (trackRef.current && trackRef.current.children.length > 0) {
             const cardWidth = trackRef.current.children[0].clientWidth;
             const gap = 20; // as in margin: 0 10px;
             trackRef.current.style.transform = `translateX(-${activeIndex * (cardWidth + gap)}px)`;
         }
-    }, [activeIndex, reviews]);
+    }, [activeIndex, product, activeTab]);
+
+    const isGeneratedReview = (review: ClinicianReview | GeneratedReview): review is GeneratedReview => {
+        return 'rating' in review && 'highlights' in review && 'review_title' in review;
+    };
+
+    // Function to get a consistent but different image for each reviewer
+    const getReviewerImage = (reviewerName: string) => {
+        // Use a hash of the reviewer name to select from a set of doctor images
+        const images = [
+            'https://images.pexels.com/photos/5215024/pexels-photo-5215024.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
+            'https://images.pexels.com/photos/3845810/pexels-photo-3845810.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
+            'https://images.pexels.com/photos/3845811/pexels-photo-3845811.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
+            'https://images.pexels.com/photos/3845812/pexels-photo-3845812.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
+            'https://images.pexels.com/photos/3845813/pexels-photo-3845813.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'
+        ];
+        
+        // Create a simple hash of the reviewer name
+        const hash = reviewerName.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        return images[hash % images.length];
+    };
+
+    if (isLoading) {
+        return (
+            <div className="loading-screen">
+                <div className="loading-spinner"></div>
+                <p>Loading review data...</p>
+            </div>
+        );
+    }
+
+    if (error || !product) {
+        return (
+            <div className="error-screen">
+                <div className="error-content">
+                    <h1>Oops! Something went wrong</h1>
+                    <p className="error-message">{error || 'Product not found'}</p>
+                    <p className="error-help">
+                        {error?.includes('database') || error?.includes('cleared') 
+                            ? 'The database has been cleared. Please generate new reviews for this product.'
+                            : 'The product you\'re looking for may have been removed or is no longer available.'}
+                    </p>
+                    <div className="error-actions">
+                        <Link to="/product-input" className="button-primary orange">
+                            Return to Homepage
+                        </Link>
+                        {error?.includes('database') || error?.includes('cleared') ? (
+                            <Link to={`/product-input?url=${encodeURIComponent(product?.product_url || '')}`} className="button-secondary">
+                                Generate New Reviews
+                            </Link>
+                        ) : null}
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    const reviews = activeTab === 'clinician' ? product.clinician_reviews : product.generated_reviews;
 
     return (
         <>
@@ -120,8 +192,23 @@ const Review: React.FC = () => {
             <main className="main-content">
                 <div className="container">
                     <div className="page-header">
-                        <h1 className="page-title">Generated Reviews for {product.product_name}</h1>
+                        <h1 className="page-title">Reviews for {product.product_name}</h1>
+                        <div className="review-tabs">
+                            <button 
+                                className={`tab-button ${activeTab === 'clinician' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('clinician')}
+                            >
+                                Clinician Reviews
+                            </button>
+                            <button 
+                                className={`tab-button ${activeTab === 'generated' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('generated')}
+                            >
+                                Generated Reviews
+                            </button>
+                        </div>
                     </div>
+
                     <div className="carousel-container">
                         <button onClick={handlePrev} className="carousel-btn" disabled={reviews.length <= 1}>
                             &lt;
@@ -129,12 +216,44 @@ const Review: React.FC = () => {
                         <div className="carousel-viewport">
                             <div className="carousel-track" ref={trackRef}>
                                 {reviews.map((review, index) => (
-                                    <div key={index} className={`review-card ${index === activeIndex ? 'is-active' : ''}`} onClick={() => openModal(review)}>
+                                    <div 
+                                        key={index} 
+                                        className={`review-card ${index === activeIndex ? 'is-active' : ''}`} 
+                                        onClick={() => openModal(review)}
+                                    >
                                         <div className="doctor-info">
-                                            <img src="https://images.pexels.com/photos/5215024/pexels-photo-5215024.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt={review.reviewer_name} />
-                                            <span className="name">{review.reviewer_name}, {review.reviewer_title}</span>
+                                            <img 
+                                                src={getReviewerImage(review.reviewer_name)}
+                                                alt={review.reviewer_name} 
+                                                onError={(e) => {
+                                                    const target = e.target as HTMLImageElement;
+                                                    target.src = 'https://images.pexels.com/photos/5215024/pexels-photo-5215024.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2';
+                                                }}
+                                            />
+                                            <span className="name">
+                                                {review.reviewer_name}, {review.reviewer_title}
+                                                {isGeneratedReview(review) && (
+                                                    <span className="rating">
+                                                        {'★'.repeat(Math.floor(review.rating))}
+                                                        {'☆'.repeat(5 - Math.floor(review.rating))}
+                                                        <span className="rating-number">{review.rating}</span>
+                                                    </span>
+                                                )}
+                                            </span>
                                         </div>
-                                        <p className="review-card__text">{review.review_text.substring(0, 150)}...</p>
+                                        {isGeneratedReview(review) && (
+                                            <h3 className="review-title">{review.review_title}</h3>
+                                        )}
+                                        <p className="review-card__text">
+                                            {review.review_text.substring(0, 150)}...
+                                        </p>
+                                        {isGeneratedReview(review) && review.highlights.length > 0 && (
+                                            <div className="review-highlights">
+                                                {review.highlights.map((highlight, i) => (
+                                                    <span key={i} className="highlight-tag">{highlight}</span>
+                                                ))}
+                                            </div>
+                                        )}
                                     </div>
                                 ))}
                             </div>
@@ -152,48 +271,43 @@ const Review: React.FC = () => {
                         <button onClick={closeModal} className="modal-close">&times;</button>
                         <div className="modal-body">
                             <div className="doctor-info">
-                                <img src="https://images.pexels.com/photos/5215024/pexels-photo-5215024.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" alt={selectedReview.reviewer_name} />
-                                <span className="name">{selectedReview.reviewer_name}, {selectedReview.reviewer_title}</span>
+                                <img 
+                                    src={getReviewerImage(selectedReview.reviewer_name)}
+                                    alt={selectedReview.reviewer_name}
+                                    onError={(e) => {
+                                        const target = e.target as HTMLImageElement;
+                                        target.src = 'https://images.pexels.com/photos/5215024/pexels-photo-5215024.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2';
+                                    }}
+                                />
+                                <span className="name">
+                                    {selectedReview.reviewer_name}, {selectedReview.reviewer_title}
+                                    {isGeneratedReview(selectedReview) && (
+                                        <span className="rating">
+                                            {'★'.repeat(Math.floor(selectedReview.rating))}
+                                            {'☆'.repeat(5 - Math.floor(selectedReview.rating))}
+                                            <span className="rating-number">{selectedReview.rating}</span>
+                                        </span>
+                                    )}
+                                </span>
                             </div>
 
-                            <h2 className="modal-section-title">Full Review</h2>
-                            <div id="modal-review-text">
+                            {isGeneratedReview(selectedReview) && (
+                                <h2 className="modal-review-title">{selectedReview.review_title}</h2>
+                            )}
+
+                            <div className="modal-review-text">
                                 <p>{selectedReview.review_text}</p>
                             </div>
 
-                            {selectedReview.research_citations && selectedReview.research_citations.length > 0 && (
-                                <>
-                                    <h2 className="modal-section-title">Supporting Research</h2>
-                                    <ul id="modal-research-list">
-                                        {selectedReview.research_citations.map((citation, index) => (
-                                            <li key={index} className="modal-research-card">
-                                                <h3 className="modal-research-card__title">{citation.title}</h3>
-                                                <div className="modal-research-card__source">
-                                                    Source: <a href={citation.source_url} target="_blank" rel="noopener noreferrer">{citation.source}</a>
-                                                </div>
-                                                <p className="modal-research-card__excerpt">{citation.excerpt}</p>
-                                            </li>
+                            {isGeneratedReview(selectedReview) && selectedReview.highlights.length > 0 && (
+                                <div className="modal-highlights">
+                                    <h3 className="modal-section-title">Key Highlights</h3>
+                                    <div className="highlights-list">
+                                        {selectedReview.highlights.map((highlight, index) => (
+                                            <span key={index} className="highlight-tag">{highlight}</span>
                                         ))}
-                                    </ul>
-                                </>
-                            )}
-
-                            {selectedReview.methodology && (
-                                <>
-                                    <h2 className="modal-section-title">Methodology</h2>
-                                    <div className="methodology-section">
-                                        <p>{selectedReview.methodology}</p>
                                     </div>
-                                </>
-                            )}
-
-                            {selectedReview.prompt && (
-                                <>
-                                    <h2 className="modal-section-title">Review Generation Prompt</h2>
-                                    <div className="prompt-display">
-                                        <pre>{selectedReview.prompt}</pre>
-                                    </div>
-                                </>
+                                </div>
                             )}
                         </div>
                     </div>

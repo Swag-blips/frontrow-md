@@ -20,7 +20,7 @@ const router = createBrowserRouter([
     element: <Processing />,
   },
   {
-    path: '/product-data',
+    path: '/product-data/:productId',
     element: <ProductData />,
   },
   {
@@ -29,7 +29,8 @@ const router = createBrowserRouter([
   }
 ], {
   future: {
-    v7_normalizeFormMethod: true
+    v7_normalizeFormMethod: true,
+    v7_startTransition: true
   } as Partial<FutureConfig>
 });
 
