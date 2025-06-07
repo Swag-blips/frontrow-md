@@ -11,6 +11,8 @@ interface Product {
     created_time: number;
 }
 
+const API_BASE_URL = import.meta.env.PROD ? 'https://frontrow-md001.vercel.app' : '';
+
 const ProductInput: React.FC = () => {
     const [url, setUrl] = useState('');
     const navigate = useNavigate();
@@ -23,7 +25,7 @@ const ProductInput: React.FC = () => {
     // Function to fetch products
     const fetchProducts = async () => {
         try {
-            const response = await fetch('/frontrowmd/products');
+            const response = await fetch(`${API_BASE_URL}/frontrowmd/products`);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -95,7 +97,7 @@ const ProductInput: React.FC = () => {
             console.log('Submitting URL:', validatedUrl); // Debug log
 
             // First, try to extract product metadata
-            const response = await fetch('/frontrowmd/extract_product_metadata', {
+            const response = await fetch(`${API_BASE_URL}/frontrowmd/extract_product_metadata`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -6,6 +6,8 @@ import '../styling/Processing.css';
 
 type Status = 'analyzing' | 'complete' | 'request_sent' | 'error';
 
+const API_BASE_URL = import.meta.env.PROD ? 'https://frontrow-md001.vercel.app' : '';
+
 const Processing: React.FC = () => {
     const [searchParams] = useSearchParams();
     const url = searchParams.get('url') || '';
@@ -28,7 +30,7 @@ const Processing: React.FC = () => {
                 setStatus('analyzing');
 
                 // Make the API call
-                const response = await fetch('/frontrowmd/extract_product_metadata', {
+                const response = await fetch(`${API_BASE_URL}/frontrowmd/extract_product_metadata`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
