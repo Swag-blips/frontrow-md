@@ -25,12 +25,16 @@ const ProductInput: React.FC = () => {
     // Function to fetch products
     const fetchProducts = async () => {
         try {
+            console.log('Fetching products from:', '/frontrowmd/products');
             const response = await fetch('/frontrowmd/products', {
+                method: 'GET',
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
-                }
+                },
+                credentials: 'same-origin' // Add this to ensure cookies are sent
             });
+            console.log('Products response:', response.status, response.statusText);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -102,19 +106,20 @@ const ProductInput: React.FC = () => {
             console.log('Submitting URL:', validatedUrl); // Debug log
 
             // First, try to extract product metadata
+            console.log('Submitting URL to:', '/frontrowmd/extract_product_metadata');
             const response = await fetch('/frontrowmd/extract_product_metadata', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json'
                 },
+                credentials: 'same-origin', // Add this to ensure cookies are sent
                 body: JSON.stringify({ 
                     product_url: validatedUrl,
                     timestamp: new Date().toISOString()
                 }),
             });
-
-            console.log('Response status:', response.status); // Debug log
+            console.log('Submit response:', response.status, response.statusText);
 
             if (!response.ok) {
                 let errorMessage = `Failed to process URL (${response.status})`;
