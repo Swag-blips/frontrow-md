@@ -28,11 +28,11 @@ const ProductInput: React.FC = () => {
             console.log('Fetching products from:', '/frontrowmd/products');
             const response = await fetch('/frontrowmd/products', {
                 method: 'GET',
+                mode: 'cors',
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
-                },
-                credentials: 'same-origin' // Add this to ensure cookies are sent
+                }
             });
             console.log('Products response:', response.status, response.statusText);
             if (!response.ok) {
@@ -109,11 +109,11 @@ const ProductInput: React.FC = () => {
             console.log('Submitting URL to:', '/frontrowmd/extract_product_metadata');
             const response = await fetch('/frontrowmd/extract_product_metadata', {
                 method: 'POST',
+                mode: 'cors',
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json'
                 },
-                credentials: 'same-origin', // Add this to ensure cookies are sent
                 body: JSON.stringify({ 
                     product_url: validatedUrl,
                     timestamp: new Date().toISOString()
