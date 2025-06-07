@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Dashboard - FrontrowMD</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --background-color: #F8F9FA;
+            --text-primary: #121212;
+            --text-secondary: #555;
+            --accent-primary: #FF6B00;
+            --accent-primary-hover: #E66000;
+            --border-subtle: #E0E0E0;
+            --card-bg: #FFFFFF;
+            --tag-bg: #E9ECEF;
+            --success-color: #28a745;
+            --success-bg-soft: #e9f5ea;
+
+            --font-family-sans: 'Inter', sans-serif;
+            --font-weight-regular: 400;
+            --font-weight-medium: 500;
+            --font-weight-bold: 700;
+
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+
+            --border-radius-medium: 12px;
+            --border-radius-large: 16px;
+            
+            --shadow-soft: 0px 4px 12px rgba(0, 0, 0, 0.05);
+            --shadow-medium: 0px 8px 24px rgba(0, 0, 0, 0.1);
+            --header-height: 60px;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes skeleton-loading { 0% { background-color: #e0e0e0; } 100% { background-color: #f0f0f0; } }
+        
+        html, body { height: 100%; overflow: hidden; }
+        body {
+            font-family: var(--font-family-sans);
+            background-color: var(--background-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+        }
+        body.modal-open { overflow: hidden; }
+
+        .container { width: 100%; max-width: 1600px; margin: 0 auto; padding: 0 var(--spacing-lg); }
+        .header {
+            padding: 0;
+            height: var(--header-height);
+            border-bottom: 1px solid var(--border-subtle);
+            flex-shrink: 0;
+            background-color: var(--card-bg);
+        }
+        .header__container { display: flex; align-items: center; height: 100%; justify-content: space-between; }
+        .logo {
+            font-size: 1.25rem; font-weight: var(--font-weight-bold); text-decoration: none;
+            color: var(--text-primary); display: flex; align-items: center; gap: 8px;
+        }
+        .logo__icon { color: var(--accent-primary); }
+        .home-link {
+            color: var(--text-primary); display: flex; align-items: center; justify-content: center; padding: var(--spacing-sm);
+            border-radius: 50%; transition: background-color 0.2s ease, color 0.2s ease;
+        }
+        .home-link:hover { background-color: var(--tag-bg); color: var(--accent-primary); }
+
+        .dashboard-container {
+            flex-grow: 1; display: grid; grid-template-columns: 3fr 4fr 5fr; grid-template-rows: 1fr;
+            gap: var(--spacing-lg); padding: var(--spacing-lg) 0; height: calc(100vh - var(--header-height));
+        }
+
+        .dashboard-panel {
+            background-color: var(--card-bg); border-radius: var(--border-radius-large); border: 1px solid var(--border-subtle);
+            padding: var(--spacing-lg); overflow-y: auto; display: flex; flex-direction: column;
+        }
+
+        /* Product Details Panel */
+        .product-image { width: 100%; border-radius: var(--border-radius-medium); margin-bottom: var(--spacing-md); }
+        .product-name { font-size: 1.25rem; font-weight: var(--font-weight-bold); }
+        .product-description {
+            color: var(--text-secondary); font-size: 0.9rem; margin: var(--spacing-sm) 0 var(--spacing-md) 0;
+            max-height: 80px; overflow: hidden; transition: max-height 0.3s ease;
+        }
+        .product-description.expanded { max-height: 500px; }
+        .toggle-description, .methodology-button {
+            background: none; border: none; color: var(--accent-primary); font-weight: var(--font-weight-medium);
+            cursor: pointer; padding: 0; font-size: 0.9rem; text-align: left;
+        }
+        .methodology-button { margin-top: auto; padding-top: var(--spacing-md); border-top: 1px solid var(--border-subtle); width: 100%; }
+        .section-title {
+            font-size: 1rem; font-weight: var(--font-weight-bold); margin-bottom: var(--spacing-sm);
+            padding-bottom: var(--spacing-sm); border-bottom: 1px solid var(--border-subtle);
+        }
+        .ingredients-list { display: flex; flex-wrap: wrap; gap: var(--spacing-sm); margin: var(--spacing-md) 0; }
+        .ingredient-tag {
+            background-color: var(--tag-bg); color: var(--text-primary); padding: 4px 10px;
+            border-radius: 16px; font-size: 0.85rem; font-weight: var(--font-weight-medium);
+        }
+
+        /* Research List Panel */
+        .research-list { display: flex; flex-direction: column; gap: var(--spacing-md); }
+        .research-card {
+            background: transparent; padding: var(--spacing-md); border-radius: var(--border-radius-medium);
+            border: 1px solid var(--border-subtle); transition: all 0.2s ease; cursor: pointer;
+        }
+        .research-card:hover { border-color: var(--accent-primary); transform: translateY(-2px); }
+        .research-card.active { border-color: var(--accent-primary); box-shadow: 0 0 0 2px var(--accent-primary-hover); }
+        .research-card__title { font-weight: var(--font-weight-bold); font-size: 0.95rem; margin-bottom: var(--spacing-sm); }
+        .research-card__relevance {
+            background-color: var(--success-bg-soft); color: #206b31; padding: 2px var(--spacing-sm);
+            border-radius: var(--border-radius-medium); font-size: 0.8rem; display: inline-block;
+        }
+        
+        /* Research Detail Panel & Modal styles */
+        .detail-placeholder {
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            height: 100%; text-align: center; color: var(--text-secondary);
+        }
+        .detail-content, .modal-body { animation: fadeIn 0.5s; }
+        .detail-title, .modal-title { font-size: 1.15rem; font-weight: var(--font-weight-bold); margin-bottom: var(--spacing-md); }
+        .detail-summary, .modal-summary {
+            font-size: 0.95rem; margin-bottom: var(--spacing-md); padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--border-radius-medium); border-left: 3px solid var(--accent-primary);
+            background-color: var(--background-color);
+        }
+        .detail-metadata, .modal-metadata { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: var(--spacing-md); }
+        .detail-statements, .modal-statements { list-style-type: none; padding-left: 0; margin-bottom: var(--spacing-md); }
+        .detail-statements li, .modal-statements li {
+            font-size: 0.9rem; font-style: italic; color: var(--text-secondary); padding-left: var(--spacing-md);
+            border-left: 2px solid var(--border-subtle); margin-bottom: var(--spacing-sm);
+        }
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6);
+            display: flex; align-items: center; justify-content: center; z-index: 1000;
+            opacity: 0; visibility: hidden; transition: all 0.3s ease;
+        }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        .modal-content {
+            background: var(--card-bg); border-radius: var(--border-radius-large); max-width: 800px;
+            width: calc(100% - 40px); max-height: 90vh; overflow-y: auto; padding: var(--spacing-xl);
+            position: relative; transform: translateY(20px) scale(0.95); transition: all 0.3s ease;
+        }
+        .modal-overlay.active .modal-content { transform: translateY(0) scale(1); }
+        .modal-close-btn {
+            position: absolute; top: var(--spacing-md); right: var(--spacing-md);
+            background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text-secondary);
+        }
+        .query-card {
+            border: 1px solid var(--border-subtle); border-radius: var(--border-radius-medium);
+            padding: var(--spacing-md); margin-bottom: var(--spacing-md);
+        }
+        .query-term-container {
+            display: flex; align-items: center; gap: var(--spacing-sm);
+            background-color: var(--background-color); padding: var(--spacing-sm); border-radius: var(--border-radius-medium);
+        }
+        .query-term { flex-grow: 1; font-family: monospace; font-size: 0.9rem; }
+        .copy-btn {
+            background: none; border: 1px solid var(--border-subtle); border-radius: 6px; padding: 4px 8px;
+            cursor: pointer; transition: background-color 0.2s;
+        }
+        .copy-btn:hover { background-color: var(--tag-bg); }
+        .query-rationale { font-size: 0.9rem; color: var(--text-secondary); margin-top: var(--spacing-sm); }
+        
+        /* Skeleton & Responsive */
+        .skeleton { animation: skeleton-loading 1s linear infinite alternate; background-color: #e0e0e0; border-radius: 4px; }
+        .skeleton-img { height: 150px; }
+        .skeleton-text { height: 1em; margin-bottom: 0.5em; }
+        @media (max-width: 1024px) {
+            html, body { height: auto; overflow: auto; }
+            .dashboard-container { grid-template-columns: 1fr; height: auto; }
+            .dashboard-panel { overflow-y: visible; }
+            .mobile-tabs { display: flex; border-bottom: 1px solid var(--border-subtle); margin-bottom: var(--spacing-lg); }
+            .mobile-tab { padding: var(--spacing-sm) var(--spacing-md); border: none; background: none; font-size: 1rem; }
+            .mobile-tab.active { border-bottom: 2px solid var(--accent-primary); font-weight: var(--font-weight-bold); }
+            .product-details, .research-list-panel, .research-detail-panel { display: none; }
+            .product-details.active, .research-list-panel.active, .research-detail-panel.active { display: flex; }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container header__container">
+            <a href="/" class="logo"><span class="logo__icon">+</span> FrontrowMD</a>
+            <a href="/" class="home-link" aria-label="Go to homepage">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            </a>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="mobile-tabs" style="display: none;">
+             <button class="mobile-tab active" data-tab="product-details">Details</button>
+             <button class="mobile-tab" data-tab="research-list-panel">Research</button>
+             <button class="mobile-tab" data-tab="research-detail-panel">Study</button>
+        </div>
+        <div class="dashboard-container">
+            <!-- Product Details Panel -->
+            <section id="product-details" class="dashboard-panel product-details active">
+                <div class="skeleton-loader"><!-- Skeleton content --></div>
+                <div class="content" style="display: none; flex-grow: 1; display: flex; flex-direction: column;">
+                    <div style="flex-grow: 1;">
+                        <img id="product-img" class="product-image" src="" alt="">
+                        <h2 id="product-name" class="product-name"></h2>
+                        <p id="product-description" class="product-description"></p>
+                        <button id="toggle-description" class="toggle-description">Show More</button>
+                        <h3 class="section-title" style="margin-top: 16px;">Key Ingredients</h3>
+                        <div id="ingredients-list" class="ingredients-list"></div>
+                    </div>
+                    <button id="methodology-button" class="methodology-button">View Search Terms &rarr;</button>
+                </div>
+            </section>
+            <!-- Other panels... -->
+            <section id="research-list-panel" class="dashboard-panel research-list-panel">
+                 <div class="skeleton-loader">
+                    <div class="skeleton skeleton-text" style="width: 50%; height: 1.25em;"></div>
+                    <div class="skeleton" style="height: 80px; margin: 1em 0;"></div>
+                    <div class="skeleton" style="height: 80px; margin: 1em 0;"></div>
+                    <div class="skeleton" style="height: 80px; margin: 1em 0;"></div>
+                </div>
+                <div class="content" style="display: none; width:100%;">
+                    <h2 class="section-title">Clinical Research</h2>
+                    <div id="research-list" class="research-list"></div>
+                </div>
+            </section>
+            <section id="research-detail-panel" class="dashboard-panel research-detail-panel">
+                <div id="detail-placeholder" class="detail-placeholder">
+                    <p>Select a clinical study from the list to view its details here.</p>
+                </div>
+                <div id="detail-content" class="detail-content" style="display: none;"></div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Methodology Modal -->
+    <div id="methodology-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button id="modal-close" class="modal-close-btn">&times;</button>
+            <h2 class="modal-title">Search Term Methodology</h2>
+            <div id="modal-body" class="modal-body"></div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const productData = { "product_name": "Propolis Throat Spray 2-Pack", "product_description": "The Propolis Throat Spray 2-Pack offers a highly concentrated formula designed to support immune health and soothe scratchy throats. It delivers the market's highest concentration of bioactive polyphenols and flavonoids, along with essential compounds like Vitamin C, iron, and B vitamins. This spray utilizes propolis, a natural hive defender, to combat free radical damage and nourish gut bacteria. Each serving contains 85mg of highly concentrated bee propolis extract, purified water, non-GMO vegetable glycerin, and wildflower honey. For daily immune support, spray 4 times in the mouth; increase to 8 sprays if symptoms are present. The product is free from refined sugars, GMOs, glyphosate, artificial flavors, dyes, antibiotics, and is drug-free.", "product_image_url": "https://www.beekeepersnaturals.com/cdn/shop/files/MAIN_TS-T.png?v=1744737054&width=800", "ingredients": ["Bee Propolis extract", "Vegetable Glycerin", "Purified Water", "Wildflower Honey", "Polyphenols", "Flavonoids", "Vitamin C", "Iron", "B vitamins", "Zinc", "Antioxidants"], "search_queries": [{ "term": "Propolis extract immunomodulatory effect respiratory infection", "rationale": "This term targets the primary ingredient and its claimed mechanism for respiratory infections." }, { "term": "Bee propolis polyphenols antioxidant activity", "rationale": "This term focuses on the bioactive compounds and their antioxidant activity." }], "clinical_research": [{ "is_relevant": true, "relevance_reason": "Directly investigates antioxidant activity of propolis polyphenols.", "title": "Antioxidant Power of Propolis Polyphenols", "product_related_summary": "This study confirms the potent antioxidant activity of polyphenols found in propolis. The research demonstrates how these compounds effectively scavenge free radicals, offering crucial support for immune health and protection against cellular damage.", "supporting_statements": ["\"Propolis is a potential source of natural antioxidants such as phenolic acids and flavonoids.\"", "\"Flavonoids are characterized by powerful antioxidative properties.\""], "metadata": { "authors": ["A. Kurek-Górecka", "et al."], "publication_date": "2013 Dec 20", "journal": "Molecules" }, "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6271064/" }, { "is_relevant": true, "relevance_reason": "Investigates antimicrobial activity relevant to soothing throats.", "title": "Propolis Extracts Boost Antimicrobial Activity", "product_related_summary": "This study explored the impact of different extraction methods on the bioactivity of propolis. The findings confirm that propolis extracts exhibit substantial antioxidant and antimicrobial properties, which are crucial for immune defense and addressing throat discomfort.", "supporting_statements": ["\"All extracts, even the aqueous ones, demonstrated antibacterial and antifungal activity.\"", "\"In vivo it may stimulate the immune system, activating the mechanisms involved in the microorganisms killing.\""], "metadata": { "authors": ["M. M. Nichitoi", "et al."], "publication_date": "11 October 2021", "journal": "Scientific Reports" }, "source_url": "https://www.nature.com/articles/s41598-021-97130-9" }, { "is_relevant": true, "relevance_reason": "Supports the product's claim of nourishing gut bacteria.", "title": "Propolis Supports Gut Health and Microbiome Balance", "product_related_summary": "This study showed that propolis supplementation improved gut microbiota composition and intestinal mucosal barrier function. These findings corroborate the claim of nourishing gut bacteria, suggesting benefits beyond throat-soothing.", "supporting_statements": ["Propolis treatment improved gut microbiota composition.", "Propolis repaired intestinal mucosal damage."], "metadata": { "authors": ["M. Xue", "et al."], "publication_date": "2019 Oct", "journal": "Biomed Pharmacother" }, "source_url": "https://pubmed.ncbi.nlm.nih.gov/31545258/" }] };
+        
+        const setupMethodologyModal = (data) => {
+            const modal = document.getElementById('methodology-modal');
+            const openBtn = document.getElementById('methodology-button');
+            const closeBtn = modal.querySelector('#modal-close');
+            const modalBody = modal.querySelector('#modal-body');
+
+            if (!data.search_queries || data.search_queries.length === 0) {
+                openBtn.style.display = 'none';
+                return;
+            }
+
+            modalBody.innerHTML = '';
+            data.search_queries.forEach(q => {
+                const card = document.createElement('div');
+                card.className = 'query-card';
+                card.innerHTML = `
+                    <div class="query-term-container">
+                        <div class="query-term">${q.term}</div>
+                        <button class="copy-btn" data-term="${q.term}">Copy</button>
+                    </div>
+                    <p class="query-rationale">${q.rationale}</p>
+                `;
+                modalBody.appendChild(card);
+            });
+
+            const openModal = () => {
+                modal.classList.add('active');
+                document.body.classList.add('modal-open');
+            };
+            const closeModal = () => {
+                modal.classList.remove('active');
+                document.body.classList.remove('modal-open');
+            };
+
+            openBtn.addEventListener('click', openModal);
+            closeBtn.addEventListener('click', closeModal);
+            modal.addEventListener('click', e => e.target === modal && closeModal());
+            document.addEventListener('keydown', e => e.key === 'Escape' && closeModal());
+
+            modalBody.addEventListener('click', e => {
+                if (e.target.classList.contains('copy-btn')) {
+                    const btn = e.target;
+                    navigator.clipboard.writeText(btn.dataset.term).then(() => {
+                        btn.textContent = 'Copied!';
+                        setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+                    });
+                }
+            });
+        };
+
+        const renderProductDetails = (data) => {
+            document.getElementById('product-img').src = data.product_image_url;
+            document.getElementById('product-img').alt = data.product_name;
+            document.getElementById('product-name').textContent = data.product_name;
+            document.getElementById('product-description').textContent = data.product_description;
+            const ingredientsList = document.getElementById('ingredients-list');
+            ingredientsList.innerHTML = '';
+            data.ingredients.forEach(i => {
+                const tag = document.createElement('span');
+                tag.className = 'ingredient-tag';
+                tag.textContent = i;
+                ingredientsList.appendChild(tag);
+            });
+            document.getElementById('toggle-description').addEventListener('click', (e) => {
+                const desc = document.getElementById('product-description');
+                desc.classList.toggle('expanded');
+                e.target.textContent = desc.classList.contains('expanded') ? 'Show Less' : 'Show More';
+            });
+        };
+
+        const renderResearchList = (data) => {
+            const listEl = document.getElementById('research-list');
+            listEl.innerHTML = '';
+            data.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = 'research-card';
+                card.dataset.index = index;
+                card.innerHTML = `<h3 class="research-card__title">${item.title}</h3><div class="research-card__relevance"><strong>✓ Relevant:</strong> ${item.relevance_reason}</div>`;
+                card.addEventListener('click', () => {
+                    renderDetailView(item);
+                    document.querySelectorAll('.research-card').forEach(c => c.classList.remove('active'));
+                    card.classList.add('active');
+                    if (window.innerWidth <= 1024) showTab('research-detail-panel');
+                });
+                listEl.appendChild(card);
+            });
+        };
+
+        const renderDetailView = (item) => {
+            const placeholder = document.getElementById('detail-placeholder');
+            const content = document.getElementById('detail-content');
+            placeholder.style.display = 'none';
+            content.style.display = 'block';
+            const statements = item.supporting_statements.map(s => `<li>${s}</li>`).join('');
+            content.innerHTML = `<h2 class="detail-title">${item.title}</h2><div class="detail-metadata"><span><strong>Authors:</strong> ${item.metadata.authors.join(', ')}</span><span><strong>Journal:</strong> ${item.metadata.journal}, ${item.metadata.publication_date}</span></div><h3 class="section-title">Summary</h3><p class="detail-summary">${item.product_related_summary}</p><h3 class="section-title">Supporting Statements</h3><ul class="detail-statements">${statements}</ul><a href="${item.source_url}" target="_blank">Read Full Study →</a>`;
+        };
+        
+        const showTab = (tabId) => {
+            document.querySelectorAll('.dashboard-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.mobile-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            document.querySelector(`.mobile-tab[data-tab="${tabId}"]`).classList.add('active');
+        };
+
+        // --- Initial Load ---
+        setTimeout(() => {
+            document.querySelectorAll('.skeleton-loader').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.content').forEach(el => { el.style.display = el.classList.contains('content') ? 'flex' : 'block'; el.style.flexDirection = 'column'; });
+            
+            renderProductDetails(productData);
+            setupMethodologyModal(productData);
+            renderResearchList(productData.clinical_research);
+
+            if (window.innerWidth <= 1024) {
+                document.querySelector('.mobile-tabs').style.display = 'flex';
+                document.querySelectorAll('.mobile-tab').forEach(tab => {
+                    tab.addEventListener('click', () => showTab(tab.dataset.tab));
+                });
+            }
+        }, 1500);
+    });
+    </script>
+</body>
+</html>
