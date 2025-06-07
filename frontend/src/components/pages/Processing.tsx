@@ -1,3 +1,5 @@
+// UI improvements: Simplified processing screens, added success tick, updated button styles
+// Last updated: 2024-03-07
 import React, { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import '../styling/Processing.css';
