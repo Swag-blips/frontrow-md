@@ -11,7 +11,7 @@ interface Product {
     created_time: number;
 }
 
-const API_BASE_URL = import.meta.env.PROD ? 'https://frontrow-md001.vercel.app' : '';
+const API_BASE_URL = ''; // Use relative URLs to avoid CORS issues
 
 const ProductInput: React.FC = () => {
     const [url, setUrl] = useState('');

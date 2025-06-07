@@ -6,7 +6,7 @@ import '../styling/Processing.css';
 
 type Status = 'analyzing' | 'complete' | 'request_sent' | 'error';
 
-const API_BASE_URL = import.meta.env.PROD ? 'https://frontrow-md001.vercel.app' : '';
+const API_BASE_URL = ''; // Use relative URLs to avoid CORS issues
 
 const Processing: React.FC = () => {
     const [searchParams] = useSearchParams();
