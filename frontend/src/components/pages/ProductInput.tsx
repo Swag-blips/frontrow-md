@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import '../styling/ProductInput.css';
 
@@ -6,9 +6,8 @@ import '../styling/ProductInput.css';
 interface Product {
     product_id: string;
     product_name: string;
-    product_url?: string;
-    product_image_url?: string;
-    created_time: number;
+    product_image_url?: string;  // Add back image URL
+    created_time: number | string;
 }
 
 const API_BASE_URL = ''; // Use relative URLs to let Vercel handle routing
@@ -16,150 +15,182 @@ const API_BASE_URL = ''; // Use relative URLs to let Vercel handle routing
 const ProductInput: React.FC = () => {
     const [url, setUrl] = useState('');
     const navigate = useNavigate();
-    const [products, setProducts] = useState<Product[]>([]);
-    const [isLoading, setIsLoading] = useState(true); // For products fetch
-    const [isSubmitting, setIsSubmitting] = useState(false); // For form submission
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [searchParams] = useSearchParams();
+    const [products, setProducts] = useState<Product[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const isFetching = useRef(false);
+    const abortController = useRef<AbortController | null>(null);
 
-    // Function to fetch products
     const fetchProducts = async () => {
+        if (isFetching.current) {
+            console.log('Already fetching, skipping...');
+            return;
+        }
+
+        // Cancel any existing fetch
+        if (abortController.current) {
+            abortController.current.abort();
+        }
+
+        // Create new abort controller
+        abortController.current = new AbortController();
+        isFetching.current = true;
+        setIsLoading(true);
+
         try {
-            const apiUrl = '/frontrowmd/products';
-            console.log('Fetching products from:', apiUrl);
-            const response = await fetch(apiUrl, {
+            console.log('Fetching fresh products...');
+            const response = await fetch(`/frontrowmd/products?t=${Date.now()}`, {
                 method: 'GET',
-                mode: 'cors',
                 headers: {
                     'Accept': 'application/json',
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Cache-Control': 'no-cache, no-store, must-revalidate',
+                    'Pragma': 'no-cache',
+                    'Expires': '0'
+                },
+                signal: abortController.current.signal
+            });
+
+            if (!response.ok) {
+                throw new Error(`Failed to fetch products: ${response.status}`);
+            }
+
+            const data = await response.json();
+            console.log('Received products:', data.products?.length || 0);
+
+            if (!data.products || !Array.isArray(data.products)) {
+                throw new Error('No products found');
+            }
+
+            // Create a map to store unique products by product_name
+            const uniqueProductsMap = new Map<string, Product>();
+
+            // Process each product, keeping only the most recent one for each product_name
+            data.products.forEach((product: Product) => {
+                const normalizedName = product.product_name.toLowerCase().trim();
+                const existingProduct = uniqueProductsMap.get(normalizedName);
+                const currentTime = typeof product.created_time === 'string' 
+                    ? new Date(product.created_time).getTime() 
+                    : product.created_time;
+                
+                if (!existingProduct) {
+                    uniqueProductsMap.set(normalizedName, product);
+                } else {
+                    const existingTime = typeof existingProduct.created_time === 'string'
+                        ? new Date(existingProduct.created_time).getTime()
+                        : existingProduct.created_time;
+                    
+                    if (currentTime > existingTime) {
+                        uniqueProductsMap.set(normalizedName, product);
+                    }
                 }
             });
-            console.log('Products response:', response.status, response.statusText);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const data = await response.json();
-            
-            // Check if products array exists and is not empty
-            if (!data.products || !Array.isArray(data.products)) {
-                throw new Error('No products found in the database. The database may have been cleared.');
-            }
-            
-            const productsArray: Product[] = data.products;
-            
-            // Ensure created_time is a number and sort by most recent first
-            const sortedData = productsArray
-                .map(product => ({
-                    ...product,
-                    created_time: typeof product.created_time === 'string' 
-                        ? new Date(product.created_time).getTime() 
-                        : product.created_time
-                }))
-                .sort((a, b) => b.created_time - a.created_time)
+
+            // Convert map to array and sort by created_time
+            const uniqueProducts = Array.from(uniqueProductsMap.values())
+                .sort((a, b) => {
+                    const timeA = typeof a.created_time === 'string' 
+                        ? new Date(a.created_time).getTime() 
+                        : a.created_time;
+                    const timeB = typeof b.created_time === 'string' 
+                        ? new Date(b.created_time).getTime() 
+                        : b.created_time;
+                    return timeB - timeA;
+                })
                 .slice(0, 6);
-            
-            setProducts(sortedData);
+
+            console.log('Processed unique products:', {
+                total: data.products.length,
+                unique: uniqueProducts.length,
+                products: uniqueProducts.map(p => ({ 
+                    name: p.product_name,
+                    time: p.created_time 
+                }))
+            });
+
+            setProducts(uniqueProducts);
             setError(null);
         } catch (err: any) {
-            console.error('Error fetching products:', err);
-            setError(err.message || 'Failed to fetch products');
-            setProducts([]); // Clear products on error
+            if (err.name !== 'AbortError') {
+                console.error('Error fetching products:', err);
+                setError(err.message);
+            }
         } finally {
+            isFetching.current = false;
             setIsLoading(false);
+            abortController.current = null;
         }
     };
 
-    // Initial fetch when component mounts
+    // Fetch on mount and when returning to the page
     useEffect(() => {
+        console.log('Component mounted or returned to page, fetching products...');
         fetchProducts();
-    }, []); // Empty dependency array means this runs once on mount
 
-    // Periodic fetch every 5 seconds
-    useEffect(() => {
-        const intervalId = setInterval(fetchProducts, 5000);
-        return () => clearInterval(intervalId);
-    }, []); // Empty dependency array means this runs once on mount
-
-    // Additional fetch when URL parameter changes
-    useEffect(() => {
-        const shouldFetch = searchParams.get('fetch') === 'true';
-        if (shouldFetch) {
-            // Add a small delay to ensure backend has processed the new product
-            const timeoutId = setTimeout(fetchProducts, 1000);
-            return () => clearTimeout(timeoutId);
-        }
-    }, [searchParams]);
+        // Cleanup function
+        return () => {
+            if (abortController.current) {
+                abortController.current.abort();
+            }
+            isFetching.current = false;
+        };
+    }, []); // Empty dependency array for mount only
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!url) return;
 
-        setIsSubmitting(true); // Use isSubmitting instead of isLoading
+        setIsSubmitting(true);
         setError(null);
 
         try {
-            // Validate URL format
             const inputUrl = url.trim();
             let validatedUrl = inputUrl;
             try {
                 const urlObj = new URL(validatedUrl);
-                // Ensure URL has http/https protocol
                 if (!urlObj.protocol.startsWith('http')) {
                     validatedUrl = `https://${validatedUrl}`;
                 }
             } catch (err) {
-                throw new Error('Please enter a valid URL (e.g., https://www.example.com/product)');
+                throw new Error('Please enter a valid URL');
             }
 
-            console.log('Submitting URL:', validatedUrl); // Debug log
-
-            // First, try to extract product metadata
-            const apiUrl = '/frontrowmd/extract_product_metadata';
-            console.log('Submitting URL to:', apiUrl);
-            const response = await fetch(apiUrl, {
+            const response = await fetch('/frontrowmd/extract_product_metadata', {
                 method: 'POST',
-                mode: 'cors',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Accept': 'application/json'
+                    'Accept': 'application/json',
+                    'Cache-Control': 'no-cache'
                 },
                 body: JSON.stringify({ 
                     product_url: validatedUrl,
                     timestamp: new Date().toISOString()
                 }),
             });
-            console.log('Submit response:', response.status, response.statusText);
 
             if (!response.ok) {
-                let errorMessage = `Failed to process URL (${response.status})`;
-                try {
-                    const errorData = await response.json();
-                    console.log('Error response:', errorData); // Debug log
-                    if (errorData.message) {
-                        errorMessage = errorData.message;
-                    } else if (errorData.error) {
-                        errorMessage = errorData.error;
-                    }
-                } catch (parseError) {
-                    console.error('Error parsing error response:', parseError);
-                }
-                throw new Error(errorMessage);
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Failed to process URL');
             }
 
             const data = await response.json();
-            console.log('Success response:', data); // Debug log
             
-            // If successful, navigate to processing page with the product ID
+            // Fetch products immediately after successful submission
+            console.log('Product submitted successfully, fetching updated list...');
+            fetchProducts();
+            
             if (data.product_id) {
                 navigate(`/processing?url=${encodeURIComponent(validatedUrl)}&productId=${data.product_id}`);
             } else {
                 navigate(`/processing?url=${encodeURIComponent(validatedUrl)}`);
             }
         } catch (err: any) {
-            console.error('Error submitting URL:', err);
-            setError(err.message || 'Failed to process URL. Please try again.');
-            setIsSubmitting(false); // Use isSubmitting instead of isLoading
+            console.error('Error:', err);
+            setError(err.message);
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -192,12 +223,12 @@ const ProductInput: React.FC = () => {
                                     value={url}
                                     onChange={(e) => setUrl(e.target.value)}
                                     required
-                                    disabled={isSubmitting} // Use isSubmitting instead of isLoading
+                                    disabled={isSubmitting}
                                 />
                                 <button 
                                     type="submit" 
                                     className="generate-btn"
-                                    disabled={isSubmitting} // Use isSubmitting instead of isLoading
+                                    disabled={isSubmitting}
                                 >
                                     {isSubmitting ? 'Processing...' : 'Generate Reviews'}
                                 </button>
@@ -217,11 +248,6 @@ const ProductInput: React.FC = () => {
                             ) : error ? (
                                 <div className="error-state">
                                     <p className="error-message">{error}</p>
-                                    {error.includes('database') || error.includes('cleared') ? (
-                                        <p className="error-help">
-                                            The database has been cleared. Start by generating new reviews for a product.
-                                        </p>
-                                    ) : null}
                                 </div>
                             ) : products.length === 0 ? (
                                 <div className="empty-state">
@@ -229,9 +255,9 @@ const ProductInput: React.FC = () => {
                                     <p className="empty-state-help">Start by entering a product URL above to generate reviews.</p>
                                 </div>
                             ) : (
-                                products.map(product => (
+                                products.map((product) => (
                                     <div 
-                                        key={product.product_id} 
+                                        key={product.product_id}
                                         className="product-card"
                                         onClick={() => handleProductClick(product.product_id)}
                                         style={{ cursor: 'pointer' }}
@@ -248,12 +274,6 @@ const ProductInput: React.FC = () => {
                                         </div>
                                         <div className="product-card__content">
                                             <h3 className="product-card__title">{product.product_name}</h3>
-                                            {product.product_url && (
-                                                <>
-                                                    <p className="product-card__url">{new URL(product.product_url).hostname}</p>
-                                                    <p className="product-card__full-url">{product.product_url}</p>
-                                                </>
-                                            )}
                                         </div>
                                     </div>
                                 ))
