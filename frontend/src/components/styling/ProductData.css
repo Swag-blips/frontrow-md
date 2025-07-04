@@ -768,7 +768,7 @@ body.modal-open {
   text-align: left;
 }
 
-.product-image {
+.product-data-wrapper .product-image {
   width: 100%;
   max-height: 300px;
   object-fit: contain;
