@@ -142,6 +142,7 @@ const ProductInput: React.FC = () => {
     };
   }, []); // Empty dependency array for mount only
 
+  console.log(products);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!url) return;
@@ -269,7 +270,7 @@ const ProductInput: React.FC = () => {
                 <input
                   type="url"
                   className="url-input"
-                  placeholder="e.g., https://www.example.com/product/item-123"
+                  placeholder="https://www.example.com/product/item-123"
                   value={url}
                   onChange={(e) => setUrl(e.target.value)}
                   required
@@ -334,6 +335,9 @@ const ProductInput: React.FC = () => {
                       <h3 className="product-card__title">
                         {product.product_name}
                       </h3>
+                      <p className="product-card__url">
+                        {product?.product_image_url}
+                      </p>
                     </div>
                   </div>
                 ))
@@ -343,7 +347,7 @@ const ProductInput: React.FC = () => {
         </div>
       </main>
 
-      <footer className="footer">
+      <footer className="product-input-footer">
         <div className="container">
           <p>&copy; 2024 FrontrowMD. All rights reserved.</p>
         </div>

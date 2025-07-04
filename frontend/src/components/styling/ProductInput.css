@@ -90,9 +90,7 @@ body {
 }
 
 .input-main-content {
-  padding: var(--spacing-xl) 0;
-  margin-bottom: var(--spacing-xxl);
-  min-height: calc(100vh - 200px); /* Account for header and footer */
+  padding: var(--spacing-xl) 0 var(--spacing-xxl) 0;
 }
 
 .input-section {
@@ -132,7 +130,7 @@ body {
   font-size: 1rem;
   border: 1px solid var(--border-subtle);
   border-radius: var(--border-radius-medium);
-  background-color: var(--card-bg);
+  background-color: var(--input-bg);
   color: var(--text-primary);
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
@@ -146,7 +144,7 @@ body {
   outline: none;
   border-color: var(--accent-primary);
   box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.2);
-  background-color: var(--card-bg);
+  background-color: var(--input-bg);
 }
 
 .generate-btn {
@@ -246,14 +244,11 @@ body {
 }
 
 /* Footer */
-.footer {
-  padding: var(--spacing-xl) 0;
+.product-input-footer {
+  padding: var(--spacing-lg) 0;
   text-align: center;
   font-size: 0.9rem;
   color: #aaa;
-  margin-top: auto;
-  background-color: transparent;
-  border-top: none;
 }
 
 .loading-message,
