@@ -1,3 +1,184 @@
+/* CSS TEST - This should make the wrapper background red */
+.product-data-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--background-color, #F8F9FA);
+    font-family: var(--font-family-sans, 'Inter', sans-serif);
+    color: var(--text-primary, #121212);
+}
+
+.product-data-wrapper *, 
+.product-data-wrapper *::before, 
+.product-data-wrapper *::after {
+    box-sizing: border-box;
+}
+
+/* Fixed header layout - Target correct flex container */
+.product-data-wrapper .header {
+    padding: 0;
+    height: 60px;
+    border-bottom: 1px solid #E0E0E0;
+    flex-shrink: 0;
+    background-color: #FFFFFF;
+}
+
+.product-data-wrapper .header .container.header__container {
+    width: 100% !important; 
+    max-width: 1600px !important; 
+    margin: 0 auto !important; 
+    padding: 0 24px !important;
+    display: flex !important; 
+    flex-direction: row !important;
+    align-items: center !important; 
+    height: 100% !important; 
+    justify-content: space-between !important; 
+}
+
+.product-data-wrapper .header .logo {
+    font-size: 1.25rem !important; 
+    font-weight: 700 !important; 
+    text-decoration: none !important;
+    color: #121212 !important; 
+    display: flex !important; 
+    flex-direction: row !important;
+    align-items: center !important; 
+    gap: 8px !important;
+}
+
+.product-data-wrapper .header .logo .logo__icon { 
+    color: #FF6B00 !important; 
+}
+
+.product-data-wrapper .header .home-button {
+    color: #121212 !important; 
+    display: flex !important; 
+    align-items: center !important; 
+    justify-content: center !important; 
+    padding: 8px !important;
+    border-radius: 50% !important; 
+    transition: background-color 0.2s ease, color 0.2s ease !important;
+    text-decoration: none !important;
+}
+
+.product-data-wrapper .header .home-button:hover { 
+    background-color: #E9ECEF !important; 
+    color: #FF6B00 !important; 
+}
+
+.product-data-wrapper .header .home-button svg {
+    opacity: 0.7;
+    transition: all 0.2s ease;
+}
+
+.product-data-wrapper .header .home-button:hover svg {
+    opacity: 1;
+    color: #FF6B00;
+}
+
+/* Make main content fill space and contain scrollable panels */
+.product-data-wrapper .main-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-height: 0;
+    padding: 8px 0 4px 0; /* Minimal padding - reduced bottom padding */
+    height: calc(100vh - 60px); /* Full height minus header */
+}
+
+.product-data-wrapper .container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 12px !important;
+    flex-grow: 1;
+}
+
+.product-data-wrapper .dashboard-container {
+    flex-grow: 1;
+    min-height: 0;
+    overflow: hidden;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 2rem;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 0.5rem 12px 0.25rem 12px; /* Minimal bottom padding */
+}
+
+/* Make individual panels scrollable and fill full height */
+.product-data-wrapper .panel {
+    height: 100%;
+    max-height: 100%;
+    overflow-y: auto;
+    /* Hide scrollbar but maintain functionality */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+    background: white;
+    border-radius: 8px;
+    padding: 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-data-wrapper .panel::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+}
+
+.product-data-wrapper .product-info-panel {
+    overflow-y: auto;
+    /* Hide scrollbar but maintain functionality */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+
+.product-data-wrapper .product-info-panel::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+}
+
+.product-data-wrapper .research-list-panel {
+    overflow-y: auto;
+    /* Hide scrollbar but maintain functionality */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+
+.product-data-wrapper .research-list-panel::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+}
+
+.product-data-wrapper .research-detail-panel {
+    overflow-y: auto;
+    /* Hide scrollbar but maintain functionality */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+
+.product-data-wrapper .research-detail-panel::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+}
+
+/* Fixed footer */
+.product-data-wrapper .footer {
+    flex-shrink: 0;
+    padding: 8px 0;
+    font-size: 0.8rem;
+}
+
 :root {
     --background-color: #F8F9FA;
     --text-primary: #121212;
@@ -200,6 +381,7 @@ body.modal-open {
     margin-bottom: var(--spacing-md);
     box-shadow: var(--shadow-soft);
 }
+
 .product-details .product-image img {
     width: 100%;
     height: 100%;
@@ -397,16 +579,23 @@ body.modal-open {
 }
 
 .modal-content {
-    background: var(--card-bg);
-    border-radius: var(--border-radius-large);
-    max-width: 800px;
-    width: calc(100% - 40px);
+    background: var(--background-color);
+    border-radius: var(--border-radius-medium);
+    width: 90%;
+    max-width: 600px;
     max-height: 90vh;
     overflow-y: auto;
-    padding: var(--spacing-xl);
     position: relative;
-    transform: translateY(20px) scale(0.95);
-    transition: all 0.3s ease;
+    box-shadow: none;
+    border: none;
+    /* Hide scrollbar but keep scrolling functionality */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+/* This applies to both modal-content classes */
+.modal-content::-webkit-scrollbar {
+    display: none; /* Safari and Chrome */
 }
 
 .modal-overlay.active .modal-content {
@@ -519,18 +708,18 @@ body.modal-open {
 .dashboard-container {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
-    gap: 1.5rem;
-    width: 95%;
-    max-width: 95%;
-    margin: 0 auto;
-    padding: 1rem 0;
+    gap: 2rem;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 0.5rem 12px 0.25rem 12px; /* Minimal bottom padding */
     min-height: calc(100vh - 200px);
 }
 
 .panel {
     background: white;
     border-radius: 8px;
-    padding: 1.25rem;
+    padding: 2rem;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     height: auto;
     overflow: visible;
@@ -767,18 +956,22 @@ body.modal-open {
     .container,
     .header__container,
     .dashboard-container {
-        width: 95%;
-        max-width: 95%;
+        width: 100%;
+        max-width: 100%;
+        padding: 0 12px;
     }
     
     .dashboard-container {
-        gap: 1rem;
+        gap: 1.5rem;
+        padding: 0.5rem 12px 0.25rem 12px; /* Minimal bottom padding */
     }
 }
 
 @media (max-width: 1200px) {
     .dashboard-container {
         grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        padding: 0.5rem 12px 0.25rem 12px; /* Minimal bottom padding */
     }
     
     .research-detail-panel {
@@ -790,17 +983,19 @@ body.modal-open {
     .container,
     .header__container,
     .dashboard-container {
-        width: 95%;
-        max-width: 95%;
+        width: 100%;
+        max-width: 100%;
+        padding: 0 8px;
     }
 
     .dashboard-container {
         grid-template-columns: 1fr;
         gap: 1rem;
+        padding: 0.5rem 8px 0.25rem 8px; /* Minimal bottom padding on mobile */
     }
     
     .panel {
-        padding: 1rem;
+        padding: 1.5rem;
     }
     
     .research-detail-panel {
@@ -943,18 +1138,6 @@ body.modal-open {
     display: flex;
 }
 
-.modal-content {
-    background: var(--background-color);
-    border-radius: var(--border-radius-medium);
-    width: 90%;
-    max-width: 600px;
-    max-height: 90vh;
-    overflow-y: auto;
-    position: relative;
-    box-shadow: none;
-    border: none;
-}
-
 .modal-body {
     padding: var(--spacing-lg);
 }
@@ -1038,44 +1221,4 @@ body.modal-open {
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-/* Generate Reviews Section */
-.generate-reviews-section {
-    padding: var(--spacing-xl) 0;
-    background-color: var(--background-color);
-    text-align: center;
-    margin-bottom: var(--spacing-xl);
-}
-
-.generate-reviews-button {
-    display: inline-block;
-    background-color: var(--accent-primary);
-    color: white;
-    padding: 16px 32px;
-    border-radius: var(--border-radius-medium);
-    text-decoration: none;
-    font-size: 1.1rem;
-    font-weight: var(--font-weight-bold);
-    transition: all 0.3s ease;
-    box-shadow: var(--shadow-medium);
-    border: none;
-    cursor: pointer;
-    min-width: 200px;
-}
-
-.generate-reviews-button:hover {
-    background-color: var(--accent-primary-hover);
-    transform: translateY(-2px);
-    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.12);
-}
-
-.generate-reviews-button:active {
-    transform: translateY(0);
-    box-shadow: var(--shadow-medium);
 } 

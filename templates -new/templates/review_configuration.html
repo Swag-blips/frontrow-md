@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configure Reviews - FrontrowMD</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --background-color: #F8F9FA;
+            --text-primary: #121212;
+            --text-secondary: #555;
+            --accent-primary: #FF6B00;
+            --accent-primary-hover: #E66000;
+            --border-subtle: #E0E0E0;
+            --card-bg: #FFFFFF;
+            --success-color: #28a745;
+            --success-color-hover: #218838;
+            --error-color: #dc3545;
+            --research-tag-bg: #e3f2fd;
+            --research-tag-text: #1565c0;
+            --no-research-tag-bg: #f3e5f5;
+            --no-research-tag-text: #7b1fa2;
+
+            --font-family-sans: 'Inter', sans-serif;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 40px;
+            --border-radius-medium: 12px;
+            --border-radius-large: 16px;
+            --shadow-soft: 0px 4px 12px rgba(0, 0, 0, 0.05);
+            --shadow-medium: 0px 8px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        body { font-family: var(--font-family-sans); background-color: var(--background-color); color: var(--text-primary); }
+        .container { width: 100%; max-width: 900px; margin: 0 auto; padding: 0 var(--spacing-md); }
+        .header { padding: var(--spacing-md) 0; border-bottom: 1px solid var(--border-subtle); background-color: var(--card-bg); }
+        .header__container { display: flex; align-items: center; }
+        .logo { font-size: 1.5rem; font-weight: 700; text-decoration: none; color: var(--text-primary); display: flex; align-items: center; gap: var(--spacing-sm); }
+        .logo__icon { color: var(--accent-primary); }
+
+        .main-content { padding: var(--spacing-xl) 0; }
+        .config-card { background-color: var(--card-bg); padding: var(--spacing-xl); border-radius: var(--border-radius-large); box-shadow: var(--shadow-soft); animation: fadeIn 0.5s ease-out; }
+        .section { margin-bottom: var(--spacing-xl); }
+        .section-header { margin-bottom: var(--spacing-lg); }
+        .section-title { font-size: 1.5rem; font-weight: 700; margin-bottom: var(--spacing-sm); }
+        .section-subtitle { color: var(--text-secondary); }
+
+        /* Controls Row Layout */
+        .controls-row { display: flex; gap: var(--spacing-xl); align-items: flex-start; flex-wrap: wrap; }
+        .control-group { flex: 1; min-width: 250px; }
+
+        /* Number Stepper */
+        .number-stepper { display: flex; align-items: center; gap: var(--spacing-md); }
+        .stepper-btn { width: 44px; height: 44px; border: 1px solid var(--border-subtle); background-color: white; border-radius: 50%; font-size: 1.5rem; cursor: pointer; transition: all 0.2s ease; }
+        .stepper-btn:hover { background-color: #f1f3f5; }
+        .stepper-display { font-size: 1.5rem; font-weight: 700; min-width: 40px; text-align: center; }
+
+        /* Word Count Range Slider */
+        .word-count-container { margin-top: var(--spacing-md); }
+        .word-count-controls { display: flex; align-items: center; gap: var(--spacing-md); }
+        .word-count-label { font-size: 0.9rem; color: var(--text-secondary); min-width: 60px; text-align: center; }
+        .range-slider-container { flex: 1; position: relative; height: 6px; background: var(--border-subtle); border-radius: 3px; margin: 0 var(--spacing-sm); }
+        .range-slider { position: absolute; top: 0; left: 0; right: 0; bottom: 0; }
+        .range-input { 
+            position: absolute; width: 100%; height: 100%; background: transparent; 
+            appearance: none; pointer-events: none; outline: none; 
+        }
+        .range-input::-webkit-slider-thumb {
+            appearance: none; width: 20px; height: 20px; border-radius: 50%; 
+            background: var(--accent-primary); cursor: pointer; pointer-events: all;
+            border: 2px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+        .range-input::-moz-range-thumb {
+            width: 20px; height: 20px; border-radius: 50%; 
+            background: var(--accent-primary); cursor: pointer; pointer-events: all;
+            border: 2px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+        .range-track { position: absolute; height: 6px; background: var(--accent-primary); border-radius: 3px; }
+        .word-count-display { display: flex; align-items: center; gap: var(--spacing-sm); margin-top: var(--spacing-sm); }
+        .word-count-value { font-weight: 700; color: var(--accent-primary); }
+
+        /* Persona Grid */
+        .persona-grid-container { overflow-x: auto; padding-bottom: var(--spacing-md); scrollbar-width: none; -ms-overflow-style: none; }
+        .persona-grid-container::-webkit-scrollbar { display: none; }
+        .persona-grid { display: flex; flex-wrap: nowrap; gap: var(--spacing-lg); }
+        .persona-card {
+            flex: 0 0 200px; height: 240px;
+            border-radius: var(--border-radius-large);
+            cursor: pointer; transition: all 0.3s ease;
+            position: relative;
+            background-color: var(--card-bg);
+            border: 2px solid var(--border-subtle);
+            box-shadow: var(--shadow-soft);
+            overflow: hidden;
+        }
+        .persona-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-medium); }
+        .persona-card.selected { border-color: var(--accent-primary); }
+        .persona-visual { height: 60%; background-size: cover; background-position: center; position: relative; }
+        .persona-visual::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.3), transparent); }
+        .persona-content { height: 40%; background: white; padding: var(--spacing-md); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: var(--spacing-sm); }
+        .persona-title { font-weight: 700; font-size: 1rem; }
+        .research-tag {
+            font-size: 0.75rem; font-weight: 600; padding: 4px 8px; border-radius: 12px; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .research-tag.with-research { background: var(--research-tag-bg); color: var(--research-tag-text); }
+        .research-tag.without-research { background: var(--no-research-tag-bg); color: var(--no-research-tag-text); }
+        .info-button {
+            position: absolute; top: 12px; right: 12px;
+            background: rgba(255,255,255,0.7); backdrop-filter: blur(4px); border-radius: 50%; border: none;
+            width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+            cursor: help; color: var(--text-primary); transition: all .2s;
+        }
+        .info-button:hover { background: white; color: var(--accent-primary); }
+
+        /* Research Links */
+        .research-links-container { display: flex; flex-direction: column; gap: var(--spacing-md); }
+        .research-input-group { display: flex; align-items: center; gap: var(--spacing-sm); background: #F8F9FA; border: 1px solid var(--border-subtle); border-radius: var(--border-radius-medium); padding-left: var(--spacing-md); }
+        .research-input-group svg { color: var(--text-secondary); }
+        .research-input { flex-grow: 1; font-size: 1rem; padding: var(--spacing-md); border: none; background: transparent; }
+        .research-input:focus { outline: none; }
+        .remove-research-btn { background: none; border: none; cursor: pointer; color: var(--text-secondary); padding: var(--spacing-md); }
+        .remove-research-btn:hover { color: var(--error-color); }
+        .add-research-button { display: inline-flex; align-items: center; gap: var(--spacing-sm); background: none; border: 1px dashed var(--border-subtle); color: var(--text-secondary); padding: 12px var(--spacing-md); border-radius: var(--border-radius-medium); cursor: pointer; margin-top: var(--spacing-md); transition: all 0.2s ease; }
+        .add-research-button:hover { border-color: var(--accent-primary); color: var(--accent-primary); }
+
+        /* Final Action */
+        .generate-button { width: 100%; background-color: var(--success-color); color: white; font-size: 1.1rem; font-weight: 700; padding: 18px; border: none; border-radius: var(--border-radius-medium); cursor: pointer; transition: all 0.3s ease; }
+        .generate-button:hover { background-color: var(--success-color-hover); transform: translateY(-2px); }
+
+        /* Modal */
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 1000; }
+        .modal-overlay.active { display: flex; }
+        .modal-content { background: var(--card-bg); border-radius: var(--border-radius-large); max-width: 700px; width: calc(100% - 40px); padding: var(--spacing-xl); position: relative; animation: fadeIn 0.3s; max-height: 80vh; overflow-y: auto; }
+        .modal-close { position: absolute; top: 16px; right: 16px; font-size: 24px; background: none; border: none; cursor: pointer; }
+        .modal-section { margin-bottom: var(--spacing-lg); }
+        .modal-section h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: var(--spacing-sm); }
+        .modal-section p { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6; }
+        .modal-section ul { margin-left: var(--spacing-lg); }
+        .modal-section li { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.5; margin-bottom: 4px; }
+        .modal-example-review { background: var(--background-color); padding: var(--spacing-md); border-radius: var(--border-radius-medium); border-left: 3px solid var(--accent-primary); }
+        .modal-tag { display: inline-block; font-size: 0.8rem; font-weight: 600; padding: 4px 10px; border-radius: 12px; margin-bottom: var(--spacing-md); }
+        .modal-tag.with-research { background: var(--research-tag-bg); color: var(--research-tag-text); }
+        .modal-tag.without-research { background: var(--no-research-tag-bg); color: var(--no-research-tag-text); }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container header__container">
+            <a href="/" class="logo"><span class="logo__icon">+</span><span>FrontrowMD</span></a>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="config-card">
+                <form id="review-config-form">
+                    <div class="section-header">
+                        <h2 class="section-title">Configure Review Generation</h2>
+                        <p class="section-subtitle">Set the parameters for your AI-generated reviews. Your choices will guide the tone, style, and scientific basis of the output.</p>
+                    </div>
+
+                    <div class="section">
+                        <div class="controls-row">
+                            <div class="control-group">
+                        <h3 class="section-title">Number of Reviews</h3>
+                        <div class="number-stepper">
+                            <button type="button" class="stepper-btn" id="minus-btn" aria-label="Decrease">-</button>
+                            <div class="stepper-display" id="num-reviews-display">5</div>
+                            <button type="button" class="stepper-btn" id="plus-btn" aria-label="Increase">+</button>
+                                </div>
+                            </div>
+
+                            <div class="control-group">
+                                <h3 class="section-title">Review Length (Words)</h3>
+                                <div class="word-count-container">
+                                    <div class="word-count-controls">
+                                        <span class="word-count-label">Min</span>
+                                        <div class="range-slider-container">
+                                            <div class="range-track" id="range-track"></div>
+                                            <input type="range" id="min-words" class="range-input" min="10" max="200" step="10" value="80">
+                                            <input type="range" id="max-words" class="range-input" min="10" max="200" step="10" value="120">
+                                        </div>
+                                        <span class="word-count-label">Max</span>
+                                    </div>
+                                    <div class="word-count-display">
+                                        <span>Range: </span>
+                                        <span class="word-count-value" id="min-display">80</span>
+                                        <span>-</span>
+                                        <span class="word-count-value" id="max-display">120</span>
+                                        <span>words</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h3 class="section-title">Select Review Tones</h3>
+                        <div class="persona-grid-container">
+                             <div class="persona-grid" id="persona-grid"></div>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h3 class="section-title">Add Supporting Research (Optional)</h3>
+                        <div class="research-links-container" id="research-links-container"></div>
+                        <button type="button" class="add-research-button" id="add-research-btn">
+                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                            Add Research URL
+                        </button>
+                    </div>
+
+                    <button type="submit" class="generate-button">Generate Reviews</button>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <div class="modal-overlay" id="persona-modal">
+        <div class="modal-content">
+            <button class="modal-close" id="modal-close">&times;</button>
+            <div id="modal-content-body"></div>
+        </div>
+    </div>
+
+    <script>
+        const personaData = {
+            "clinical_authority": {
+                name: "The Clinical Authority",
+                description: "Objective, direct, and evidence-forward. The review is presented as a professional recommendation based on clinical data and mechanism of action.",
+                uses_clinical_research: true,
+                voice_characteristics: ["Objective", "Direct", "Evidence-forward", "Professional", "Clinical data focused"],
+                tone_prompt: "Write as a clinician who bases recommendations strictly on scientific evidence. Use measured, professional language. Reference specific research findings when available. Avoid emotional appeals or personal stories. Focus on mechanism of action and clinical outcomes. Use phrases like 'clinical evidence suggests' or 'research demonstrates' rather than personal opinions.",
+                data_incorporation: {
+                    product_name: "Stated clearly but not necessarily at the beginning",
+                    ingredients: "Focuses on the primary active ingredients with scientific context",
+                    clinical_info_citations: "Directly references research findings to establish authority",
+                    reasoning: "Explains the product's value through its scientifically-validated mechanism"
+                },
+                example_10_word_summary: "Provides evidence-based relief using clinically validated active ingredients.",
+                focus_areas: ["Clinical data", "Mechanism of action", "Scientific validation", "Professional authority"],
+                imageUrl: 'https://images.pexels.com/photos/5215024/pexels-photo-5215024.jpeg?auto=compress&cs=tinysrgb&w=800'
+            },
+            "empathetic_practitioner": {
+                name: "The Empathetic Practitioner",
+                description: "Warm, reassuring, and patient-centric. Acknowledges patient concerns while maintaining professional credibility without personal anecdotes.",
+                uses_clinical_research: false,
+                voice_characteristics: ["Warm", "Reassuring", "Patient-centric", "Empathetic", "Understanding"],
+                tone_prompt: "Write with genuine warmth and understanding for patient struggles, but maintain professional boundaries. Focus on how the product addresses patient needs without sharing personal stories. Use compassionate but clinical language. Emphasize patient comfort and quality of life improvements. Avoid marketing buzzwords - sound like a caring doctor, not a salesperson.",
+                data_incorporation: {
+                    product_description: "Interprets benefits in context of patient comfort and daily life",
+                    ingredients: "Mentions ingredients in the context of providing gentle, effective support",
+                    reasoning: "Core focus is improving patient's quality of life and daily experience"
+                },
+                example_10_word_summary: "A gentle, effective solution to help you reclaim your day.",
+                focus_areas: ["Patient comfort", "Quality of life", "Gentle solutions", "Daily experience improvement"],
+                imageUrl: 'https://images.pexels.com/photos/5452291/pexels-photo-5452291.jpeg?auto=compress&cs=tinysrgb&w=800'
+            },
+            "scientific_educator": {
+                name: "The Scientific Educator",
+                description: "Educational and mechanism-focused. Teaches patients about how and why the product works through scientific explanation.",
+                uses_clinical_research: true,
+                voice_characteristics: ["Educational", "Explanatory", "Science-focused", "Informative", "Mechanism-oriented"],
+                tone_prompt: "Adopt a teaching approach that explains the 'why' behind the product's effectiveness. Use scientific terminology appropriately but keep explanations accessible. Focus on biological mechanisms and pathways. Reference research to support educational points. Avoid condescending language - treat the reader as an intelligent person seeking understanding, not a sales target.",
+                data_incorporation: {
+                    product_name: "Introduced as the subject of scientific explanation",
+                    clinical_info_reasoning: "Core of the review - explains biological pathways behind key ingredients",
+                    citations: "Used to anchor explanations in established science"
+                },
+                example_10_word_summary: "Understand the science of how this formula supports joint health.",
+                focus_areas: ["Scientific mechanisms", "Biological pathways", "Patient education", "Research explanation"],
+                imageUrl: 'https://images.pexels.com/photos/4167544/pexels-photo-4167544.jpeg?auto=compress&cs=tinysrgb&w=800'
+            },
+            "due_diligence_expert": {
+                name: "The Due Diligence Expert",
+                description: "Thorough, analytical, and methodical. Conveys rigorous evaluation process without personal anecdotes.",
+                uses_clinical_research: true,
+                voice_characteristics: ["Thorough", "Analytical", "Methodical", "Rigorous", "Evidence-based"],
+                tone_prompt: "Write as a meticulous clinician who thoroughly vets every recommendation. Explain your evaluation criteria and process. Reference specific research findings that informed your decision. Use analytical language that demonstrates careful consideration. Avoid emotional appeals - let the systematic evaluation speak for itself. Sound like a careful scientist, not a marketer.",
+                data_incorporation: {
+                    reasoning: "The review walks through the systematic evaluation process",
+                    clinical_info_citations: "Mentions specific research review as basis for recommendation",
+                    ingredients: "Confirms ingredients and dosages align with effective research protocols"
+                },
+                example_10_word_summary: "A rigorously vetted formula with strong evidence for effective support.",
+                focus_areas: ["Rigorous vetting", "Systematic evaluation", "Evidence standards", "Quality assessment"],
+                imageUrl: 'https://images.pexels.com/photos/3951628/pexels-photo-3951628.jpeg?auto=compress&cs=tinysrgb&w=800'
+            },
+            "no_nonsense_clinician": {
+                name: "The No-Nonsense Clinician",
+                description: "Direct, efficient, and results-oriented. Delivers clear, concise recommendations without unnecessary elaboration.",
+                uses_clinical_research: false,
+                voice_characteristics: ["Direct", "Efficient", "Results-oriented", "Concise", "Straightforward"],
+                tone_prompt: "Be brutally efficient and direct. Cut through marketing fluff and give a clear, professional assessment. Use short, declarative sentences. Focus on what works and why, without flowery language. Sound like a busy clinician giving a quick, honest assessment to a colleague. Avoid sales language entirely - your credibility comes from directness, not persuasion.",
+                data_incorporation: {
+                    product_name_benefit: "Stated directly with immediate assessment",
+                    ingredients: "Presented as straightforward list of effective components",
+                    reasoning: "Implicit - it works because it contains the right ingredients in proper amounts"
+                },
+                example_10_word_summary: "It works. A straightforward, effective product that delivers results.",
+                focus_areas: ["Direct results", "Efficiency", "Clear outcomes", "No-nonsense assessment"],
+                imageUrl: 'https://images.pexels.com/photos/5327653/pexels-photo-5327653.jpeg?auto=compress&cs=tinysrgb&w=800'
+            },
+            "holistic_integrator": {
+                name: "The Holistic Integrator",
+                description: "Balanced and focused on systemic wellness. Frames the product as part of comprehensive health approach.",
+                uses_clinical_research: false,
+                voice_characteristics: ["Balanced", "Systemic wellness focused", "Integrative", "Holistic", "Lifestyle-oriented"],
+                tone_prompt: "Approach from a whole-body wellness perspective. Discuss how the product fits into broader health strategies. Use calm, balanced language that reflects integrative medicine principles. Focus on supporting the body's natural processes rather than 'fixing' problems. Avoid new-age terminology - maintain scientific credibility while embracing holistic concepts.",
+                data_incorporation: {
+                    product_description: "Interprets in context of supporting body's natural healing processes",
+                    ingredients: "Highlights natural ingredients and their synergistic, body-supporting effects",
+                    reasoning: "Positions as tool that works with the body to promote overall balance"
+                },
+                example_10_word_summary: "Naturally supports your body's own joint healing and wellness.",
+                focus_areas: ["Systemic wellness", "Natural healing", "Body balance", "Integrative health"],
+                imageUrl: 'https://images.pexels.com/photos/6749779/pexels-photo-6749779.jpeg?auto=compress&cs=tinysrgb&w=800'
+            },
+            "safety_first_specialist": {
+                name: "The Safety-First Specialist",
+                description: "Meticulous about safety, purity, and tolerability. Primary focus on product safety profile and quality standards.",
+                uses_clinical_research: true,
+                voice_characteristics: ["Safety-focused", "Meticulous", "Quality-oriented", "Risk-conscious", "Purity-minded"],
+                tone_prompt: "Prioritize safety and tolerability in every statement. Discuss purity, quality standards, and absence of harmful additives. Reference safety data from research when available. Use cautious, measured language that demonstrates thorough safety consideration. Sound like a clinician who puts patient safety above all marketing considerations.",
+                data_incorporation: {
+                    product_description: "Focuses on purity claims and safety profile",
+                    ingredients: "Emphasizes clean, minimal formulation and safety considerations",
+                    reasoning: "Primary recommendation basis is high safety profile and tolerability"
+                },
+                example_10_word_summary: "A safe, pure, and well-tolerated formula for sensitive patients.",
+                focus_areas: ["Safety profile", "Purity standards", "Quality assurance", "Patient tolerability"],
+                imageUrl: 'https://images.pexels.com/photos/5792911/pexels-photo-5792911.jpeg?auto=compress&cs=tinysrgb&w=800'
+            },
+            "proactive_preventative": {
+                name: "The Proactive & Preventative Doctor",
+                description: "Forward-thinking and prevention-focused. Frames the product as investment in long-term health maintenance.",
+                uses_clinical_research: false,
+                voice_characteristics: ["Forward-thinking", "Prevention-focused", "Strategic", "Long-term oriented", "Proactive"],
+                tone_prompt: "Emphasize prevention and long-term health maintenance over symptom treatment. Discuss the product as an investment in future wellness. Use forward-looking language about maintaining function and preventing decline. Avoid fear-based messaging - focus on positive, proactive health strategies. Sound like a preventive medicine specialist, not a marketer.",
+                data_incorporation: {
+                    reasoning: "Built around prevention and maintenance philosophy",
+                    ingredients: "Discusses based on ability to preserve function and structure over time",
+                    clinical_info: "References long-term benefits rather than short-term relief"
+                },
+                example_10_word_summary: "A smart, proactive investment for your long-term joint health.",
+                focus_areas: ["Prevention", "Long-term health", "Maintenance", "Future wellness"],
+                imageUrl: 'https://images.pexels.com/photos/5407206/pexels-photo-5407206.jpeg?auto=compress&cs=tinysrgb&w=800'
+            },
+            "formulation_quality_expert": {
+                name: "The Formulation Quality Expert",
+                description: "Technical focus on formulation details, bioavailability, and sourcing quality. Emphasizes superior chemistry and absorption.",
+                uses_clinical_research: true,
+                voice_characteristics: ["Technical", "Precise", "Quality-focused", "Chemistry-oriented", "Detail-oriented"],
+                tone_prompt: "Focus on technical aspects of formulation quality, bioavailability, and absorption. Discuss ingredient forms, sourcing, and manufacturing quality. Use precise, technical language appropriate for discussing pharmaceutical chemistry. Reference research on bioavailability when available. Sound like a formulation scientist or clinical pharmacist, not a marketing representative.",
+                data_incorporation: {
+                    reasoning: "Explains superior formulation quality compared to other products",
+                    ingredients: "Discusses specific forms, sources, and bioavailability considerations",
+                    clinical_info: "Connects formulation specifics to clinical trial results"
+                },
+                example_10_word_summary: "A superior formulation for maximum absorption and effective results.",
+                focus_areas: ["Bioavailability", "Formulation quality", "Absorption", "Manufacturing standards"],
+                imageUrl: 'https://images.pexels.com/photos/7108110/pexels-photo-7108110.jpeg?auto=compress&cs=tinysrgb&w=800'
+            },
+            "patient_outcome_focused": {
+                name: "The Patient Outcome Specialist",
+                description: "Results-oriented focus on measurable patient outcomes and functional improvements without personal anecdotes.",
+                uses_clinical_research: false,
+                voice_characteristics: ["Outcome-focused", "Results-oriented", "Functional improvement focused", "Measurable benefits oriented", "Practical"],
+                tone_prompt: "Focus on measurable, functional outcomes that patients can expect. Discuss improvements in daily activities and quality of life metrics. Use practical, results-oriented language. Avoid personal stories - instead focus on documented improvements in function, mobility, and daily activities. Sound like an outcomes researcher or rehabilitation specialist, not a marketer.",
+                data_incorporation: {
+                    reasoning: "Based on expected functional improvements and measurable outcomes",
+                    product_name: "Presented as solution for achieving specific functional goals",
+                    ingredients: "Mentioned as components that contribute to measurable improvements"
+                },
+                example_10_word_summary: "Delivers measurable improvements in daily function and life quality.",
+                focus_areas: ["Functional outcomes", "Measurable improvements", "Daily activities", "Quality of life metrics"],
+                imageUrl: 'https://images.pexels.com/photos/8460157/pexels-photo-8460157.jpeg?auto=compress&cs=tinysrgb&w=800'
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            let reviewCount = 5;
+            let minWords = 80;
+            let maxWords = 120;
+            
+            const numReviewsDisplay = document.getElementById('num-reviews-display');
+            const minWordsSlider = document.getElementById('min-words');
+            const maxWordsSlider = document.getElementById('max-words');
+            const minDisplay = document.getElementById('min-display');
+            const maxDisplay = document.getElementById('max-display');
+            const rangeTrack = document.getElementById('range-track');
+            const personaGrid = document.getElementById('persona-grid');
+            const modal = document.getElementById('persona-modal');
+            const modalBody = document.getElementById('modal-content-body');
+            
+            // Update displays
+            const updateReviewCountDisplay = () => numReviewsDisplay.textContent = reviewCount;
+            const updateWordCountDisplay = () => {
+                minDisplay.textContent = minWords;
+                maxDisplay.textContent = maxWords;
+                updateRangeTrack();
+            };
+            
+            // Update range track visual
+            const updateRangeTrack = () => {
+                const minPercent = ((minWords - 10) / (200 - 10)) * 100;
+                const maxPercent = ((maxWords - 10) / (200 - 10)) * 100;
+                rangeTrack.style.left = minPercent + '%';
+                rangeTrack.style.width = (maxPercent - minPercent) + '%';
+            };
+            
+            // Review count stepper events
+            document.getElementById('minus-btn').addEventListener('click', () => { 
+                if (reviewCount > 1) { 
+                    reviewCount--; 
+                    updateReviewCountDisplay(); 
+                } 
+            });
+            document.getElementById('plus-btn').addEventListener('click', () => { 
+                if (reviewCount < 20) { 
+                    reviewCount++; 
+                    updateReviewCountDisplay(); 
+                } 
+            });
+            
+            // Word count slider events
+            minWordsSlider.addEventListener('input', (e) => {
+                const value = parseInt(e.target.value);
+                if (value < maxWords) {
+                    minWords = value;
+                    updateWordCountDisplay();
+                } else {
+                    e.target.value = minWords;
+                }
+            });
+            
+            maxWordsSlider.addEventListener('input', (e) => {
+                const value = parseInt(e.target.value);
+                if (value > minWords) {
+                    maxWords = value;
+                    updateWordCountDisplay();
+                } else {
+                    e.target.value = maxWords;
+                }
+            });
+
+            // Generate persona cards
+            Object.entries(personaData).forEach(([key, persona]) => {
+                const researchTag = persona.uses_clinical_research ? 
+                    '<span class="research-tag with-research">Research-Based</span>' : 
+                    '<span class="research-tag without-research">Experience-Based</span>';
+                
+                const card = document.createElement('div');
+                card.className = 'persona-card';
+                card.dataset.personaKey = key;
+                card.innerHTML = `
+                    <div class="persona-visual" style="background-image: url('${persona.imageUrl}')"></div>
+                    <div class="persona-content">
+                        <h4 class="persona-title">${persona.name}</h4>
+                        ${researchTag}
+                    </div>
+                    <button type="button" class="info-button" aria-label="More info on ${persona.name}">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/><circle cx="12" cy="12" r="10"/></svg>
+                    </button>`;
+                personaGrid.appendChild(card);
+            });
+            
+            // Persona card events
+            personaGrid.addEventListener('click', e => {
+                const card = e.target.closest('.persona-card');
+                if (!card) return;
+                if (e.target.closest('.info-button')) {
+                    e.stopPropagation();
+                    const key = card.dataset.personaKey;
+                    const persona = personaData[key];
+                    
+                    const researchTagClass = persona.uses_clinical_research ? 'with-research' : 'without-research';
+                    const researchTagText = persona.uses_clinical_research ? 'Incorporates Clinical Research' : 'Experience-Based Approach';
+                    
+                    const voiceCharacteristics = persona.voice_characteristics.map(char => `<li>${char}</li>`).join('');
+                    const focusAreas = persona.focus_areas.map(area => `<li>${area}</li>`).join('');
+                    
+                    const dataIncorporationItems = Object.entries(persona.data_incorporation).map(([key, value]) => 
+                        `<li><strong>${key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}:</strong> ${value}</li>`
+                    ).join('');
+                    
+                    modalBody.innerHTML = `
+                        <div class="modal-section">
+                            <h3>${persona.name}</h3>
+                            <span class="modal-tag ${researchTagClass}">${researchTagText}</span>
+                            <p>${persona.description}</p>
+                        </div>
+                        <div class="modal-section">
+                            <h3>Voice Characteristics</h3>
+                            <ul>${voiceCharacteristics}</ul>
+                        </div>
+                        <div class="modal-section">
+                            <h3>Tone-Specific Instructions</h3>
+                            <p>${persona.tone_prompt}</p>
+                        </div>
+                        <div class="modal-section">
+                            <h3>Data Incorporation Strategy</h3>
+                            <ul>${dataIncorporationItems}</ul>
+                        </div>
+                        <div class="modal-section">
+                            <h3>Focus Areas</h3>
+                            <ul>${focusAreas}</ul>
+                        </div>
+                        <div class="modal-section modal-example-review">
+                            <h3>Example 10-Word Summary</h3>
+                            <p><em>"${persona.example_10_word_summary}"</em></p>
+                        </div>`;
+                    modal.classList.add('active');
+                } else {
+                    card.classList.toggle('selected');
+                }
+            });
+            
+            // Modal events
+            document.getElementById('modal-close').addEventListener('click', () => modal.classList.remove('active'));
+            modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('active'); });
+
+            // Research links functionality
+            const researchContainer = document.getElementById('research-links-container');
+            const addResearchBtn = document.getElementById('add-research-btn');
+            
+            const addResearchField = () => {
+                const group = document.createElement('div');
+                group.className = 'research-input-group';
+                group.innerHTML = `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.72"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.72-1.72"></path></svg>
+                    <input type="url" class="research-input" placeholder="https://www.example.com/clinical-study">
+                    <button type="button" class="remove-research-btn" aria-label="Remove URL">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>`;
+                researchContainer.appendChild(group);
+            };
+            
+            researchContainer.addEventListener('click', e => {
+                if (e.target.closest('.remove-research-btn')) {
+                    e.target.closest('.research-input-group').remove();
+                }
+            });
+
+            addResearchBtn.addEventListener('click', addResearchField);
+
+            // Form submission
+            document.getElementById('review-config-form').addEventListener('submit', e => { 
+                e.preventDefault(); 
+                const selectedTones = Array.from(document.querySelectorAll('.persona-card.selected')).map(card => card.dataset.personaKey);
+                const researchUrls = Array.from(document.querySelectorAll('.research-input')).map(input => input.value).filter(url => url.trim());
+                
+                console.log('Configuration:', {
+                    reviewCount,
+                    wordRange: { min: minWords, max: maxWords },
+                    selectedTones,
+                    researchUrls
+                });
+                
+                alert('Generating reviews...'); 
+            });
+            
+            // Initialize displays
+            updateReviewCountDisplay();
+            updateWordCountDisplay();
+        });
+    </script>
+</body>
+</html>

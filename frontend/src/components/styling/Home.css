@@ -254,4 +254,132 @@ body {
         animation: none;
         transition: none;
     }
+}
+
+/* Fixed Layout Wrapper - One View Screen */
+.home-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--background-color, #F8F9FA);
+    font-family: var(--font-family-sans, 'Inter', sans-serif);
+    color: var(--text-primary, #121212);
+}
+
+.home-wrapper *, 
+.home-wrapper *::before, 
+.home-wrapper *::after {
+    box-sizing: border-box;
+}
+
+/* Ultra-compact header for space savings */
+.home-wrapper .header {
+    flex-shrink: 0;
+    padding: 40px 0;
+}
+
+.home-wrapper .logo {
+    font-size: 1.4rem;
+}
+
+/* Optimized main content - original font sizes with tighter spacing */
+.home-wrapper .main-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    min-height: 0;
+    padding: 8px 0;
+}
+
+.home-wrapper .hero-grid {
+    gap: 16px;
+    height: 100%;
+    align-items: center;
+    max-height: calc(100vh - 100px);
+}
+
+/* Original font sizes preserved */
+.home-wrapper .hero__title {
+    font-size: clamp(2.5rem, 6vw, 4.2rem);
+    line-height: 1.1;
+    margin-bottom: 8px;
+}
+
+.home-wrapper .hero__subtitle {
+    font-size: clamp(1.1rem, 2vw, 1.25rem);
+    line-height: 1.3;
+    margin: 0 auto 28px;
+    max-width: 550px;
+}
+
+.home-wrapper .hero__cta {
+    padding: 16px 32px;
+    font-size: 1.1rem;
+}
+
+/* Compact visual elements to save vertical space */
+.home-wrapper .hero__visual-content {
+    min-height: 320px;
+    max-height: 320px;
+}
+
+.home-wrapper .image-bubble {
+    width: 280px;
+    height: 350px;
+}
+
+.home-wrapper .icon-bubble {
+    width: 50px;
+    height: 50px;
+}
+
+.home-wrapper .icon-bubble svg {
+    width: 24px;
+    height: 24px;
+}
+
+.home-wrapper .text-bubble {
+    padding: 4px 10px;
+    font-size: 0.75rem;
+}
+
+/* Ultra-compact footer */
+.home-wrapper .footer {
+    flex-shrink: 0;
+    padding: 6px 0;
+    font-size: 0.75rem;
+}
+
+/* Tighter container padding */
+.home-wrapper .container {
+    padding: 0 16px;
+}
+
+/* Mobile optimizations for wrapper with original font sizes */
+@media (max-width: 767px) {
+    .home-wrapper .main-content {
+        padding: 6px 0;
+    }
+    
+    .home-wrapper .hero__title {
+        margin-bottom: 6px;
+    }
+    
+    .home-wrapper .hero__subtitle {
+        margin-bottom: 20px;
+    }
+    
+    .home-wrapper .container {
+        padding: 0 12px;
+    }
 } 

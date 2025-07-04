@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analysis Failed - FrontrowMD</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --background-color: #F8F9FA;
+            --text-primary: #121212;
+            --text-secondary: #555;
+            --accent-primary: #FF6B00;
+            --accent-primary-hover: #E66000;
+            --card-bg: #FFFFFF;
+            --error-color: #EF4444;
+            --error-bg-soft: #FEE2E2;
+            --font-family-sans: 'Inter', sans-serif;
+            --spacing-md: 16px;
+            --spacing-lg: 32px;
+            --spacing-xl: 48px;
+            --border-radius-large: 16px;
+            --shadow-soft: 0px 4px 12px rgba(0, 0, 0, 0.05);
+            --shadow-medium: 0px 8px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Animations */
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes iconPop {
+            0% { transform: scale(0.5); opacity: 0; }
+            60% { transform: scale(1.1); opacity: 1; }
+            80% { transform: scale(0.95); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        body {
+            font-family: var(--font-family-sans);
+            background-color: var(--background-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-lg);
+        }
+
+        .header {
+            padding: var(--spacing-md) 0;
+            flex-shrink: 0;
+        }
+
+        .header__container {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-decoration: none;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .logo__icon {
+            color: var(--accent-primary);
+        }
+
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--spacing-xl) 0;
+        }
+
+        .failure-card {
+            max-width: 480px;
+            width: 90%;
+            background: var(--card-bg);
+            padding: var(--spacing-xl);
+            border-radius: var(--border-radius-large);
+            box-shadow: var(--shadow-medium);
+            text-align: center;
+            animation: slideInUp 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        .failure-icon, .failure-card__title, .failure-card__text, .button-primary {
+            opacity: 0;
+        }
+
+        .failure-icon {
+            margin: 0 auto var(--spacing-md);
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--error-bg-soft);
+            color: var(--error-color);
+            animation: iconPop 0.5s cubic-bezier(0.25, 1, 0.5, 1) 0.4s forwards;
+        }
+        
+        .failure-card__title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: var(--spacing-md);
+            animation: fadeIn 0.5s ease-out 0.7s forwards;
+        }
+        
+        .failure-card__text {
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-lg);
+            font-size: 1rem;
+            animation: fadeIn 0.5s ease-out 0.8s forwards;
+        }
+
+        .button-primary {
+            display: inline-block;
+            background-color: var(--accent-primary);
+            color: white;
+            padding: 14px 28px;
+            font-size: 1.05rem;
+            font-weight: 500;
+            text-decoration: none;
+            border: none;
+            border-radius: var(--border-radius-large);
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-soft);
+            animation: fadeIn 0.5s ease-out 0.9s forwards;
+        }
+        
+        .button-primary:hover {
+            background-color: var(--accent-primary-hover);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-medium);
+        }
+        
+        .footer {
+            padding: var(--spacing-lg) 0;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #aaa;
+            flex-shrink: 0;
+        }
+
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container header__container">
+            <a href="product_input.html" class="logo">
+                <span class="logo__icon">+</span>
+                <span>FrontrowMD</span>
+            </a>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="failure-card">
+            <div class="failure-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </div>
+            <h1 class="failure-card__title">URL Analysis Failed</h1>
+            <p class="failure-card__text">We couldn't process this URL. Please try a different product page.</p>
+            <a href="product_input.html" class="button-primary">Try Another Page</a>
+        </div>
+    </main>
+    
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 FrontrowMD. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

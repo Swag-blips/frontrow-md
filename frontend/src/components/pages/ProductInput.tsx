@@ -157,6 +157,17 @@ const ProductInput: React.FC = () => {
                 throw new Error('Please enter a valid URL');
             }
 
+            const payload = { 
+                product_url: validatedUrl,
+                timestamp: new Date().toISOString()
+            };
+            
+            console.log('ProductInput: Making API call with payload:', payload);
+            console.log('ProductInput: Original URL:', inputUrl);
+            console.log('ProductInput: Validated URL:', validatedUrl);
+
+            // COMMENTED OUT: API call for UI testing
+            /*
             const response = await fetch('/frontrowmd/extract_product_metadata', {
                 method: 'POST',
                 headers: {
@@ -164,15 +175,26 @@ const ProductInput: React.FC = () => {
                     'Accept': 'application/json',
                     'Cache-Control': 'no-cache'
                 },
-                body: JSON.stringify({ 
-                    product_url: validatedUrl,
-                    timestamp: new Date().toISOString()
-                }),
+                body: JSON.stringify(payload),
             });
 
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || 'Failed to process URL');
+                let errorText = `HTTP ${response.status}: ${response.statusText}`;
+                try {
+                    const errorData = await response.json();
+                    console.error('ProductInput: Backend error response:', errorData);
+                    errorText = errorData.message || errorData.detail || errorText;
+                } catch (e) {
+                    // If response is not JSON, get text
+                    try {
+                        const textError = await response.text();
+                        console.error('ProductInput: Backend error text:', textError);
+                        errorText = textError || errorText;
+                    } catch (e2) {
+                        console.error('ProductInput: Could not read error response');
+                    }
+                }
+                throw new Error(errorText);
             }
 
             const data = await response.json();
@@ -186,6 +208,20 @@ const ProductInput: React.FC = () => {
             } else {
                 navigate(`/processing?url=${encodeURIComponent(validatedUrl)}`);
             }
+            */
+
+            // UI DEMO MODE: Direct redirect to processing page
+            console.log('🎨 ProductInput: UI demo mode - redirecting to processing page');
+            
+            // Simulate a brief loading delay
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            // Generate a demo product ID
+            const demoProductId = 'demo-' + Date.now();
+            
+            // Navigate directly to processing page
+            navigate(`/processing?url=${encodeURIComponent(validatedUrl)}&productId=${demoProductId}`);
+
         } catch (err: any) {
             console.error('Error:', err);
             setError(err.message);

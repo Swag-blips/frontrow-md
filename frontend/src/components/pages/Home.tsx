@@ -34,7 +34,7 @@ const Home: React.FC = () => {
   }, []);
 
   return (
-    <>
+    <div className="home-wrapper">
       <header className="header">
         <div className="container header__container">
           <a href="/" className="logo">
@@ -79,7 +79,7 @@ const Home: React.FC = () => {
           <p>&copy; 2024 FrontrowMD. All rights reserved.</p>
         </div>
       </footer>
-    </>
+    </div>
   );
 };
 

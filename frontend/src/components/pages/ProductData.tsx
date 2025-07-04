@@ -34,53 +34,66 @@ interface Product {
     }>;
 }
 
-const API_BASE_URL = ''; // Use relative URLs to let Vercel handle routing
-
 const ProductData: React.FC = () => {
     const { productId } = useParams<{ productId: string }>();
     const navigate = useNavigate();
     const [productData, setProductData] = useState<Product | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [showSearchTerms, setShowSearchTerms] = useState(false);
     const [selectedResearch, setSelectedResearch] = useState<number | null>(null);
     const [showFullDescription, setShowFullDescription] = useState(false);
+    const hasFetched = React.useRef(false);
+    const [isSearchTermsOpen, setIsSearchTermsOpen] = useState(false);
+    const [selectedProductId, setSelectedProductId] = useState<string>('');
 
     useEffect(() => {
         const fetchProductData = async () => {
-            if (!productId) return;
+            if (!productId || hasFetched.current) return;
+            hasFetched.current = true;
+
+            // Check localStorage first
+            const cachedProducts = localStorage.getItem('frontrow_products');
+            const cachedTimestamp = localStorage.getItem('frontrow_products_timestamp');
+            const now = Date.now();
+            
+            // Use cache if it's less than 5 seconds old
+            if (cachedProducts && cachedTimestamp && (now - parseInt(cachedTimestamp)) < 5000) {
+                const products = JSON.parse(cachedProducts);
+                const product = products.find((p: Product) => p.product_id === productId);
+                if (product) {
+                    console.log('Found product in cache:', product);
+                    setProductData(product);
+                    setError(null);
+                    setIsLoading(false);
+                    return;
+                }
+            }
 
             try {
-                console.log('Fetching all products to find product:', productId);
-                const allProductsResponse = await fetch('/frontrowmd/products', {
+                const response = await fetch('/frontrowmd/products', {
                     method: 'GET',
-                    mode: 'cors',
                     headers: {
                         'Accept': 'application/json',
                         'Content-Type': 'application/json'
                     }
                 });
                 
-                if (!allProductsResponse.ok) {
-                    throw new Error(`Failed to fetch products: ${allProductsResponse.status}`);
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch products: ${response.status}`);
                 }
                 
-                const allProductsData = await allProductsResponse.json();
-                console.log('All products data:', allProductsData);
-                
-                // Check if products array exists and is not empty
-                if (!allProductsData.products || !Array.isArray(allProductsData.products) || allProductsData.products.length === 0) {
-                    throw new Error('No products found in the database. The database may have been cleared.');
+                const data = await response.json();
+                if (!data.products || !Array.isArray(data.products)) {
+                    throw new Error('No products found in the database.');
                 }
                 
-                // Find the specific product
-                const product = allProductsData.products.find((p: any) => p.product_id === productId);
+                const product = data.products.find((p: Product) => p.product_id === productId);
                 if (product) {
                     console.log('Found product:', product);
                     setProductData(product);
                     setError(null);
                 } else {
-                    throw new Error(`Product with ID ${productId} not found. It may have been removed from the database.`);
+                    throw new Error(`Product with ID ${productId} not found.`);
                 }
             } catch (err: any) {
                 console.error('Error fetching product data:', err);
@@ -94,8 +107,22 @@ const ProductData: React.FC = () => {
     }, [productId]);
 
     const toggleSearchTerms = () => {
-        setShowSearchTerms(!showSearchTerms);
+        setIsSearchTermsOpen(!isSearchTermsOpen);
     };
+
+    // Prevent background scrolling when modal is open
+    useEffect(() => {
+        if (isSearchTermsOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+
+        // Cleanup on unmount
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, [isSearchTermsOpen]);
 
     const toggleDescription = () => {
         setShowFullDescription(!showFullDescription);
@@ -141,7 +168,7 @@ const ProductData: React.FC = () => {
     }
 
     return (
-        <>
+        <div className="product-data-wrapper">
             <header className="header">
                 <div className="container header__container">
                     <Link to="/" className="logo">
@@ -193,7 +220,7 @@ const ProductData: React.FC = () => {
                                 </div>
                                 <div className="search-terms-section">
                                     <button onClick={toggleSearchTerms} className="search-terms-button">
-                                        {showSearchTerms ? 'Hide Search Terms' : 'View Search Terms'}
+                                        {isSearchTermsOpen ? 'Hide Search Terms' : 'View Search Terms'}
                                     </button>
                                 </div>
                             </div>
@@ -268,18 +295,7 @@ const ProductData: React.FC = () => {
                 </div>
             </main>
 
-            <div className="generate-reviews-section">
-                <div className="container">
-                    <button 
-                        onClick={handleGenerateReviews}
-                        className="generate-reviews-button"
-                    >
-                        See Reviews
-                    </button>
-                </div>
-            </div>
-
-            {showSearchTerms && (
+            {isSearchTermsOpen && (
                 <div className="modal is-visible">
                     <div className="modal-content">
                         <button onClick={toggleSearchTerms} className="modal-close">&times;</button>
@@ -296,13 +312,7 @@ const ProductData: React.FC = () => {
                     </div>
                 </div>
             )}
-
-            <footer className="footer">
-                <div className="container">
-                    <p>&copy; 2024 FrontrowMD. All rights reserved.</p>
-                </div>
-            </footer>
-        </>
+        </div>
     );
 };
 

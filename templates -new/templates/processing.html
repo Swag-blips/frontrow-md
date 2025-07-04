@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Processing... - FrontrowMD</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --background-color: #F8F9FA;
+            --text-primary: #121212;
+            --text-secondary: #555;
+            --accent-primary: #FF6B00;
+            --accent-primary-hover: #E66000;
+            --border-subtle: #E0E0E0;
+            --card-bg: #FFFFFF;
+            --success-color: #28a745;
+
+            --font-family-sans: 'Inter', sans-serif;
+            --font-weight-regular: 400;
+            --font-weight-medium: 500;
+            --font-weight-bold: 700;
+
+            --spacing-md: 16px;
+            --spacing-lg: 32px;
+            --spacing-xl: 48px;
+            --spacing-xxl: 64px;
+
+            --border-radius-medium: 12px;
+            --border-radius-large: 16px;
+            
+            --shadow-soft: 0px 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        body {
+            font-family: var(--font-family-sans);
+            background-color: var(--background-color);
+            color: var(--text-primary);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 var(--spacing-lg);
+        }
+
+        /* Header */
+        .header {
+            padding: var(--spacing-md) 0;
+            flex-shrink: 0;
+        }
+
+        .header__container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: var(--font-weight-bold);
+            text-decoration: none;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .logo__icon {
+            color: var(--accent-primary);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--spacing-xl) 0;
+        }
+        
+        .processing-card {
+            max-width: 600px;
+            width: 100%;
+            background: var(--card-bg);
+            padding: var(--spacing-xl);
+            border-radius: var(--border-radius-large);
+            box-shadow: var(--shadow-soft);
+            text-align: center;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid var(--border-subtle);
+            border-top-color: var(--accent-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto var(--spacing-lg);
+        }
+
+        .processing-card__title {
+            font-size: 1.8rem;
+            font-weight: var(--font-weight-bold);
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .processing-card__url-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .processing-card__url {
+            font-weight: var(--font-weight-medium);
+            word-break: break-all;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .status-text {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            min-height: 24px;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        /* Stages */
+        .stages-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin: var(--spacing-lg) 0;
+        }
+
+        .stage {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 130px;
+            height: 120px;
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius-medium);
+            border: 1px solid var(--border-subtle);
+            background-color: var(--card-bg);
+            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            opacity: 0.6;
+        }
+
+        .stage.processing {
+            opacity: 1;
+            transform: scale(1.05);
+            border-color: var(--accent-primary);
+            box-shadow: 0 8px 20px -5px rgba(255, 107, 0, 0.2);
+        }
+        
+        .stage.done {
+            opacity: 0.5;
+            background-color: #FBFBFB;
+        }
+
+        .stage-icon {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+        }
+
+        .stage.processing .stage-icon { color: var(--accent-primary); }
+        .stage.done .stage-icon { color: var(--success-color); }
+        .stage-icon svg { transition: all 0.3s ease; }
+        .stage-text { font-size: 0.8rem; font-weight: 500; text-align: center; }
+
+        .stage-icon .spinner {
+            width: 28px;
+            height: 28px;
+            border: 3px solid rgba(255, 107, 0, 0.2);
+            border-top-color: var(--accent-primary);
+        }
+        
+        .checkmark {
+            transform: scale(0);
+            animation: popIn 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+        }
+        
+        @keyframes popIn { to { transform: scale(1); } }
+        
+        .button-primary {
+            display: inline-block;
+            background-color: var(--accent-primary);
+            color: var(--card-bg);
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: var(--font-weight-medium);
+            text-decoration: none;
+            border-radius: var(--border-radius-medium);
+            transition: background-color 0.3s ease;
+            margin-top: var(--spacing-lg);
+        }
+        
+        .button-primary:hover {
+            background-color: var(--accent-primary-hover);
+        }
+
+        /* Footer */
+        .footer {
+            padding: var(--spacing-lg) 0;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #aaa;
+            flex-shrink: 0;
+        }
+
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="container header__container">
+            <a href="/" class="logo">
+                <span class="logo__icon">+</span>
+                <span>FrontrowMD</span>
+            </a>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="processing-card">
+            <h1 id="processing-title" class="processing-card__title">Analyzing Product</h1>
+            <p class="processing-card__url-label">Processing URL:</p>
+            <p id="processing-url" class="processing-card__url">Loading...</p>
+            
+            <div id="stages-container" class="stages-container">
+                <div class="stage" data-stage="fetch">
+                    <div class="stage-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 17l4 4 4-4M12 12v9"></path><path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.29"></path></svg></div>
+                    <span class="stage-text">Fetching URL Content</span>
+                </div>
+                <div class="stage" data-stage="extract">
+                    <div class="stage-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></div>
+                    <span class="stage-text">Extracting Product Info</span>
+                </div>
+                <div class="stage" data-stage="analyze">
+                    <div class="stage-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg></div>
+                    <span class="stage-text">Analyzing Key Details</span>
+                </div>
+                <div class="stage" data-stage="finalize">
+                    <div class="stage-icon"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></div>
+                    <span class="stage-text">Finalizing Analysis</span>
+                </div>
+            </div>
+
+            <p id="status-text" class="status-text">Initializing...</p>
+            <a href="/" id="home-button" class="button-primary" style="display: none;">Back to Homepage</a>
+        </div>
+    </main>
+    
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 FrontrowMD. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const processingUrlEl = document.getElementById('processing-url');
+            const statusTextEl = document.getElementById('status-text');
+            const processingTitleEl = document.getElementById('processing-title');
+            const homeButtonEl = document.getElementById('home-button');
+            const urlLabelEl = document.querySelector('.processing-card__url-label');
+            const stagesContainerEl = document.getElementById('stages-container');
+
+            // Get URL from query parameter
+            const params = new URLSearchParams(window.location.search);
+            const productUrl = params.get('url') || 'No URL provided';
+            if (productUrl === 'No URL provided') {
+                urlLabelEl.style.display = 'none';
+            }
+            processingUrlEl.textContent = productUrl;
+            
+            const stages = Array.from(document.querySelectorAll('.stage'));
+            const STAGE_MESSAGES = {
+                fetch: "Gathering information from the provided URL...",
+                extract: "Scanning the page for product name, images, and description...",
+                analyze: "Identifying the core features and benefits...",
+                finalize: "Wrapping up the analysis and preparing the results...",
+            };
+            const STAGE_DURATION = 5000;
+
+            function runStages() {
+                stages.forEach((stage, index) => {
+                    setTimeout(() => {
+                        // Mark previous stage as done
+                        if (index > 0) {
+                            const prevStage = stages[index - 1];
+                            prevStage.classList.remove('processing');
+                            prevStage.classList.add('done');
+                            prevStage.querySelector('.stage-icon').innerHTML = `<svg class="checkmark" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--success-color)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+                        }
+                        
+                        // Mark current stage as processing
+                        stage.classList.add('processing');
+                        stage.querySelector('.stage-icon').innerHTML = '<div class="spinner"></div>';
+                        statusTextEl.textContent = STAGE_MESSAGES[stage.dataset.stage];
+                        
+                    }, index * STAGE_DURATION);
+                });
+
+                // Final step after all stages
+                const totalDuration = stages.length * STAGE_DURATION;
+                setTimeout(() => {
+                    const lastStage = stages[stages.length - 1];
+                    lastStage.classList.remove('processing');
+                    lastStage.classList.add('done');
+                    lastStage.querySelector('.stage-icon').innerHTML = `<svg class="checkmark" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--success-color)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+                    
+                    setTimeout(() => {
+                        stagesContainerEl.style.display = 'none';
+                        urlLabelEl.style.display = 'none';
+                        processingUrlEl.style.display = 'none';
+                        
+                        processingTitleEl.textContent = 'Analysis Complete';
+                        statusTextEl.textContent = 'Your request has been processed. The product analysis will appear on the homepage shortly.';
+                        homeButtonEl.style.display = 'inline-block';
+                    }, 800);
+
+                }, totalDuration);
+            }
+
+            setTimeout(runStages, 500);
+        });
+    </script>
+</body>
+</html>
