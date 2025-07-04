@@ -216,7 +216,7 @@
   box-shadow: var(--shadow-soft);
 }
 
-svg {
+.processing-success-wrapper svg {
   width: 64px;
   height: 64px;
 }
