@@ -43,15 +43,15 @@
       "destination": "https://65.108.49.212/product_management/get_product_by_id/$1"
     },
     {
-      "source": "/frontrowmd/product_management/update_review_status",
+      "source": "/product_management/update_review_status",
       "destination": "https://65.108.49.212/product_management/update_review_status"
     },
     {
-      "source": "/frontrowmd/product_metadata_extraction/regenerate_review",
+      "source": "/product_metadata_extraction/regenerate_review",
       "destination": "https://65.108.49.212/product_metadata_extraction/regenerate_review"
     },
     {
-      "source": "/frontrowmd/product_metadata_extraction/save_regenerated_review",
+      "source": "/product_metadata_extraction/save_regenerated_review",
       "destination": "https://65.108.49.212/product_metadata_extraction/save_regenerated_review"
     },
     {
