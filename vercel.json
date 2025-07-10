@@ -38,15 +38,15 @@
       "source": "/frontrowmd/generate_reviews_async",
       "destination": "https://65.108.49.212/product_metadata_extraction/generate_reviews_async"
     },
-
+    {
+      "source": "/frontrowmd/get_product_by_id/(.*)",
+      "destination": "https://65.108.49.212/product_management/get_product_by_id/$1"
+    },
     {
       "source": "/product_management/update_review_status",
       "destination": "https://65.108.49.212/product_management/update_review_status"
     },
-    {
-      "source": "/product_management/get_product_by_id",
-      "destination": "https://65.108.49.212/product_management/get_product_by_id"
-    },
+
     {
       "source": "/product_metadata_extraction/regenerate_review",
       "destination": "https://65.108.49.212/product_metadata_extraction/regenerate_review"
