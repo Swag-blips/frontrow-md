@@ -80,13 +80,10 @@ const ProductInput: React.FC = () => {
     const ids = getProcessingIds();
     if (ids.length > 0) {
       setProcessingIds(ids);
-      toast("We’re processing your new product(s). They’ll appear shortly.", {
-        icon: "⏳",
-      });
     }
   }, []);
 
-  const fetchProducts = async () => {
+  const fetchProducts = async (isPolling: boolean = false) => {
     if (isFetching.current) {
       return;
     }
@@ -97,7 +94,7 @@ const ProductInput: React.FC = () => {
 
     abortController.current = new AbortController();
     isFetching.current = true;
-    setIsLoading(true);
+    if (!isPolling) setIsLoading(true);
 
     try {
       const response = await fetch(`/frontrowmd/products?t=${Date.now()}`, {
@@ -117,8 +114,6 @@ const ProductInput: React.FC = () => {
       }
 
       const data = await response.json();
-
-      console.log("DATA", data);
 
       if (!data.products || !Array.isArray(data.products)) {
         throw new Error("No products found");
@@ -188,7 +183,6 @@ const ProductInput: React.FC = () => {
       setError(null);
 
       if (processingIds.length > 0) {
-        console.log("PROCESSING");
         pollForProcessedProducts(uniqueProducts);
       }
     } catch (err: any) {
@@ -197,18 +191,22 @@ const ProductInput: React.FC = () => {
       }
     } finally {
       isFetching.current = false;
-      setIsLoading(false);
+      if (!isPolling) setIsLoading(false);
       abortController.current = null;
     }
   };
 
   useEffect(() => {
-    fetchProducts();
+    fetchProducts(); // initial mount, show loading
 
     if (getProcessingIds().length > 0 && !pollingRef.current) {
       pollingRef.current = setInterval(() => {
-        fetchProducts();
-      }, 10000);
+        fetchProducts(true); // polling, don't show loading spinner
+        toast.loading(
+          "We’re processing your new product(s). They’ll appear shortly.",
+          { id: "polling" }
+        );
+      }, 2000);
     }
 
     return () => {
@@ -220,6 +218,7 @@ const ProductInput: React.FC = () => {
         clearInterval(pollingRef.current);
         pollingRef.current = null;
       }
+      toast.dismiss("polling");
     };
   }, [processingIds]);
 
