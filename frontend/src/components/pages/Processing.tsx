@@ -172,7 +172,7 @@ const Processing: React.FC = () => {
         setTimeout(() => {
           navigate(`/processing-success?url=${encodeURIComponent(url)}&productId=${result.product_metadata.product_id}`);
         }, 2000); // 2 second delay to show completion
-
+ 
       } catch (err: any) {
         // Clear any running intervals
         if (intervalRef.current) {

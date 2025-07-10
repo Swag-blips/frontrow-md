@@ -221,7 +221,7 @@ const ProductInput: React.FC = () => {
         pollingRef.current = null;
       }
     };
-  }, [processingIds]);  
+  }, [processingIds]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
