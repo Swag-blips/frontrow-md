@@ -878,7 +878,7 @@ const ReviewResults: React.FC = () => {
                   className="form-submit primary"
                   disabled={isGenerating}
                 >
-                  {isGenerating && <span className="loading-spinner"></span>}
+                  {isGenerating && <span className="loading-spinner-alt"></span>}
                   {isGenerating ? "Generating..." : "Generate Edited Review"}
                 </button>
               </div>
