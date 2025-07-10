@@ -58,7 +58,6 @@ const ProcessingSuccess: React.FC = () => {
         return;
       }
 
-      // Fetch product data from database using the correct endpoint
       try {
         const response = await fetch(
           `/frontrowmd/get_product_by_id/${productId}`

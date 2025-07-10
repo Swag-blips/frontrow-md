@@ -87,7 +87,7 @@ export default defineConfig({
       "/frontrowmd/get_reviews_by_task": {
         target: "https://65.108.49.212/",
         changeOrigin: true,
-        secure: false,
+        secure: false, 
         rewrite: (path) =>
           path.replace(
             "/frontrowmd/get_reviews_by_task",
