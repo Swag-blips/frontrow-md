@@ -95,7 +95,7 @@ const ReviewResults: React.FC = () => {
 
         // Fetch the product by ID and extract reviews
         const response = await fetch(
-          `/product_management/get_product_by_id/${productId}`
+          `${window.location.origin}/frontrowmd/get_product_by_id/${productId}`
         );
         if (!response.ok) {
           throw new Error(`Failed to fetch product: ${response.status}`);
