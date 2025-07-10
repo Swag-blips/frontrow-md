@@ -43,12 +43,11 @@
       "destination": "https://65.108.49.212/product_management/get_product_by_id/$1"
     },
     {
-      "source": "/frontowmd/product_management/update_review_status",
+      "source": "/frontrowmd/product_management/update_review_status",
       "destination": "https://65.108.49.212/product_management/update_review_status"
     },
-
     {
-      "source": "/frontowmd/product_management/update_review_status",
+      "source": "/frontrowmd/product_metadata_extraction/regenerate_review",
       "destination": "https://65.108.49.212/product_metadata_extraction/regenerate_review"
     },
     {
