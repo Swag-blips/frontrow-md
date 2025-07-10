@@ -13,59 +13,88 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
-    }
+    },
   },
   server: {
     proxy: {
       // Updated to new backend
-      '/frontrowmd/products': {
-        target: 'http://65.108.49.212:5002',
+      "/frontrowmd/products": {
+        target: "https://65.108.49.212/",
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path.replace('/frontrowmd/products', '/product_management/get_all_products')
+        rewrite: (path) =>
+          path.replace(
+            "/frontrowmd/products",
+            "/product_management/get_all_products"
+          ),
       },
-      '/frontrowmd/product_metadata_extraction': {
-        target: 'http://65.108.49.212:5002',
+      "/frontrowmd/product_metadata_extraction": {
+        target: "https://65.108.49.212/",
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path.replace('/frontrowmd/product_metadata_extraction', '/product_metadata_extraction')
+        rewrite: (path) =>
+          path.replace(
+            "/frontrowmd/product_metadata_extraction",
+            "/product_metadata_extraction"
+          ),
       },
-      '/frontrowmd/extract_product_metadata': {
-        target: 'http://65.108.49.212:5002',
+      "/frontrowmd/extract_product_metadata": {
+        target: "https://65.108.49.212/",
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path.replace('/frontrowmd/extract_product_metadata', '/product_management/extract_product_metadata')
+        rewrite: (path) =>
+          path.replace(
+            "/frontrowmd/extract_product_metadata",
+            "/product_management/extract_product_metadata"
+          ),
       },
-      '/frontrowmd/add_human_review': {
-        target: 'http://65.108.49.212:5002',
+      "/frontrowmd/add_human_review": {
+        target: "https://65.108.49.212/",
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path.replace('/frontrowmd/add_human_review', '/product_management/add_human_review')
+        rewrite: (path) =>
+          path.replace(
+            "/frontrowmd/add_human_review",
+            "/product_management/add_human_review"
+          ),
       },
-      '/frontrowmd/generate_reviews_async': {
-        target: 'http://65.108.49.212:5002',
+      "/frontrowmd/generate_reviews_async": {
+        target: "https://65.108.49.212/",
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path.replace('/frontrowmd/generate_reviews_async', '/product_metadata_extraction/generate_reviews_async')
+        rewrite: (path) =>
+          path.replace(
+            "/frontrowmd/generate_reviews_async",
+            "/product_metadata_extraction/generate_reviews_async"
+          ),
       },
-      '/product_management/get_product_by_id': {
-        target: 'http://65.108.49.212:5002',
+      "/product_management/get_product_by_id": {
+        target: "https://65.108.49.212/",
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path // Keep the full path including the product ID
+        rewrite: (path) => path, // Keep the full path including the product ID
       },
-      '/frontrowmd/get_product_by_id': {
-        target: 'http://65.108.49.212:5002',
+      "/frontrowmd/get_product_by_id": {
+        target: "https://65.108.49.212/",
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path.replace('/frontrowmd/get_product_by_id', '/product_management/get_product_by_id')
+        rewrite: (path) =>
+          path.replace(
+            "/frontrowmd/get_product_by_id",
+            "/product_management/get_product_by_id"
+          ),
       },
-      '/frontrowmd/get_reviews_by_task': {
-        target: 'http://65.108.49.212:5002',
+      "/frontrowmd/get_reviews_by_task": {
+        target: "https://65.108.49.212/",
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path.replace('/frontrowmd/get_reviews_by_task', '/product_metadata_extraction/get_reviews_by_task')
-      }
-    }
-  }
-})
+        rewrite: (path) =>
+          path.replace(
+            "/frontrowmd/get_reviews_by_task",
+            "/product_metadata_extraction/get_reviews_by_task"
+          ),
+      },
+    },
+  },
+});
+ 
