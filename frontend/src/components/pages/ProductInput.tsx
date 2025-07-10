@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import toast, { Toaster } from "react-hot-toast";
 import "../styling/ProductInput.css";
 
 // Define the shape of a product
@@ -27,17 +28,73 @@ const ProductInput: React.FC = () => {
   const isFetching = useRef(false);
   const abortController = useRef<AbortController | null>(null);
 
+  // Polling state for processing product IDs
+  const [processingIds, setProcessingIds] = useState<string[]>([]);
+  const pollingRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Helper to get processing IDs from sessionStorage
+  const getProcessingIds = () => {
+    try {
+      const stored = sessionStorage.getItem("processingProductIds");
+      if (stored) return JSON.parse(stored);
+    } catch {}
+    return [];
+  };
+
+  // Helper to update processing IDs in sessionStorage and state
+  const updateProcessingIds = (ids: string[]) => {
+    setProcessingIds(ids);
+    if (ids.length > 0) {
+      sessionStorage.setItem("processingProductIds", JSON.stringify(ids));
+    } else {
+      sessionStorage.removeItem("processingProductIds");
+    }
+  };
+
+  const pollForProcessedProducts = (productsList: Product[]) => {
+    if (processingIds.length === 0) return;
+    let updatedIds = [...processingIds];
+    let foundAny = false;
+    processingIds.forEach((id) => {
+      if (
+        productsList.some((p) => {
+          return p.product_id === id;
+        })
+      ) {
+        toast.success("Your new product is now live!");
+        updatedIds = updatedIds.filter((pid) => pid !== id);
+        foundAny = true;
+      }
+    });
+    if (foundAny) {
+      updateProcessingIds(updatedIds);
+    }
+
+    if (updatedIds.length === 0 && pollingRef.current) {
+      clearInterval(pollingRef.current);
+      pollingRef.current = null;
+    }
+  };
+
+  useEffect(() => {
+    const ids = getProcessingIds();
+    if (ids.length > 0) {
+      setProcessingIds(ids);
+      toast("We’re processing your new product(s). They’ll appear shortly.", {
+        icon: "⏳",
+      });
+    }
+  }, []);
+
   const fetchProducts = async () => {
     if (isFetching.current) {
       return;
     }
 
-    // Cancel any existing fetch
     if (abortController.current) {
       abortController.current.abort();
     }
 
-    // Create new abort controller
     abortController.current = new AbortController();
     isFetching.current = true;
     setIsLoading(true);
@@ -61,6 +118,8 @@ const ProductInput: React.FC = () => {
 
       const data = await response.json();
 
+      console.log("DATA", data);
+
       if (!data.products || !Array.isArray(data.products)) {
         throw new Error("No products found");
       }
@@ -71,8 +130,9 @@ const ProductInput: React.FC = () => {
       // Process each product, keeping only the most recent one for each product_name
       data.products.forEach((product: any) => {
         // Extract product name from either direct property or nested product_info
-        const productName = product.product_name || product.product_info?.product_name;
-        
+        const productName =
+          product.product_name || product.product_info?.product_name;
+
         // Skip products without a product_name to prevent frontend errors
         if (!productName) {
           return;
@@ -82,8 +142,10 @@ const ProductInput: React.FC = () => {
         const normalizedProduct: Product = {
           product_id: product.product_id,
           product_name: productName,
-          product_image_url: product.product_image_url || product.product_info?.product_image_url,
-          created_time: product.created_time
+          product_image_url:
+            product.product_image_url ||
+            product.product_info?.product_image_url,
+          created_time: product.created_time,
         };
 
         const normalizedName = productName.toLowerCase().trim();
@@ -124,6 +186,11 @@ const ProductInput: React.FC = () => {
 
       setProducts(uniqueProducts);
       setError(null);
+
+      if (processingIds.length > 0) {
+        console.log("PROCESSING");
+        pollForProcessedProducts(uniqueProducts);
+      }
     } catch (err: any) {
       if (err.name !== "AbortError") {
         setError(err.message);
@@ -135,18 +202,26 @@ const ProductInput: React.FC = () => {
     }
   };
 
-  // Fetch on mount and when returning to the page
   useEffect(() => {
     fetchProducts();
 
-    // Cleanup function
+    if (getProcessingIds().length > 0 && !pollingRef.current) {
+      pollingRef.current = setInterval(() => {
+        fetchProducts();
+      }, 10000);
+    }
+
     return () => {
       if (abortController.current) {
         abortController.current.abort();
       }
       isFetching.current = false;
+      if (pollingRef.current) {
+        clearInterval(pollingRef.current);
+        pollingRef.current = null;
+      }
     };
-  }, []); // Empty dependency array for mount only
+  }, [processingIds]);  
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -186,6 +261,7 @@ const ProductInput: React.FC = () => {
 
   return (
     <>
+      <Toaster position="top-center" />
       <header className="header">
         <div className="container header__container">
           <Link to="/" className="logo">

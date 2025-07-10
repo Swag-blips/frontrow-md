@@ -26,29 +26,35 @@ interface ReviewData {
 
 const ReviewResults: React.FC = () => {
   const [searchParams] = useSearchParams();
-  const [activeTab, setActiveTab] = useState<'pending' | 'accepted'>('pending');
+  const [activeTab, setActiveTab] = useState<"pending" | "accepted">("pending");
   const [currentPendingIndex, setCurrentPendingIndex] = useState<number>(0);
   const [currentAcceptedIndex, setCurrentAcceptedIndex] = useState<number>(0);
   const [currentEditingIndex, setCurrentEditingIndex] = useState<number>(-1);
-  const [updatedReviewData, setUpdatedReviewData] = useState<ReviewData | null>(null);
-  
+  const [updatedReviewData, setUpdatedReviewData] = useState<ReviewData | null>(
+    null
+  );
+
   // URL parameters
   const taskId = searchParams.get("taskId");
   const productId = searchParams.get("productId");
-  
+
   // Loading states
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Modal states
   const [isAcceptModalOpen, setIsAcceptModalOpen] = useState<boolean>(false);
   const [isRejectModalOpen, setIsRejectModalOpen] = useState<boolean>(false);
-  const [isRejectSuccessModalOpen, setIsRejectSuccessModalOpen] = useState<boolean>(false);
+  const [isRejectSuccessModalOpen, setIsRejectSuccessModalOpen] =
+    useState<boolean>(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
-  const [isEditSuccessModalOpen, setIsEditSuccessModalOpen] = useState<boolean>(false);
-  const [isAcceptedReviewModalOpen, setIsAcceptedReviewModalOpen] = useState<boolean>(false);
-  const [selectedAcceptedReview, setSelectedAcceptedReview] = useState<ReviewData | null>(null);
-  
+  const [isEditSuccessModalOpen, setIsEditSuccessModalOpen] =
+    useState<boolean>(false);
+  const [isAcceptedReviewModalOpen, setIsAcceptedReviewModalOpen] =
+    useState<boolean>(false);
+  const [selectedAcceptedReview, setSelectedAcceptedReview] =
+    useState<ReviewData | null>(null);
+
   // Form states
   const [selectedWordCount, setSelectedWordCount] = useState<number>(100);
   const [toneAdjustment, setToneAdjustment] = useState<string>("");
@@ -60,14 +66,18 @@ const ReviewResults: React.FC = () => {
   const carouselViewportRef = useRef<HTMLDivElement>(null);
 
   // Review data state
-  const [pendingReviewsData, setPendingReviewsData] = useState<ReviewData[]>([]);
-  const [acceptedReviewsData, setAcceptedReviewsData] = useState<ReviewData[]>([]);
+  const [pendingReviewsData, setPendingReviewsData] = useState<ReviewData[]>(
+    []
+  );
+  const [acceptedReviewsData, setAcceptedReviewsData] = useState<ReviewData[]>(
+    []
+  );
 
   // Fetch reviews when component mounts
   useEffect(() => {
     const fetchReviews = async () => {
       if (!productId) {
-        setError('Missing productId parameter');
+        setError("Missing productId parameter");
         setIsLoading(false);
         return;
       }
@@ -75,22 +85,26 @@ const ReviewResults: React.FC = () => {
       try {
         setIsLoading(true);
         setError(null);
-        
+
         // Fetch the product by ID and extract reviews
-        const response = await fetch(`/product_management/get_product_by_id/${productId}`);
+        const response = await fetch(
+          `/product_management/get_product_by_id/${productId}`
+        );
         if (!response.ok) {
           throw new Error(`Failed to fetch product: ${response.status}`);
         }
         const product = await response.json();
-        
+
+        console.log("product", product);
+
         // Use enhanced_generated_reviews as pending reviews
-        setPendingReviewsData(product.enhanced_generated_reviews || []);
+        setPendingReviewsData(product.product.enhanced_generated_reviews || []);
         // Optionally clear accepted reviews on load
         setAcceptedReviewsData([]);
       } catch (err) {
         setPendingReviewsData([]);
         setAcceptedReviewsData([]);
-        setError('Failed to fetch product or reviews. Please try again.');
+        setError("Failed to fetch product or reviews. Please try again.");
       } finally {
         setIsLoading(false);
       }
@@ -101,21 +115,27 @@ const ReviewResults: React.FC = () => {
 
   // Update carousel position when accepted reviews change
   useEffect(() => {
-    if (carouselTrackRef.current && carouselViewportRef.current && acceptedReviewsData.length > 0) {
-      const cards = carouselTrackRef.current.querySelectorAll('.review-card');
+    if (
+      carouselTrackRef.current &&
+      carouselViewportRef.current &&
+      acceptedReviewsData.length > 0
+    ) {
+      const cards = carouselTrackRef.current.querySelectorAll(".review-card");
       if (cards.length > 0) {
         const cardWidth = cards[0].clientWidth;
         const viewportWidth = carouselViewportRef.current.clientWidth;
         const gap = 20;
-        const offset = -currentAcceptedIndex * (cardWidth + gap) + (viewportWidth / 2 - cardWidth / 2);
-        
+        const offset =
+          -currentAcceptedIndex * (cardWidth + gap) +
+          (viewportWidth / 2 - cardWidth / 2);
+
         carouselTrackRef.current.style.transform = `translateX(${offset}px)`;
       }
     }
   }, [currentAcceptedIndex, acceptedReviewsData.length]);
 
   const formatToneType = (toneType: string) => {
-    return toneType.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    return toneType.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
   };
 
   const renderPendingReviews = () => {
@@ -124,106 +144,153 @@ const ReviewResults: React.FC = () => {
         <div className="empty-state">
           <div className="empty-state-icon">
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-              <path fill="currentColor" d="M12,2A3,3 0 0,1 15,5V11A3,3 0 0,1 12,14A3,3 0 0,1 9,11V5A3,3 0 0,1 12,2M19,11C19,14.53 16.39,17.44 13,17.93V21H11V17.93C7.61,17.44 5,14.53 5,11H7A5,5 0 0,0 12,16A5,5 0 0,0 17,11H19Z"/>
+              <path
+                fill="currentColor"
+                d="M12,2A3,3 0 0,1 15,5V11A3,3 0 0,1 12,14A3,3 0 0,1 9,11V5A3,3 0 0,1 12,2M19,11C19,14.53 16.39,17.44 13,17.93V21H11V17.93C7.61,17.44 5,14.53 5,11H7A5,5 0 0,0 12,16A5,5 0 0,0 17,11H19Z"
+              />
             </svg>
           </div>
           <h3 className="empty-state-title">No Pending Reviews</h3>
-          <p className="empty-state-message">No reviews were generated for this product.</p>
+          <p className="empty-state-message">
+            No reviews were generated for this product.
+          </p>
         </div>
       );
     }
 
-    const review = pendingReviewsData[currentPendingIndex];
-    const toneTypeFormatted = formatToneType(review.tone_type);
-    
-    const highlightTags = review.highlights.map(highlight => 
-      <span key={highlight} className="tag highlight">{highlight}</span>
-    );
-    
-    const toneTag = <span className="tag tone">{toneTypeFormatted}</span>;
-    const researchTag = review.uses_clinical_research ? <span className="tag research">Clinical Research</span> : null;
-    
-    const studiesList = review.referenced_studies.map((url, index) => 
-      <li key={index} className="study-item">
-        <a href={url} target="_blank" rel="noopener noreferrer" className="study-link">{url}</a>
-      </li>
-    );
-
     return (
-      <div className="pending-review-container">
-        <div className="pending-review-navigation">
-          <div className="review-counter">
-            Review {currentPendingIndex + 1} of {pendingReviewsData.length}
-          </div>
-          <div className="nav-buttons">
-            <button 
-              className="nav-btn" 
-              disabled={currentPendingIndex === 0}
-              onClick={() => setCurrentPendingIndex(Math.max(0, currentPendingIndex - 1))}
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24">
-                <path fill="currentColor" d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" />
-              </svg>
-            </button>
-            <button 
-              className="nav-btn" 
-              disabled={currentPendingIndex === pendingReviewsData.length - 1}
-              onClick={() => setCurrentPendingIndex(Math.min(pendingReviewsData.length - 1, currentPendingIndex + 1))}
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24">
-                <path fill="currentColor" d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" />
-              </svg>
-            </button>
-          </div>
-        </div>
+      <div className="pending-reviews-list">
+        {pendingReviewsData.map((review, index) => {
+          const toneTypeFormatted = formatToneType(review.tone_type);
+          const highlightTags = review.highlights.map((highlight) => (
+            <span key={highlight} className="tag highlight">
+              {highlight}
+            </span>
+          ));
+          const toneTag = <span className="tag tone">{toneTypeFormatted}</span>;
+          const researchTag = review.uses_clinical_research ? (
+            <span className="tag research">Clinical Research</span>
+          ) : null;
+          const studiesList = review.referenced_studies.map((url, idx) => (
+            <li key={idx} className="study-item">
+              <a
+                href={url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="study-link"
+              >
+                {url}
+              </a>
+            </li>
+          ));
 
-        <div className="review-content-container">
-          <div className="doctor-info">
-            <img src={review.profile_image_url} alt={review.reviewer_name} />
-            <div className="doctor-details">
-              <h3>{review.reviewer_name}</h3>
-              <div className="title">{review.reviewer_title}</div>
+          if (index !== currentPendingIndex) return null;
+
+          return (
+            <div className="pending-review-container" key={index}>
+              <div className="pending-review-navigation">
+                <div className="review-counter">
+                  Review {index + 1} of {pendingReviewsData.length}
+                </div>
+                <div className="nav-buttons">
+                  <button
+                    className="nav-btn"
+                    disabled={currentPendingIndex === 0}
+                    onClick={() =>
+                      setCurrentPendingIndex(
+                        Math.max(0, currentPendingIndex - 1)
+                      )
+                    }
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24">
+                      <path
+                        fill="currentColor"
+                        d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z"
+                      />
+                    </svg>
+                  </button>
+                  <button
+                    className="nav-btn"
+                    disabled={
+                      currentPendingIndex === pendingReviewsData.length - 1
+                    }
+                    onClick={() =>
+                      setCurrentPendingIndex(
+                        Math.min(
+                          pendingReviewsData.length - 1,
+                          currentPendingIndex + 1
+                        )
+                      )
+                    }
+                  >
+                    <svg width="20" height="20" viewBox="0 0 24 24">
+                      <path
+                        fill="currentColor"
+                        d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <div className="review-content-container">
+                <div className="doctor-info">
+                  <img
+                    src={review.profile_image_url}
+                    alt={review.reviewer_name}
+                  />
+                  <div className="doctor-details">
+                    <h3>{review.reviewer_name}</h3>
+                    <div className="title">{review.reviewer_title}</div>
+                  </div>
+                </div>
+
+                <div className="review-header">
+                  <h2 className="review-title">{review.review_title}</h2>
+                  <p className="review-summary">{review.review_summary_line}</p>
+
+                  <div className="review-tags">
+                    {highlightTags}
+                    {toneTag}
+                    {researchTag}
+                  </div>
+
+                  <div className="word-count-display">
+                    {review.actual_word_count}/{review.target_word_count} words
+                  </div>
+                </div>
+
+                <div className="review-text">{review.review_text}</div>
+
+                <div className="referenced-studies-section">
+                  <h3 className="section-title">Referenced Clinical Studies</h3>
+                  <ul className="studies-list">{studiesList}</ul>
+                </div>
+
+                <div className="pending-actions">
+                  <button
+                    className="action-btn accept"
+                    onClick={() => acceptPendingReview(index)}
+                  >
+                    Accept
+                  </button>
+                  <button
+                    className="action-btn edit"
+                    onClick={() => editPendingReview(index)}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className="action-btn reject"
+                    onClick={() => rejectPendingReview(index)}
+                  >
+                    Reject
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
-
-          <div className="review-header">
-            <h2 className="review-title">{review.review_title}</h2>
-            <p className="review-summary">{review.review_summary_line}</p>
-            
-            <div className="review-tags">
-              {highlightTags}
-              {toneTag}
-              {researchTag}
-            </div>
-            
-            <div className="word-count-display">
-              {review.actual_word_count}/{review.target_word_count} words
-            </div>
-          </div>
-
-          <div className="review-text">
-            {review.review_text}
-          </div>
-
-          <div className="referenced-studies-section">
-            <h3 className="section-title">Referenced Clinical Studies</h3>
-            <ul className="studies-list">
-              {studiesList}
-            </ul>
-          </div>
-
-          <div className="pending-actions">
-            <button className="action-btn accept" onClick={() => acceptPendingReview(currentPendingIndex)}>
-              Accept
-            </button>
-            <button className="action-btn edit" onClick={() => editPendingReview(currentPendingIndex)}>
-              Edit
-            </button>
-            <button className="action-btn reject" onClick={() => rejectPendingReview(currentPendingIndex)}>
-              Reject
-            </button>
-          </div>
-        </div>
+          );
+        })}
       </div>
     );
   };
@@ -234,59 +301,87 @@ const ReviewResults: React.FC = () => {
         <div className="empty-state">
           <div className="empty-state-icon">
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-              <path fill="currentColor" d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+              <path
+                fill="currentColor"
+                d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"
+              />
             </svg>
           </div>
           <h3 className="empty-state-title">No Accepted Reviews</h3>
-          <p className="empty-state-message">No reviews have been accepted yet.</p>
+          <p className="empty-state-message">
+            No reviews have been accepted yet.
+          </p>
         </div>
       );
     }
 
     const review = acceptedReviewsData[currentAcceptedIndex];
     const toneTypeFormatted = formatToneType(review.tone_type);
-    
-    const highlightTags = review.highlights.map(highlight => 
-      <span key={highlight} className="tag highlight">{highlight}</span>
-    );
-    
+
+    const highlightTags = review.highlights.map((highlight) => (
+      <span key={highlight} className="tag highlight">
+        {highlight}
+      </span>
+    ));
+
     const toneTag = <span className="tag tone">{toneTypeFormatted}</span>;
-    const researchTag = review.uses_clinical_research ? <span className="tag research">Clinical Research</span> : null;
+    const researchTag = review.uses_clinical_research ? (
+      <span className="tag research">Clinical Research</span>
+    ) : null;
 
     return (
       <div className="carousel-container">
-        <button className="carousel-btn" onClick={() => setCurrentAcceptedIndex((prevIndex) => (prevIndex - 1 + acceptedReviewsData.length) % acceptedReviewsData.length)}>
+        <button
+          className="carousel-btn"
+          onClick={() =>
+            setCurrentAcceptedIndex(
+              (prevIndex) =>
+                (prevIndex - 1 + acceptedReviewsData.length) %
+                acceptedReviewsData.length
+            )
+          }
+        >
           <svg width="24" height="24" viewBox="0 0 24 24">
-            <path fill="currentColor" d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" />
+            <path
+              fill="currentColor"
+              d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z"
+            />
           </svg>
         </button>
-        
+
         <div className="carousel-viewport" ref={carouselViewportRef}>
           <div className="carousel-track" ref={carouselTrackRef}>
             {acceptedReviewsData.map((review, index) => (
-              <div 
-                key={index} 
-                className={`review-card ${index === currentAcceptedIndex ? 'is-active' : ''}`}
+              <div
+                key={index}
+                className={`review-card ${
+                  index === currentAcceptedIndex ? "is-active" : ""
+                }`}
                 onClick={() => openAcceptedReviewModal(review)}
-                style={{ cursor: 'pointer' }}
+                style={{ cursor: "pointer" }}
               >
                 <div className="card-doctor-info">
-                  <img src={review.profile_image_url} alt={review.reviewer_name} />
+                  <img
+                    src={review.profile_image_url}
+                    alt={review.reviewer_name}
+                  />
                   <div>
                     <h3>{review.reviewer_name}</h3>
                     <p>{review.reviewer_title}</p>
                   </div>
                 </div>
-                
+
                 <h4 className="card-review-title">{review.review_title}</h4>
-                <p className="card-review-summary">{review.review_summary_line}</p>
-                
+                <p className="card-review-summary">
+                  {review.review_summary_line}
+                </p>
+
                 <div className="card-tags">
                   {highlightTags}
                   {toneTag}
                   {researchTag}
                 </div>
-                
+
                 <div className="card-word-count">
                   {review.actual_word_count}/{review.target_word_count} words
                 </div>
@@ -294,10 +389,20 @@ const ReviewResults: React.FC = () => {
             ))}
           </div>
         </div>
-        
-        <button className="carousel-btn" onClick={() => setCurrentAcceptedIndex((prevIndex) => (prevIndex + 1) % acceptedReviewsData.length)}>
+
+        <button
+          className="carousel-btn"
+          onClick={() =>
+            setCurrentAcceptedIndex(
+              (prevIndex) => (prevIndex + 1) % acceptedReviewsData.length
+            )
+          }
+        >
           <svg width="24" height="24" viewBox="0 0 24 24">
-            <path fill="currentColor" d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" />
+            <path
+              fill="currentColor"
+              d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"
+            />
           </svg>
         </button>
       </div>
@@ -306,13 +411,13 @@ const ReviewResults: React.FC = () => {
 
   const acceptPendingReview = (index: number) => {
     const review = pendingReviewsData[index];
-    setAcceptedReviewsData(prev => [...prev, review]);
-    setPendingReviewsData(prev => prev.filter((_, i) => i !== index));
-    
+    setAcceptedReviewsData((prev) => [...prev, review]);
+    setPendingReviewsData((prev) => prev.filter((_, i) => i !== index));
+
     if (currentPendingIndex >= pendingReviewsData.length - 1) {
       setCurrentPendingIndex(Math.max(0, pendingReviewsData.length - 2));
     }
-    
+
     setIsAcceptModalOpen(true);
   };
 
@@ -329,14 +434,16 @@ const ReviewResults: React.FC = () => {
   const handleRejectSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (rejectReason.trim()) {
-      setPendingReviewsData(prev => prev.filter((_, i) => i !== currentEditingIndex));
-      
+      setPendingReviewsData((prev) =>
+        prev.filter((_, i) => i !== currentEditingIndex)
+      );
+
       if (currentPendingIndex >= pendingReviewsData.length - 1) {
         setCurrentPendingIndex(Math.max(0, pendingReviewsData.length - 2));
       }
-      
-    setIsRejectModalOpen(false);
-    setIsRejectSuccessModalOpen(true);
+
+      setIsRejectModalOpen(false);
+      setIsRejectSuccessModalOpen(true);
       setRejectReason("");
     }
   };
@@ -344,7 +451,7 @@ const ReviewResults: React.FC = () => {
   const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!toneAdjustment.trim()) {
-      alert('Please provide a tone adjustment instruction.');
+      alert("Please provide a tone adjustment instruction.");
       return;
     }
 
@@ -352,23 +459,24 @@ const ReviewResults: React.FC = () => {
 
     try {
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
       const originalReview = pendingReviewsData[currentEditingIndex];
       const updatedReview = {
         ...originalReview,
-        review_text: `This is a mock updated review with approximately ${selectedWordCount} words. The tone has been adjusted based on: "${toneAdjustment}". ${originalReview.review_text.substring(50)}`,
-        review_title: originalReview.review_title + ' (Edited)',
+        review_text: `This is a mock updated review with approximately ${selectedWordCount} words. The tone has been adjusted based on: "${toneAdjustment}". ${originalReview.review_text.substring(
+          50
+        )}`,
+        review_title: originalReview.review_title + " (Edited)",
         actual_word_count: selectedWordCount,
-        target_word_count: selectedWordCount
+        target_word_count: selectedWordCount,
       };
-      
+
       setUpdatedReviewData(updatedReview);
-    setIsEditModalOpen(false);
-    setIsEditSuccessModalOpen(true);
-      
+      setIsEditModalOpen(false);
+      setIsEditSuccessModalOpen(true);
     } catch (error) {
-      alert('Error generating edited review. Please try again.');
+      alert("Error generating edited review. Please try again.");
     } finally {
       setIsGenerating(false);
     }
@@ -376,9 +484,11 @@ const ReviewResults: React.FC = () => {
 
   const useUpdatedVersion = () => {
     if (updatedReviewData && currentEditingIndex >= 0) {
-      setPendingReviewsData(prev => prev.map((review, index) => 
-        index === currentEditingIndex ? updatedReviewData : review
-      ));
+      setPendingReviewsData((prev) =>
+        prev.map((review, index) =>
+          index === currentEditingIndex ? updatedReviewData : review
+        )
+      );
       setIsEditSuccessModalOpen(false);
       setUpdatedReviewData(null);
     }
@@ -423,20 +533,24 @@ const ReviewResults: React.FC = () => {
 
           <div className="tabs-container">
             <div className="tabs">
-                      <button
-                className={`tab-button ${activeTab === 'pending' ? 'active' : ''}`}
-                onClick={() => setActiveTab('pending')}
+              <button
+                className={`tab-button ${
+                  activeTab === "pending" ? "active" : ""
+                }`}
+                onClick={() => setActiveTab("pending")}
               >
                 Pending Reviews
-                      </button>
-                      <button
-                className={`tab-button ${activeTab === 'accepted' ? 'active' : ''}`}
-                onClick={() => setActiveTab('accepted')}
+              </button>
+              <button
+                className={`tab-button ${
+                  activeTab === "accepted" ? "active" : ""
+                }`}
+                onClick={() => setActiveTab("accepted")}
               >
                 Accepted Reviews
-                      </button>
-                    </div>
-                    </div>
+              </button>
+            </div>
+          </div>
 
           <div className="tab-content active">
             {isLoading ? (
@@ -448,113 +562,153 @@ const ReviewResults: React.FC = () => {
               <div className="error-state">
                 <div className="error-icon">
                   <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-                    <path fill="currentColor" d="M12,2A3,3 0 0,1 15,5V11A3,3 0 0,1 12,14A3,3 0 0,1 9,11V5A3,3 0 0,1 12,2M19,11C19,14.53 16.39,17.44 13,17.93V21H11V17.93C7.61,17.44 5,14.53 5,11H7A5,5 0 0,0 12,16A5,5 0 0,0 17,11H19Z"/>
+                    <path
+                      fill="currentColor"
+                      d="M12,2A3,3 0 0,1 15,5V11A3,3 0 0,1 12,14A3,3 0 0,1 9,11V5A3,3 0 0,1 12,2M19,11C19,14.53 16.39,17.44 13,17.93V21H11V17.93C7.61,17.44 5,14.53 5,11H7A5,5 0 0,0 12,16A5,5 0 0,0 17,11H19Z"
+                    />
                   </svg>
-            </div>
+                </div>
                 <h3 className="error-title">Error Loading Reviews</h3>
                 <p className="error-message">{error}</p>
-                <button 
+                <button
                   className="retry-button"
                   onClick={() => window.location.reload()}
                 >
                   Try Again
-            </button>
+                </button>
               </div>
+            ) : activeTab === "pending" ? (
+              renderPendingReviews()
             ) : (
-              activeTab === 'pending' ? renderPendingReviews() : renderAcceptedReviews()
+              renderAcceptedReviews()
             )}
           </div>
         </div>
       </main>
 
       {/* Accept Success Modal */}
-      <div className={`modal ${isAcceptModalOpen ? 'is-visible' : ''}`}>
+      <div className={`modal ${isAcceptModalOpen ? "is-visible" : ""}`}>
         <div className="modal-content small">
           <button className="modal-close" onClick={closeAllModals}>
             <svg width="24" height="24" viewBox="0 0 24 24">
-              <path fill="currentColor" d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
-              </svg>
-            </button>
-            <div className="modal-body">
-              <div className="success-icon">
+              <path
+                fill="currentColor"
+                d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"
+              />
+            </svg>
+          </button>
+          <div className="modal-body">
+            <div className="success-icon">
               <svg viewBox="0 0 24 24">
-                <path fill="currentColor" d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" />
-                </svg>
-              </div>
-              <h2 className="success-title">Review Accepted!</h2>
-            <p className="success-message">The review has been moved to the accepted reviews section.</p>
+                <path
+                  fill="currentColor"
+                  d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"
+                />
+              </svg>
+            </div>
+            <h2 className="success-title">Review Accepted!</h2>
+            <p className="success-message">
+              The review has been moved to the accepted reviews section.
+            </p>
           </div>
         </div>
       </div>
 
       {/* Reject Modal */}
-      <div className={`modal ${isRejectModalOpen ? 'is-visible' : ''}`}>
+      <div className={`modal ${isRejectModalOpen ? "is-visible" : ""}`}>
         <div className="modal-content small">
           <button className="modal-close" onClick={closeAllModals}>
             <svg width="24" height="24" viewBox="0 0 24 24">
-              <path fill="currentColor" d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
-              </svg>
-            </button>
-            <div className="modal-body">
+              <path
+                fill="currentColor"
+                d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"
+              />
+            </svg>
+          </button>
+          <div className="modal-body">
             <form className="reject-form" onSubmit={handleRejectSubmit}>
               <h2 className="reject-title">Reject Review</h2>
-                <div className="form-group">
+              <div className="form-group">
                 <label className="form-label">Reason for rejection:</label>
-                  <textarea
-                    className="form-textarea"
+                <textarea
+                  className="form-textarea"
                   value={rejectReason}
                   onChange={(e) => setRejectReason(e.target.value)}
                   placeholder="Please provide a reason for rejecting this review..."
                   required
-                  />
-                </div>
-              <button type="submit" className="form-submit">Submit Rejection</button>
-              </form>
-            </div>
+                />
+              </div>
+              <button type="submit" className="form-submit">
+                Submit Rejection
+              </button>
+            </form>
           </div>
         </div>
+      </div>
 
       {/* Reject Success Modal */}
-      <div className={`modal ${isRejectSuccessModalOpen ? 'is-visible' : ''}`}>
+      <div className={`modal ${isRejectSuccessModalOpen ? "is-visible" : ""}`}>
         <div className="modal-content small">
           <button className="modal-close" onClick={closeAllModals}>
             <svg width="24" height="24" viewBox="0 0 24 24">
-              <path fill="currentColor" d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
-              </svg>
-            </button>
-            <div className="modal-body">
-              <div className="success-icon">
+              <path
+                fill="currentColor"
+                d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"
+              />
+            </svg>
+          </button>
+          <div className="modal-body">
+            <div className="success-icon">
               <svg viewBox="0 0 24 24">
-                <path fill="currentColor" d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" />
-                </svg>
+                <path
+                  fill="currentColor"
+                  d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"
+                />
+              </svg>
             </div>
             <h2 className="success-title">Review Rejected</h2>
-            <p className="success-message">The review has been removed from the pending reviews.</p>
+            <p className="success-message">
+              The review has been removed from the pending reviews.
+            </p>
           </div>
         </div>
       </div>
 
       {/* Edit Modal */}
-      <div className={`modal ${isEditModalOpen ? 'is-visible' : ''}`}>
+      <div className={`modal ${isEditModalOpen ? "is-visible" : ""}`}>
         <div className="modal-content">
           <button className="modal-close" onClick={closeAllModals}>
             <svg width="24" height="24" viewBox="0 0 24 24">
-              <path fill="currentColor" d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
-              </svg>
-            </button>
-            <div className="modal-body">
+              <path
+                fill="currentColor"
+                d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"
+              />
+            </svg>
+          </button>
+          <div className="modal-body">
             <form className="edit-form" onSubmit={handleEditSubmit}>
               <h2 className="edit-title">Edit Review</h2>
 
               <div className="current-review-preview">
                 <div className="preview-title">Current Review:</div>
                 <div id="current-review-content">
-                  {currentEditingIndex >= 0 && pendingReviewsData[currentEditingIndex] && (
-                    <>
-                      <strong>{pendingReviewsData[currentEditingIndex].review_title}</strong> ({pendingReviewsData[currentEditingIndex].actual_word_count} words)<br /><br />
-                      {pendingReviewsData[currentEditingIndex].review_text}
-                    </>
-                  )}
+                  {currentEditingIndex >= 0 &&
+                    pendingReviewsData[currentEditingIndex] && (
+                      <>
+                        <strong>
+                          {pendingReviewsData[currentEditingIndex].review_title}
+                        </strong>{" "}
+                        (
+                        {
+                          pendingReviewsData[currentEditingIndex]
+                            .actual_word_count
+                        }{" "}
+                        words)
+                        <br />
+                        <br />
+                        {pendingReviewsData[currentEditingIndex].review_text}
+                      </>
+                    )}
                 </div>
                 <div className="editing-animation">
                   <div className="typing-dots">
@@ -562,133 +716,201 @@ const ReviewResults: React.FC = () => {
                     <div className="typing-dot"></div>
                     <div className="typing-dot"></div>
                   </div>
-                  <div className="editing-text">Generating updated review...</div>
+                  <div className="editing-text">
+                    Generating updated review...
+                  </div>
                   <div className="progress-bar">
                     <div className="progress-fill"></div>
                   </div>
                 </div>
               </div>
 
-                <div className="form-group">
+              <div className="form-group">
                 <label className="form-label">Target word count:</label>
-                  <div className="word-count-options">
-                  {[60, 80, 100, 120, 150].map(count => (
-                      <button
-                        key={count}
-                        type="button"
-                      className={`word-count-btn ${selectedWordCount === count ? 'active' : ''}`}
-                        onClick={() => setSelectedWordCount(count)}
-                      >
+                <div className="word-count-options">
+                  {[60, 80, 100, 120, 150].map((count) => (
+                    <button
+                      key={count}
+                      type="button"
+                      className={`word-count-btn ${
+                        selectedWordCount === count ? "active" : ""
+                      }`}
+                      onClick={() => setSelectedWordCount(count)}
+                    >
                       {count} words
-                      </button>
-                    ))}
-                  </div>
+                    </button>
+                  ))}
                 </div>
+              </div>
 
-                <div className="form-group">
+              <div className="form-group">
                 <label className="form-label">Tone adjustment:</label>
-                <input 
-                  type="text" 
-                  className="form-input" 
+                <input
+                  type="text"
+                  className="form-input"
                   value={toneAdjustment}
                   onChange={(e) => setToneAdjustment(e.target.value)}
                   placeholder="e.g., make this more formal, casual, scientific, warm, professional..."
-                  />
-                </div>
+                />
+              </div>
 
               <div className="form-row">
-                <button type="button" className="form-submit" onClick={closeAllModals}>Cancel</button>
-                <button type="submit" className="form-submit primary" disabled={isGenerating}>
+                <button
+                  type="button"
+                  className="form-submit"
+                  onClick={closeAllModals}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="form-submit primary"
+                  disabled={isGenerating}
+                >
                   {isGenerating && <span className="loading-spinner"></span>}
-                  {isGenerating ? 'Generating...' : 'Generate Edited Review'}
-                  </button>
-                </div>
-              </form>
-            </div>
+                  {isGenerating ? "Generating..." : "Generate Edited Review"}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
+      </div>
 
       {/* Edit Success Modal */}
-      <div className={`modal ${isEditSuccessModalOpen ? 'is-visible' : ''}`}>
+      <div className={`modal ${isEditSuccessModalOpen ? "is-visible" : ""}`}>
         <div className="modal-content">
           <button className="modal-close" onClick={closeAllModals}>
             <svg width="24" height="24" viewBox="0 0 24 24">
-              <path fill="currentColor" d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
+              <path
+                fill="currentColor"
+                d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"
+              />
             </svg>
           </button>
           <div className="modal-body">
             <div className="success-icon">
               <svg viewBox="0 0 24 24">
-                <path fill="currentColor" d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z" />
+                <path
+                  fill="currentColor"
+                  d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"
+                />
               </svg>
             </div>
             <h2 className="success-title">Review Updated!</h2>
             <div className="current-review-preview">
               {updatedReviewData && (
                 <>
-                  <div className="preview-title">Updated Review ({updatedReviewData.actual_word_count} words):</div>
-                  <strong>{updatedReviewData.review_title}</strong><br /><br />
+                  <div className="preview-title">
+                    Updated Review ({updatedReviewData.actual_word_count}{" "}
+                    words):
+                  </div>
+                  <strong>{updatedReviewData.review_title}</strong>
+                  <br />
+                  <br />
                   {updatedReviewData.review_text}
                 </>
               )}
             </div>
-            <div style={{ display: 'flex', gap: 'var(--spacing-md)', justifyContent: 'center', marginTop: 'var(--spacing-lg)' }}>
-              <button className="form-submit" onClick={closeAllModals}>Keep Original</button>
-              <button className="form-submit primary" onClick={useUpdatedVersion}>Use Updated Version</button>
+            <div
+              style={{
+                display: "flex",
+                gap: "var(--spacing-md)",
+                justifyContent: "center",
+                marginTop: "var(--spacing-lg)",
+              }}
+            >
+              <button className="form-submit" onClick={closeAllModals}>
+                Keep Original
+              </button>
+              <button
+                className="form-submit primary"
+                onClick={useUpdatedVersion}
+              >
+                Use Updated Version
+              </button>
             </div>
           </div>
         </div>
       </div>
 
       {/* Accepted Review Modal */}
-      <div className={`modal ${isAcceptedReviewModalOpen ? 'is-visible' : ''}`} onClick={closeAllModals}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+      <div
+        className={`modal ${isAcceptedReviewModalOpen ? "is-visible" : ""}`}
+        onClick={closeAllModals}
+      >
+        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
           <button className="modal-close" onClick={closeAllModals}>
             <svg width="24" height="24" viewBox="0 0 24 24">
-              <path fill="currentColor" d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
-              </svg>
-            </button>
-            <div className="modal-body">
+              <path
+                fill="currentColor"
+                d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"
+              />
+            </svg>
+          </button>
+          <div className="modal-body">
             <h2 className="modal-title">Accepted Review Details</h2>
             {selectedAcceptedReview && (
               <>
                 <div className="doctor-info">
-                  <img src={selectedAcceptedReview.profile_image_url} alt={selectedAcceptedReview.reviewer_name} />
+                  <img
+                    src={selectedAcceptedReview.profile_image_url}
+                    alt={selectedAcceptedReview.reviewer_name}
+                  />
                   <div>
                     <h3>{selectedAcceptedReview.reviewer_name}</h3>
                     <p>{selectedAcceptedReview.reviewer_title}</p>
                   </div>
                 </div>
-                
-                <h4 className="card-review-title">{selectedAcceptedReview.review_title}</h4>
-                <p className="card-review-summary">{selectedAcceptedReview.review_summary_line}</p>
-                
+
+                <h4 className="card-review-title">
+                  {selectedAcceptedReview.review_title}
+                </h4>
+                <p className="card-review-summary">
+                  {selectedAcceptedReview.review_summary_line}
+                </p>
+
                 <div className="card-tags">
-                  {selectedAcceptedReview.highlights.map(highlight => 
-                    <span key={highlight} className="tag highlight">{highlight}</span>
+                  {selectedAcceptedReview.highlights.map((highlight) => (
+                    <span key={highlight} className="tag highlight">
+                      {highlight}
+                    </span>
+                  ))}
+                  <span className="tag tone">
+                    {formatToneType(selectedAcceptedReview.tone_type)}
+                  </span>
+                  {selectedAcceptedReview.uses_clinical_research && (
+                    <span className="tag research">Clinical Research</span>
                   )}
-                  <span className="tag tone">{formatToneType(selectedAcceptedReview.tone_type)}</span>
-                  {selectedAcceptedReview.uses_clinical_research && <span className="tag research">Clinical Research</span>}
                 </div>
 
                 <div className="card-word-count">
-                  {selectedAcceptedReview.actual_word_count}/{selectedAcceptedReview.target_word_count} words
+                  {selectedAcceptedReview.actual_word_count}/
+                  {selectedAcceptedReview.target_word_count} words
                 </div>
 
                 <div className="review-text">
                   {selectedAcceptedReview.review_text}
-              </div>
+                </div>
 
                 <div className="referenced-studies-section">
                   <h3 className="section-title">Referenced Clinical Studies</h3>
                   <ul className="studies-list">
-                    {selectedAcceptedReview.referenced_studies.map((url, index) => 
-                      <li key={index} className="study-item">
-                        <a href={url} target="_blank" rel="noopener noreferrer" className="study-link">{url}</a>
-                      </li>
+                    {selectedAcceptedReview.referenced_studies.map(
+                      (url, index) => (
+                        <li key={index} className="study-item">
+                          <a
+                            href={url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="study-link"
+                          >
+                            {url}
+                          </a>
+                        </li>
+                      )
                     )}
                   </ul>
-              </div>
+                </div>
               </>
             )}
           </div>

@@ -452,12 +452,12 @@ const ReviewConfiguration: React.FC = () => {
     event.preventDefault();
 
     if (!productId) {
-      alert('Error: No product ID found. Please try again.');
+      alert("Error: No product ID found. Please try again.");
       return;
     }
 
     if (selectedPersonas.size === 0) {
-      alert('Please select at least one review tone.');
+      alert("Please select at least one review tone.");
       return;
     }
 
@@ -469,16 +469,18 @@ const ReviewConfiguration: React.FC = () => {
         number_of_reviews: reviewCount,
         review_word_limits: {
           min: minWords,
-          max: maxWords
+          max: maxWords,
         },
         selected_review_tones: Array.from(selectedPersonas),
-        supporting_research_links: researchLinks.filter((link) => link.trim() !== "")
+        supporting_research_links: researchLinks.filter(
+          (link) => link.trim() !== ""
+        ),
       };
 
-      const response = await fetch('/frontrowmd/generate_reviews_async', {
-        method: 'POST',
+      const response = await fetch("/frontrowmd/generate_reviews_async", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(payload),
       });
@@ -489,15 +491,29 @@ const ReviewConfiguration: React.FC = () => {
 
       const result = await response.json();
 
-      if (result.success && result.task_id) {
-        // Navigate to review results page with task ID
-        navigate(`/review-results?taskId=${result.task_id}&productId=${productId}`);
-      } else {
-        throw new Error('Failed to get task ID from response');
-      }
+      console.log("RESULT", result);
 
+      if (result.success && result.task_id) {
+        // Store processing productId in sessionStorage for polling on ProductInput
+        const processingKey = "processingProductIds";
+        let processingIds: string[] = [];
+        try {
+          const stored = sessionStorage.getItem(processingKey);
+          if (stored) {
+            processingIds = JSON.parse(stored);
+          }
+        } catch {}
+        if (productId && !processingIds.includes(productId)) {
+          processingIds.push(productId);
+        }
+        sessionStorage.setItem(processingKey, JSON.stringify(processingIds));
+        // Redirect to product input page for polling/feedback
+        navigate("/product-input");
+      } else {
+        throw new Error("Failed to get task ID from response");
+      }
     } catch (error) {
-      alert('Failed to generate reviews. Please try again.');
+      alert("Failed to generate reviews. Please try again.");
     } finally {
       setIsGenerating(false);
     }
@@ -711,7 +727,7 @@ const ReviewConfiguration: React.FC = () => {
                     xmlns="http://www.w3.org/2000/svg"
                     width="20"
                     height="20"
-                    viewBox="0 0 24 24" 
+                    viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
                     strokeWidth="2"
@@ -725,12 +741,16 @@ const ReviewConfiguration: React.FC = () => {
                 </button>
               </div>
 
-              <button type="submit" className="generate-button" disabled={isGenerating}>
-                {isGenerating ? 'Generating Reviews...' : 'Generate Reviews'}
+              <button
+                type="submit"
+                className="generate-button"
+                disabled={isGenerating}
+              >
+                {isGenerating ? "Generating Reviews..." : "Generate Reviews"}
               </button>
             </form>
           </div>
-        </div>  
+        </div>
       </main>
 
       {isModalOpen && selectedPersonaKey && (

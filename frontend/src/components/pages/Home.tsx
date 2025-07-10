@@ -8,7 +8,7 @@ const Home: React.FC = () => {
     if (
       visualContainer &&
       window.matchMedia("(prefers-reduced-motion: no-preference)").matches
-    ) {
+    ) { 
       const handleMouseMove = (e: MouseEvent) => {
         const { clientX, clientY } = e;
         const heroRect = visualContainer.getBoundingClientRect();
