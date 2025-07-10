@@ -1,23 +1,50 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import '../styling/RejectionFeedback.css';
 
 type FormState = 'input' | 'saving' | 'success';
 
 const RejectionFeedback: React.FC = () => {
+    const [searchParams] = useSearchParams();
     const [currentState, setCurrentState] = useState<FormState>('input');
     const [feedbackText, setFeedbackText] = useState<string>('');
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const productId = searchParams.get('productId');
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         
-        // In a real application, you would send feedbackText to the server here
-        console.log('Feedback submitted:', feedbackText);
+        if (!productId) {
+            alert('Error: No product ID found. Please try again.');
+            return;
+        }
+
         setCurrentState('saving');
 
-        setTimeout(() => {
+        try {
+            // Call the add_human_review endpoint with is_accurate: false and feedback context
+            const response = await fetch('/frontrowmd/add_human_review', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    product_id: productId,
+                    is_accurate: false,
+                    context: feedbackText,
+                }),
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            // Show success state
             setCurrentState('success');
-        }, 2000);
+        } catch (error) {
+            alert('Failed to submit feedback. Please try again.');
+            setCurrentState('input');
+        }
     };
 
     const renderInputState = () => (

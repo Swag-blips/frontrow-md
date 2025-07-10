@@ -5,7 +5,11 @@ import "../styling/ProductInput.css";
 // Define the shape of a product
 interface Product {
   product_id: string;
-  product_name: string;
+  product_name?: string; // Optional for backward compatibility
+  product_info?: {
+    product_name: string;
+    product_image_url?: string;
+  };
   product_image_url?: string; // Add back image URL
   created_time: number | string;
 }
@@ -25,7 +29,6 @@ const ProductInput: React.FC = () => {
 
   const fetchProducts = async () => {
     if (isFetching.current) {
-      console.log("Already fetching, skipping...");
       return;
     }
 
@@ -40,7 +43,6 @@ const ProductInput: React.FC = () => {
     setIsLoading(true);
 
     try {
-      console.log("Fetching fresh products...");
       const response = await fetch(`/frontrowmd/products?t=${Date.now()}`, {
         method: "GET",
         headers: {
@@ -58,7 +60,6 @@ const ProductInput: React.FC = () => {
       }
 
       const data = await response.json();
-      console.log("Received products:", data.products?.length || 0);
 
       if (!data.products || !Array.isArray(data.products)) {
         throw new Error("No products found");
@@ -68,16 +69,32 @@ const ProductInput: React.FC = () => {
       const uniqueProductsMap = new Map<string, Product>();
 
       // Process each product, keeping only the most recent one for each product_name
-      data.products.forEach((product: Product) => {
-        const normalizedName = product.product_name.toLowerCase().trim();
+      data.products.forEach((product: any) => {
+        // Extract product name from either direct property or nested product_info
+        const productName = product.product_name || product.product_info?.product_name;
+        
+        // Skip products without a product_name to prevent frontend errors
+        if (!productName) {
+          return;
+        }
+
+        // Create a normalized product object for the frontend
+        const normalizedProduct: Product = {
+          product_id: product.product_id,
+          product_name: productName,
+          product_image_url: product.product_image_url || product.product_info?.product_image_url,
+          created_time: product.created_time
+        };
+
+        const normalizedName = productName.toLowerCase().trim();
         const existingProduct = uniqueProductsMap.get(normalizedName);
         const currentTime =
-          typeof product.created_time === "string"
-            ? new Date(product.created_time).getTime()
-            : product.created_time;
+          typeof normalizedProduct.created_time === "string"
+            ? new Date(normalizedProduct.created_time).getTime()
+            : normalizedProduct.created_time;
 
         if (!existingProduct) {
-          uniqueProductsMap.set(normalizedName, product);
+          uniqueProductsMap.set(normalizedName, normalizedProduct);
         } else {
           const existingTime =
             typeof existingProduct.created_time === "string"
@@ -85,7 +102,7 @@ const ProductInput: React.FC = () => {
               : existingProduct.created_time;
 
           if (currentTime > existingTime) {
-            uniqueProductsMap.set(normalizedName, product);
+            uniqueProductsMap.set(normalizedName, normalizedProduct);
           }
         }
       });
@@ -105,20 +122,10 @@ const ProductInput: React.FC = () => {
         })
         .slice(0, 6);
 
-      console.log("Processed unique products:", {
-        total: data.products.length,
-        unique: uniqueProducts.length,
-        products: uniqueProducts.map((p) => ({
-          name: p.product_name,
-          time: p.created_time,
-        })),
-      });
-
       setProducts(uniqueProducts);
       setError(null);
     } catch (err: any) {
       if (err.name !== "AbortError") {
-        console.error("Error fetching products:", err);
         setError(err.message);
       }
     } finally {
@@ -130,7 +137,6 @@ const ProductInput: React.FC = () => {
 
   // Fetch on mount and when returning to the page
   useEffect(() => {
-    console.log("Component mounted or returned to page, fetching products...");
     fetchProducts();
 
     // Cleanup function
@@ -142,17 +148,20 @@ const ProductInput: React.FC = () => {
     };
   }, []); // Empty dependency array for mount only
 
-  console.log(products);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!url) return;
-
     setIsSubmitting(true);
-    setError(null);
+    setError("");
 
     try {
-      const inputUrl = url.trim();
-      let validatedUrl = inputUrl;
+      let validatedUrl = url.trim();
+
+      // Basic URL validation
+      if (!validatedUrl) {
+        throw new Error("Please enter a URL");
+      }
+
+      // Ensure URL has protocol
       try {
         const urlObj = new URL(validatedUrl);
         if (!urlObj.protocol.startsWith("http")) {
@@ -162,78 +171,9 @@ const ProductInput: React.FC = () => {
         throw new Error("Please enter a valid URL");
       }
 
-      const payload = {
-        product_url: validatedUrl,
-        timestamp: new Date().toISOString(),
-      };
-
-      console.log("ProductInput: Making API call with payload:", payload);
-      console.log("ProductInput: Original URL:", inputUrl);
-      console.log("ProductInput: Validated URL:", validatedUrl);
-
-      // COMMENTED OUT: API call for UI testing
-      /*
-            const response = await fetch('/frontrowmd/extract_product_metadata', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'Cache-Control': 'no-cache'
-                },
-                body: JSON.stringify(payload),
-            });
-
-            if (!response.ok) {
-                let errorText = `HTTP ${response.status}: ${response.statusText}`;
-                try {
-                    const errorData = await response.json();
-                    console.error('ProductInput: Backend error response:', errorData);
-                    errorText = errorData.message || errorData.detail || errorText;
-                } catch (e) {
-                    // If response is not JSON, get text
-                    try {
-                        const textError = await response.text();
-                        console.error('ProductInput: Backend error text:', textError);
-                        errorText = textError || errorText;
-                    } catch (e2) {
-                        console.error('ProductInput: Could not read error response');
-                    }
-                }
-                throw new Error(errorText);
-            }
-
-            const data = await response.json();
-            
-            // Fetch products immediately after successful submission
-            console.log('Product submitted successfully, fetching updated list...');
-            fetchProducts();
-            
-            if (data.product_id) {
-                navigate(`/processing?url=${encodeURIComponent(validatedUrl)}&productId=${data.product_id}`);
-            } else {
-                navigate(`/processing?url=${encodeURIComponent(validatedUrl)}`);
-            }
-            */
-
-      // UI DEMO MODE: Direct redirect to processing page
-      console.log(
-        "🎨 ProductInput: UI demo mode - redirecting to processing page"
-      );
-
-      // Simulate a brief loading delay
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      // Generate a demo product ID
-      const demoProductId = "demo-" + Date.now();
-
-      // Navigate directly to processing page
-      navigate(
-        `/processing?url=${encodeURIComponent(
-          validatedUrl
-        )}&productId=${demoProductId}`
-      );
+      // Navigate to Processing page to handle the extraction
+      navigate(`/processing?url=${encodeURIComponent(validatedUrl)}`);
     } catch (err: any) {
-      console.error("Error:", err);
       setError(err.message);
     } finally {
       setIsSubmitting(false);
@@ -323,7 +263,7 @@ const ProductInput: React.FC = () => {
                           product.product_image_url ||
                           "https://images.pexels.com/photos/3683074/pexels-photo-3683074.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
                         }
-                        alt={product.product_name}
+                        alt={product.product_name || "Product"}
                         onError={(e) => {
                           const target = e.target as HTMLImageElement;
                           target.src =
@@ -333,7 +273,7 @@ const ProductInput: React.FC = () => {
                     </div>
                     <div className="product-card__content">
                       <h3 className="product-card__title">
-                        {product.product_name}
+                        {product.product_name || "Unnamed Product"}
                       </h3>
                       <p className="product-card__url">
                         {product?.product_image_url}

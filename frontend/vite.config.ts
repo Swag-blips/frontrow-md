@@ -17,22 +17,54 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      '/frontrowmd': {
-        target: 'http://157.180.29.221:5001',
+      // Updated to new backend
+      '/frontrowmd/products': {
+        target: 'http://65.108.49.212:5002',
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => path,
-        configure: (proxy, _options) => {
-          proxy.on('error', (err, _req, _res) => {
-            console.log('proxy error', err);
-          });
-          proxy.on('proxyReq', (proxyReq, req, _res) => {
-            console.log('Sending Request to the Target:', req.method, req.url);
-          });
-          proxy.on('proxyRes', (proxyRes, req, _res) => {
-            console.log('Received Response from the Target:', proxyRes.statusCode, req.url);
-          });
-        }
+        rewrite: (path) => path.replace('/frontrowmd/products', '/product_management/get_all_products')
+      },
+      '/frontrowmd/product_metadata_extraction': {
+        target: 'http://65.108.49.212:5002',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace('/frontrowmd/product_metadata_extraction', '/product_metadata_extraction')
+      },
+      '/frontrowmd/extract_product_metadata': {
+        target: 'http://65.108.49.212:5002',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace('/frontrowmd/extract_product_metadata', '/product_management/extract_product_metadata')
+      },
+      '/frontrowmd/add_human_review': {
+        target: 'http://65.108.49.212:5002',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace('/frontrowmd/add_human_review', '/product_management/add_human_review')
+      },
+      '/frontrowmd/generate_reviews_async': {
+        target: 'http://65.108.49.212:5002',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace('/frontrowmd/generate_reviews_async', '/product_metadata_extraction/generate_reviews_async')
+      },
+      '/product_management/get_product_by_id': {
+        target: 'http://65.108.49.212:5002',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path // Keep the full path including the product ID
+      },
+      '/frontrowmd/get_product_by_id': {
+        target: 'http://65.108.49.212:5002',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace('/frontrowmd/get_product_by_id', '/product_management/get_product_by_id')
+      },
+      '/frontrowmd/get_reviews_by_task': {
+        target: 'http://65.108.49.212:5002',
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace('/frontrowmd/get_reviews_by_task', '/product_metadata_extraction/get_reviews_by_task')
       }
     }
   }

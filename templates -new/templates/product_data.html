@@ -100,10 +100,37 @@
             font-size: 1rem; font-weight: var(--font-weight-bold); margin-bottom: var(--spacing-sm);
             padding-bottom: var(--spacing-sm); border-bottom: 1px solid var(--border-subtle);
         }
-        .ingredients-list { display: flex; flex-wrap: wrap; gap: var(--spacing-sm); margin: var(--spacing-md) 0; }
+        .ingredients-list { 
+            display: flex; 
+            flex-direction: column; 
+            gap: var(--spacing-sm); 
+            margin: var(--spacing-md) 0; 
+        }
+        .ingredient-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-sm) var(--spacing-md);
+            background-color: var(--background-color);
+            border-radius: var(--border-radius-medium);
+            border: 1px solid var(--border-subtle);
+        }
         .ingredient-tag {
-            background-color: var(--tag-bg); color: var(--text-primary); padding: 4px 10px;
-            border-radius: 16px; font-size: 0.85rem; font-weight: var(--font-weight-medium);
+            background-color: var(--tag-bg); 
+            color: var(--text-primary); 
+            padding: 4px 10px;
+            border-radius: 16px; 
+            font-size: 0.85rem; 
+            font-weight: var(--font-weight-medium);
+        }
+        .ingredient-sources {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-style: italic;
+            background-color: var(--card-bg);
+            padding: 2px 8px;
+            border-radius: 8px;
+            border: 1px solid var(--border-subtle);
         }
 
         /* Research List Panel */
@@ -184,12 +211,72 @@
             .product-details, .research-list-panel, .research-detail-panel { display: none; }
             .product-details.active, .research-list-panel.active, .research-detail-panel.active { display: flex; }
         }
+
+        /* Review Button Styles */
+        .review-button {
+            background: var(--accent-primary);
+            color: white;
+            border: none;
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-radius: var(--border-radius-medium);
+            font-weight: var(--font-weight-medium);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: var(--spacing-md);
+            border-top: 1px solid var(--border-subtle);
+            padding-top: var(--spacing-md);
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-sm);
+        }
+        .review-button:hover {
+            background: var(--accent-primary-hover);
+            transform: translateY(-1px);
+        }
+        /* Header Review Button Styles */
+        .header-review-button {
+            background: var(--accent-primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: var(--border-radius-medium);
+            font-weight: var(--font-weight-medium);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            font-size: 0.9rem;
+            box-shadow: var(--shadow-soft);
+        }
+        .header-review-button:hover {
+            background: var(--accent-primary-hover);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        /* Remove old review button styles since we moved it */
+        .review-button {
+            display: none;
+        }
     </style>
 </head>
 <body>
     <header class="header">
         <div class="container header__container">
             <a href="/" class="logo"><span class="logo__icon">+</span> FrontrowMD</a>
+            <button id="review-button" class="header-review-button">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14,2 14,8 20,8"></polyline>
+                    <line x1="16" y1="13" x2="8" y2="13"></line>
+                    <line x1="16" y1="17" x2="8" y2="17"></line>
+                    <polyline points="10,9 9,9 8,9"></polyline>
+                </svg>
+                View AI Reviews
+            </button>
             <a href="/" class="home-link" aria-label="Go to homepage">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
             </a>
@@ -251,7 +338,33 @@
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const productData = { "product_name": "Propolis Throat Spray 2-Pack", "product_description": "The Propolis Throat Spray 2-Pack offers a highly concentrated formula designed to support immune health and soothe scratchy throats. It delivers the market's highest concentration of bioactive polyphenols and flavonoids, along with essential compounds like Vitamin C, iron, and B vitamins. This spray utilizes propolis, a natural hive defender, to combat free radical damage and nourish gut bacteria. Each serving contains 85mg of highly concentrated bee propolis extract, purified water, non-GMO vegetable glycerin, and wildflower honey. For daily immune support, spray 4 times in the mouth; increase to 8 sprays if symptoms are present. The product is free from refined sugars, GMOs, glyphosate, artificial flavors, dyes, antibiotics, and is drug-free.", "product_image_url": "https://www.beekeepersnaturals.com/cdn/shop/files/MAIN_TS-T.png?v=1744737054&width=800", "ingredients": ["Bee Propolis extract", "Vegetable Glycerin", "Purified Water", "Wildflower Honey", "Polyphenols", "Flavonoids", "Vitamin C", "Iron", "B vitamins", "Zinc", "Antioxidants"], "search_queries": [{ "term": "Propolis extract immunomodulatory effect respiratory infection", "rationale": "This term targets the primary ingredient and its claimed mechanism for respiratory infections." }, { "term": "Bee propolis polyphenols antioxidant activity", "rationale": "This term focuses on the bioactive compounds and their antioxidant activity." }], "clinical_research": [{ "is_relevant": true, "relevance_reason": "Directly investigates antioxidant activity of propolis polyphenols.", "title": "Antioxidant Power of Propolis Polyphenols", "product_related_summary": "This study confirms the potent antioxidant activity of polyphenols found in propolis. The research demonstrates how these compounds effectively scavenge free radicals, offering crucial support for immune health and protection against cellular damage.", "supporting_statements": ["\"Propolis is a potential source of natural antioxidants such as phenolic acids and flavonoids.\"", "\"Flavonoids are characterized by powerful antioxidative properties.\""], "metadata": { "authors": ["A. Kurek-Górecka", "et al."], "publication_date": "2013 Dec 20", "journal": "Molecules" }, "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6271064/" }, { "is_relevant": true, "relevance_reason": "Investigates antimicrobial activity relevant to soothing throats.", "title": "Propolis Extracts Boost Antimicrobial Activity", "product_related_summary": "This study explored the impact of different extraction methods on the bioactivity of propolis. The findings confirm that propolis extracts exhibit substantial antioxidant and antimicrobial properties, which are crucial for immune defense and addressing throat discomfort.", "supporting_statements": ["\"All extracts, even the aqueous ones, demonstrated antibacterial and antifungal activity.\"", "\"In vivo it may stimulate the immune system, activating the mechanisms involved in the microorganisms killing.\""], "metadata": { "authors": ["M. M. Nichitoi", "et al."], "publication_date": "11 October 2021", "journal": "Scientific Reports" }, "source_url": "https://www.nature.com/articles/s41598-021-97130-9" }, { "is_relevant": true, "relevance_reason": "Supports the product's claim of nourishing gut bacteria.", "title": "Propolis Supports Gut Health and Microbiome Balance", "product_related_summary": "This study showed that propolis supplementation improved gut microbiota composition and intestinal mucosal barrier function. These findings corroborate the claim of nourishing gut bacteria, suggesting benefits beyond throat-soothing.", "supporting_statements": ["Propolis treatment improved gut microbiota composition.", "Propolis repaired intestinal mucosal damage."], "metadata": { "authors": ["M. Xue", "et al."], "publication_date": "2019 Oct", "journal": "Biomed Pharmacother" }, "source_url": "https://pubmed.ncbi.nlm.nih.gov/31545258/" }] };
+        const productData = { 
+            "product_name": "Propolis Throat Spray 2-Pack", 
+            "product_description": "The Propolis Throat Spray 2-Pack offers a highly concentrated formula designed to support immune health and soothe scratchy throats. It delivers the market's highest concentration of bioactive polyphenols and flavonoids, along with essential compounds like Vitamin C, iron, and B vitamins. This spray utilizes propolis, a natural hive defender, to combat free radical damage and nourish gut bacteria. Each serving contains 85mg of highly concentrated bee propolis extract, purified water, non-GMO vegetable glycerin, and wildflower honey. For daily immune support, spray 4 times in the mouth; increase to 8 sprays if symptoms are present. The product is free from refined sugars, GMOs, glyphosate, artificial flavors, dyes, antibiotics, and is drug-free.", 
+            "product_image_url": "https://www.beekeepersnaturals.com/cdn/shop/files/MAIN_TS-T.png?v=1744737054&width=800", 
+            "ingredients": [
+                { "ingredient_name": "Bee Propolis extract", "ingredient_location": ["description", "reviews"] },
+                { "ingredient_name": "Vegetable Glycerin", "ingredient_location": ["description"] },
+                { "ingredient_name": "Purified Water", "ingredient_location": ["description"] },
+                { "ingredient_name": "Wildflower Honey", "ingredient_location": ["description"] },
+                { "ingredient_name": "Polyphenols", "ingredient_location": ["description", "reviews"] },
+                { "ingredient_name": "Flavonoids", "ingredient_location": ["description", "reviews"] },
+                { "ingredient_name": "Vitamin C", "ingredient_location": ["description", "reviews"] },
+                { "ingredient_name": "Iron", "ingredient_location": ["description"] },
+                { "ingredient_name": "B vitamins", "ingredient_location": ["description"] },
+                { "ingredient_name": "Zinc", "ingredient_location": ["reviews"] },
+                { "ingredient_name": "Antioxidants", "ingredient_location": ["general"] }
+            ],
+            "search_queries": [
+                { "term": "Propolis extract immunomodulatory effect respiratory infection", "rationale": "This term targets the primary ingredient and its claimed mechanism for respiratory infections." }, 
+                { "term": "Bee propolis polyphenols antioxidant activity", "rationale": "This term focuses on the bioactive compounds and their antioxidant activity." }
+            ], 
+            "clinical_research": [
+                { "is_relevant": true, "relevance_reason": "Directly investigates antioxidant activity of propolis polyphenols.", "title": "Antioxidant Power of Propolis Polyphenols", "product_related_summary": "This study confirms the potent antioxidant activity of polyphenols found in propolis. The research demonstrates how these compounds effectively scavenge free radicals, offering crucial support for immune health and protection against cellular damage.", "supporting_statements": ["\"Propolis is a potential source of natural antioxidants such as phenolic acids and flavonoids.\"", "\"Flavonoids are characterized by powerful antioxidative properties.\""], "metadata": { "authors": ["A. Kurek-Górecka", "et al."], "publication_date": "2013 Dec 20", "journal": "Molecules" }, "source_url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC6271064/" }, 
+                { "is_relevant": true, "relevance_reason": "Investigates antimicrobial activity relevant to soothing throats.", "title": "Propolis Extracts Boost Antimicrobial Activity", "product_related_summary": "This study explored the impact of different extraction methods on the bioactivity of propolis. The findings confirm that propolis extracts exhibit substantial antioxidant and antimicrobial properties, which are crucial for immune defense and addressing throat discomfort.", "supporting_statements": ["\"All extracts, even the aqueous ones, demonstrated antibacterial and antifungal activity.\"", "\"In vivo it may stimulate the immune system, activating the mechanisms involved in the microorganisms killing.\""], "metadata": { "authors": ["M. M. Nichitoi", "et al."], "publication_date": "11 October 2021", "journal": "Scientific Reports" }, "source_url": "https://www.nature.com/articles/s41598-021-97130-9" }, 
+                { "is_relevant": true, "relevance_reason": "Supports the product's claim of nourishing gut bacteria.", "title": "Propolis Supports Gut Health and Microbiome Balance", "product_related_summary": "This study showed that propolis supplementation improved gut microbiota composition and intestinal mucosal barrier function. These findings corroborate the claim of nourishing gut bacteria, suggesting benefits beyond throat-soothing.", "supporting_statements": ["Propolis treatment improved gut microbiota composition.", "Propolis repaired intestinal mucosal damage."], "metadata": { "authors": ["M. Xue", "et al."], "publication_date": "2019 Oct", "journal": "Biomed Pharmacther" }, "source_url": "https://pubmed.ncbi.nlm.nih.gov/31545258/" }
+            ] 
+        };
         
         const setupMethodologyModal = (data) => {
             const modal = document.getElementById('methodology-modal');
@@ -308,18 +421,38 @@
             document.getElementById('product-img').alt = data.product_name;
             document.getElementById('product-name').textContent = data.product_name;
             document.getElementById('product-description').textContent = data.product_description;
+            
             const ingredientsList = document.getElementById('ingredients-list');
             ingredientsList.innerHTML = '';
-            data.ingredients.forEach(i => {
+            
+            data.ingredients.forEach(ingredient => {
+                const item = document.createElement('div');
+                item.className = 'ingredient-item';
+                
                 const tag = document.createElement('span');
                 tag.className = 'ingredient-tag';
-                tag.textContent = i;
-                ingredientsList.appendChild(tag);
+                tag.textContent = ingredient.ingredient_name;
+                
+                const sources = document.createElement('span');
+                sources.className = 'ingredient-sources';
+                sources.textContent = ingredient.ingredient_location.join(', ');
+                
+                item.appendChild(tag);
+                item.appendChild(sources);
+                ingredientsList.appendChild(item);
             });
+            
             document.getElementById('toggle-description').addEventListener('click', (e) => {
                 const desc = document.getElementById('product-description');
                 desc.classList.toggle('expanded');
                 e.target.textContent = desc.classList.contains('expanded') ? 'Show Less' : 'Show More';
+            });
+        };
+
+        // Move review button setup outside of renderProductDetails since it's now in header
+        const setupReviewButton = () => {
+            document.getElementById('review-button').addEventListener('click', () => {
+                window.location.href = 'review_results.html';
             });
         };
 
@@ -364,6 +497,7 @@
             
             renderProductDetails(productData);
             setupMethodologyModal(productData);
+            setupReviewButton(); // Add this line
             renderResearchList(productData.clinical_research);
 
             if (window.innerWidth <= 1024) {

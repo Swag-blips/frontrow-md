@@ -17,11 +17,27 @@
   "rewrites": [
     {
       "source": "/frontrowmd/products",
-      "destination": "http://157.180.29.221:5001/frontrowmd/products"
+      "destination": "http://65.108.49.212:5002/product_management/get_all_products"
+    },
+    {
+      "source": "/frontrowmd/product_metadata_extraction/(.*)",
+      "destination": "http://65.108.49.212:5002/product_metadata_extraction/$1"
     },
     {
       "source": "/frontrowmd/extract_product_metadata",
       "destination": "http://157.180.29.221:5001/frontrowmd/extract_product_metadata"
+    },
+    {
+      "source": "/frontrowmd/add_human_review",
+      "destination": "http://65.108.49.212:5002/product_management/add_human_review"
+    },
+    {
+      "source": "/frontrowmd/generate_reviews_async",
+      "destination": "http://65.108.49.212:5002/product_metadata_extraction/generate_reviews_async"
+    },
+    {
+      "source": "/product_management/get_product_by_id/(.*)",
+      "destination": "http://65.108.49.212:5002/product_management/get_product_by_id/$1"
     },
     {
       "source": "/(.*)",

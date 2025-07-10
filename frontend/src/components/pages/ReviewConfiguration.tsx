@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import "../styling/ReviewConfiguration.css";
 
 interface DataIncorporation {
@@ -32,6 +32,7 @@ interface PersonaData {
 
 const ReviewConfiguration: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [reviewCount, setReviewCount] = useState<number>(5);
   const [minWords, setMinWords] = useState<number>(80);
   const [maxWords, setMaxWords] = useState<number>(120);
@@ -41,6 +42,9 @@ const ReviewConfiguration: React.FC = () => {
   const [researchLinks, setResearchLinks] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [selectedPersonaKey, setSelectedPersonaKey] = useState<string>("");
+  const [isGenerating, setIsGenerating] = useState<boolean>(false);
+
+  const productId = searchParams.get("productId");
 
   const personaData: PersonaData = {
     clinical_authority: {
@@ -444,18 +448,59 @@ const ReviewConfiguration: React.FC = () => {
     setResearchLinks(filtered);
   };
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    // Demo mode - redirect to review results page
-    console.log("Generating reviews with configuration:", {
-      reviewCount,
-      wordRange: { min: minWords, max: maxWords },
-      selectedPersonas: Array.from(selectedPersonas),
-      researchLinks: researchLinks.filter((link) => link.trim() !== ""),
-    });
+    if (!productId) {
+      alert('Error: No product ID found. Please try again.');
+      return;
+    }
 
-    navigate("/review-results");
+    if (selectedPersonas.size === 0) {
+      alert('Please select at least one review tone.');
+      return;
+    }
+
+    setIsGenerating(true);
+
+    try {
+      const payload = {
+        product_id: productId,
+        number_of_reviews: reviewCount,
+        review_word_limits: {
+          min: minWords,
+          max: maxWords
+        },
+        selected_review_tones: Array.from(selectedPersonas),
+        supporting_research_links: researchLinks.filter((link) => link.trim() !== "")
+      };
+
+      const response = await fetch('/frontrowmd/generate_reviews_async', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      if (result.success && result.task_id) {
+        // Navigate to review results page with task ID
+        navigate(`/review-results?taskId=${result.task_id}&productId=${productId}`);
+      } else {
+        throw new Error('Failed to get task ID from response');
+      }
+
+    } catch (error) {
+      alert('Failed to generate reviews. Please try again.');
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   return (
@@ -680,8 +725,8 @@ const ReviewConfiguration: React.FC = () => {
                 </button>
               </div>
 
-              <button type="submit" className="generate-button">
-                Generate Reviews
+              <button type="submit" className="generate-button" disabled={isGenerating}>
+                {isGenerating ? 'Generating Reviews...' : 'Generate Reviews'}
               </button>
             </form>
           </div>

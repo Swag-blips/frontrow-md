@@ -8,7 +8,7 @@ interface Product {
     product_description: string;
     product_image_url: string;
     product_url?: string;
-    ingredients: string[];
+    ingredients: Array<string | { ingredient_name: string; ingredient_location: string[] }>;
     search_queries: Array<{
         term: string;
         rationale: string;
@@ -59,10 +59,22 @@ const ProductData: React.FC = () => {
             // Use cache if it's less than 5 seconds old
             if (cachedProducts && cachedTimestamp && (now - parseInt(cachedTimestamp)) < 5000) {
                 const products = JSON.parse(cachedProducts);
-                const product = products.find((p: Product) => p.product_id === productId);
+                const product = products.find((p: any) => p.product_id === productId);
                 if (product) {
-                    console.log('Found product in cache:', product);
-                    setProductData(product);
+                    // Normalize the product data to handle nested structure
+                    const normalizedProduct: Product = {
+                        product_id: product.product_id,
+                        product_name: product.product_info?.product_name || product.product_name || 'Unnamed Product',
+                        product_description: product.product_info?.product_description || product.product_description || '',
+                        product_image_url: product.product_info?.product_image_url || product.product_image_url || '',
+                        product_url: product.product_url || product.product_info?.source_url || '',
+                        ingredients: product.product_info?.ingredients?.map((ing: any) => ing.ingredient_name || ing) || product.ingredients || [],
+                        search_queries: product.search_queries || product.search_terms || [],
+                        clinical_research: product.combined_research_studies || product.clinical_research || [],
+                        clinician_reviews: product.product_info?.clinician_reviews || product.clinician_reviews || []
+                    };
+                    
+                    setProductData(normalizedProduct);
                     setError(null);
                     setIsLoading(false);
                     return;
@@ -87,16 +99,27 @@ const ProductData: React.FC = () => {
                     throw new Error('No products found in the database.');
                 }
                 
-                const product = data.products.find((p: Product) => p.product_id === productId);
+                const product = data.products.find((p: any) => p.product_id === productId);
                 if (product) {
-                    console.log('Found product:', product);
-                    setProductData(product);
+                    // Normalize the product data to handle nested structure
+                    const normalizedProduct: Product = {
+                        product_id: product.product_id,
+                        product_name: product.product_info?.product_name || product.product_name || 'Unnamed Product',
+                        product_description: product.product_info?.product_description || product.product_description || '',
+                        product_image_url: product.product_info?.product_image_url || product.product_image_url || '',
+                        product_url: product.product_url || product.product_info?.source_url || '',
+                        ingredients: product.product_info?.ingredients?.map((ing: any) => ing.ingredient_name || ing) || product.ingredients || [],
+                        search_queries: product.search_queries || product.search_terms || [],
+                        clinical_research: product.combined_research_studies || product.clinical_research || [],
+                        clinician_reviews: product.product_info?.clinician_reviews || product.clinician_reviews || []
+                    };
+                    
+                    setProductData(normalizedProduct);
                     setError(null);
                 } else {
                     throw new Error(`Product with ID ${productId} not found.`);
                 }
             } catch (err: any) {
-                console.error('Error fetching product data:', err);
                 setError(err.message || 'Failed to load product data');
             } finally {
                 setIsLoading(false);
@@ -121,6 +144,20 @@ const ProductData: React.FC = () => {
         // Cleanup on unmount
         return () => {
             document.body.style.overflow = '';
+        };
+    }, [isSearchTermsOpen]);
+
+    // Add ESC key functionality to close modal
+    useEffect(() => {
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Escape' && isSearchTermsOpen) {
+                setIsSearchTermsOpen(false);
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyDown);
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown);
         };
     }, [isSearchTermsOpen]);
 
@@ -175,8 +212,21 @@ const ProductData: React.FC = () => {
                         <span className="logo__icon">+</span>
                         <span>FrontrowMD</span>
                     </Link>
-                    <Link to="/product-input" className="home-button">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <button 
+                        className="header-review-button"
+                        onClick={() => navigate(`/review-results?productId=${productId}`)}
+                    >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14,2 14,8 20,8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10,9 9,9 8,9"></polyline>
+                        </svg>
+                        View AI Reviews
+                    </button>
+                    <Link to="/" className="home-link" aria-label="Go to homepage">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                             <polyline points="9 22 9 12 15 12 15 22"></polyline>
                         </svg>
@@ -190,10 +240,10 @@ const ProductData: React.FC = () => {
                         {/* Product Info Panel */}
                         <div className="panel product-info-panel">
                             <div className="product-header">
-                                <h1 className="product-title">{productData.product_name}</h1>
+                                <h1 className="product-title">{productData.product_name || "Unnamed Product"}</h1>
                                 <img 
                                     src={productData.product_image_url} 
-                                    alt={productData.product_name}
+                                    alt={productData.product_name || "Product"}
                                     className="product-image"
                                     onError={(e) => {
                                         const target = e.target as HTMLImageElement;
@@ -202,35 +252,42 @@ const ProductData: React.FC = () => {
                                 />
                                 <div className="product-description-container">
                                     <p className={`product-description ${!showFullDescription ? 'truncated' : ''}`}>
-                                        {productData.product_description}
+                                        {productData.product_description || 'No description available'}
                                     </p>
-                                    {productData.product_description.length > 200 && (
+                                    {(productData.product_description?.length || 0) > 200 && (
                                         <button onClick={toggleDescription} className="show-more-button">
                                             {showFullDescription ? 'Show Less' : 'Show More'}
                                         </button>
                                     )}
                                 </div>
                                 <div className="ingredients-section">
-                                    <h3 className="section-title">Key Features</h3>
+                                    <h3 className="section-title">Key Ingredients</h3>
                                     <div className="ingredients-list">
-                                        {productData.ingredients.map((ingredient, index) => (
-                                            <span key={index} className="ingredient-tag">{ingredient}</span>
-                                        ))}
+                                        {(productData.ingredients || []).map((ingredient, index) => {
+                                            // Handle both string and object formats
+                                            const ingredientName = typeof ingredient === 'string' ? ingredient : (ingredient as any).ingredient_name || ingredient;
+                                            const ingredientSources = typeof ingredient === 'object' && (ingredient as any).ingredient_location ? (ingredient as any).ingredient_location : ['description'];
+                                            
+                                            return (
+                                                <div key={index} className="ingredient-item">
+                                                    <span className="ingredient-tag">{ingredientName}</span>
+                                                    <span className="ingredient-sources">{ingredientSources.join(', ')}</span>
+                                                </div>
+                                            );
+                                        })}
                                     </div>
                                 </div>
-                                <div className="search-terms-section">
-                                    <button onClick={toggleSearchTerms} className="search-terms-button">
-                                        {isSearchTermsOpen ? 'Hide Search Terms' : 'View Search Terms'}
-                                    </button>
-                                </div>
                             </div>
+                            <button onClick={toggleSearchTerms} className="methodology-button">
+                                View Search Terms → 
+                            </button>
                         </div>
 
                         {/* Research List Panel */}
                         <div className="panel research-list-panel">
                             <h2 className="section-title">Clinical Research</h2>
                             <div className="research-cards">
-                                {productData.clinical_research.map((research, index) => (
+                                {(productData.clinical_research || []).map((research, index) => (
                                     <div
                                         key={index}
                                         className={`research-card ${selectedResearch === index ? 'selected' : ''}`}
@@ -252,26 +309,22 @@ const ProductData: React.FC = () => {
 
                         {/* Research Detail Panel */}
                         <div className="panel research-detail-panel">
-                            {selectedResearch !== null ? (
-                                <div className="research-detail">
-                                    <h2 className="research-detail-title">
+                            {selectedResearch !== null && productData.clinical_research && productData.clinical_research[selectedResearch] ? (
+                                <div className="detail-content">
+                                    <h2 className="detail-title">
                                         {productData.clinical_research[selectedResearch].title}
                                     </h2>
-                                    <div className="authors-section">
-                                        <span className="authors-label">Authors:</span>
-                                        <span className="research-authors">
-                                            {Array.isArray(productData.clinical_research[selectedResearch].metadata.authors)
-                                                ? productData.clinical_research[selectedResearch].metadata.authors.join(', ')
-                                                : productData.clinical_research[selectedResearch].metadata.authors}
-                                        </span>
+                                    <div className="detail-metadata">
+                                        <span><strong>Authors:</strong> {Array.isArray(productData.clinical_research[selectedResearch].metadata.authors)
+                                            ? productData.clinical_research[selectedResearch].metadata.authors.join(', ')
+                                            : productData.clinical_research[selectedResearch].metadata.authors}</span>
+                                        <span><strong>Journal:</strong> {productData.clinical_research[selectedResearch].metadata.journal}, {productData.clinical_research[selectedResearch].metadata.publication_date}</span>
                                     </div>
-                                    <div className="research-summary">
-                                        <span className="quote-mark">"</span>
-                                        <p>{productData.clinical_research[selectedResearch].product_related_summary}</p>
-                                    </div>
-                                    <h3 className="section-title">Supporting Evidence</h3>
-                                    <ul className="supporting-statements">
-                                        {productData.clinical_research[selectedResearch].supporting_statements.map((statement, index) => (
+                                    <h3 className="section-title">Summary</h3>
+                                    <p className="detail-summary">{productData.clinical_research[selectedResearch].product_related_summary}</p>
+                                    <h3 className="section-title">Supporting Statements</h3>
+                                    <ul className="detail-statements">
+                                        {(productData.clinical_research[selectedResearch].supporting_statements || []).map((statement, index) => (
                                             <li key={index}>{statement}</li>
                                         ))}
                                     </ul>
@@ -279,15 +332,13 @@ const ProductData: React.FC = () => {
                                         href={productData.clinical_research[selectedResearch].source_url}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="read-full-story"
                                     >
-                                        Read Full Study
-                                        <span className="arrow">→</span>
+                                        Read Full Study →
                                     </a>
                                 </div>
                             ) : (
-                                <div className="no-research-selected">
-                                    Select a research study to view details
+                                <div className="detail-placeholder">
+                                    <p>Select a clinical study from the list to view its details here.</p>
                                 </div>
                             )}
                         </div>
@@ -296,18 +347,32 @@ const ProductData: React.FC = () => {
             </main>
 
             {isSearchTermsOpen && (
-                <div className="modal is-visible">
+                <div className="modal-overlay active" onClick={(e) => e.target === e.currentTarget && setIsSearchTermsOpen(false)}>
                     <div className="modal-content">
-                        <button onClick={toggleSearchTerms} className="modal-close">&times;</button>
+                        <button onClick={toggleSearchTerms} className="modal-close-btn">&times;</button>
+                        <h2 className="modal-title">Search Term Methodology</h2>
                         <div className="modal-body">
-                            <h2 className="modal-section-title">Search Terms Used</h2>
-                            <div className="search-terms-list">
-                                {productData.search_queries.map((query, index) => (
-                                    <div key={index} className="search-term-card">
-                                        <div className="search-term">{query.term}</div>
+                            {(productData.search_queries || []).map((query, index) => (
+                                <div key={index} className="query-card">
+                                    <div className="query-term-container">
+                                        <div className="query-term">{query.term}</div>
+                                        <button 
+                                            className="copy-btn" 
+                                            onClick={(event) => {
+                                                navigator.clipboard.writeText(query.term);
+                                                const btn = event?.target as HTMLButtonElement;
+                                                if (btn) {
+                                                    btn.textContent = 'Copied!';
+                                                    setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+                                                }
+                                            }}
+                                        >
+                                            Copy
+                                        </button>
                                     </div>
-                                ))}
-                            </div>
+                                    <p className="query-rationale">{query.rationale}</p>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </div>

@@ -19,6 +19,8 @@
             --code-text: #cdd9e5;
             --success-color: #10B981;
             --danger-color: #EF4444;
+            --info-color: #3B82F6;
+            --warning-color: #F59E0B;
 
             --font-family-sans: 'Inter', sans-serif;
             --font-family-mono: 'Menlo', 'Consolas', monospace;
@@ -69,13 +71,310 @@
         
         .page-header {
             text-align: center;
-            margin-bottom: var(--spacing-xl);
+            margin-bottom: var(--spacing-lg);
             animation: fadeIn 0.5s ease-out;
         }
 
-        .page-title { font-size: 2rem; font-weight: var(--font-weight-bold); }
-        
-        /* Carousel */
+        .page-title { font-size: 2rem; font-weight: var(--font-weight-bold); margin-bottom: var(--spacing-md); }
+
+        /* Tabs */
+        .tabs-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: var(--spacing-xl);
+            animation: fadeIn 0.5s ease-out 0.1s backwards;
+        }
+
+        .tabs {
+            display: flex;
+            background: var(--card-bg);
+            border-radius: var(--border-radius-large);
+            padding: 4px;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .tab-button {
+            background: transparent;
+            border: none;
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-radius: var(--border-radius-medium);
+            cursor: pointer;
+            font-weight: var(--font-weight-medium);
+            transition: all 0.3s ease;
+            color: var(--text-secondary);
+            position: relative;
+        }
+
+        .tab-button.active {
+            background: var(--accent-primary);
+            color: white;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .tab-button:not(.active):hover {
+            background: var(--background-color);
+            color: var(--text-primary);
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Pending Review View */
+        .pending-review-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            border-radius: var(--border-radius-large);
+            box-shadow: var(--shadow-soft);
+            padding: var(--spacing-xl);
+        }
+
+        .pending-review-navigation {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .review-counter {
+            font-weight: var(--font-weight-medium);
+            color: var(--text-secondary);
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+
+        .nav-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--border-radius-full);
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .nav-btn:hover {
+            background: var(--accent-primary);
+            color: white;
+            border-color: var(--accent-primary);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .nav-btn:disabled:hover {
+            background: var(--card-bg);
+            color: inherit;
+            border-color: var(--border-subtle);
+        }
+
+        /* Review Content */
+        .review-content-container {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-lg);
+        }
+
+        .doctor-info {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        .doctor-info img {
+            width: 80px;
+            height: 80px;
+            border-radius: var(--border-radius-full);
+            object-fit: cover;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .doctor-details h3 {
+            font-weight: var(--font-weight-bold);
+            margin-bottom: 4px;
+        }
+
+        .doctor-details .title {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .review-header {
+            text-align: center;
+        }
+
+        .review-title {
+            font-size: 1.5rem;
+            font-weight: var(--font-weight-bold);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .review-summary {
+            font-style: italic;
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .review-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-sm);
+            justify-content: center;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .tag {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: var(--font-weight-medium);
+            border: 1px solid;
+        }
+
+        .tag.highlight {
+            background: var(--info-color);
+            color: white;
+            border-color: var(--info-color);
+        }
+
+        .tag.tone {
+            background: var(--warning-color);
+            color: white;
+            border-color: var(--warning-color);
+        }
+
+        .tag.research {
+            background: var(--success-color);
+            color: white;
+            border-color: var(--success-color);
+        }
+
+        .word-count-display {
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .review-text {
+            background: var(--background-color);
+            padding: var(--spacing-lg);
+            border-radius: var(--border-radius-medium);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .review-text p {
+            margin-bottom: 1em;
+        }
+
+        .review-text p:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: var(--font-weight-bold);
+            margin-bottom: var(--spacing-md);
+            padding-bottom: var(--spacing-sm);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .studies-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+
+        .study-item {
+            background: var(--card-bg);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--border-radius-medium);
+            padding: var(--spacing-md);
+        }
+
+        .study-link {
+            color: var(--accent-primary);
+            text-decoration: none;
+            font-weight: var(--font-weight-medium);
+            word-break: break-all;
+        }
+
+        .study-link:hover {
+            text-decoration: underline;
+        }
+
+        .pending-actions {
+            display: flex;
+            gap: var(--spacing-md);
+            justify-content: center;
+            margin-top: var(--spacing-xl);
+            padding-top: var(--spacing-lg);
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        .action-btn {
+            padding: var(--spacing-md) var(--spacing-lg);
+            border: none;
+            border-radius: var(--border-radius-medium);
+            cursor: pointer;
+            font-weight: var(--font-weight-medium);
+            transition: all 0.2s ease;
+            min-width: 120px;
+        }
+
+        .action-btn.accept {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .action-btn.accept:hover {
+            background: #059669;
+            transform: translateY(-1px);
+        }
+
+        .action-btn.reject {
+            background: var(--danger-color);
+            color: white;
+        }
+
+        .action-btn.reject:hover {
+            background: #DC2626;
+            transform: translateY(-1px);
+        }
+
+        .action-btn.edit {
+            background: var(--card-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .action-btn.edit:hover {
+            background: var(--accent-primary);
+            color: white;
+            border-color: var(--accent-primary);
+            transform: translateY(-1px);
+        }
+
+        /* Accepted Reviews Carousel */
         .carousel-container {
             display: flex;
             align-items: center;
@@ -98,10 +397,12 @@
             transition: all 0.2s ease;
             flex-shrink: 0;
         }
+
         .carousel-btn:hover {
             transform: scale(1.1);
             box-shadow: var(--shadow-medium);
         }
+
         .carousel-btn svg { width: 24px; height: 24px; color: var(--text-secondary); }
 
         .carousel-viewport {
@@ -123,7 +424,7 @@
             padding: var(--spacing-lg);
             text-align: center;
             flex: 0 0 80%;
-            margin: 0 10px; /* Provides spacing, controlled by JS */
+            margin: 0 10px;
             max-width: 400px;
             cursor: pointer;
             transition: transform 0.4s ease, opacity 0.4s ease;
@@ -143,83 +444,86 @@
             opacity: 1;
         }
 
-        /* Card Action Buttons */
-        .card-actions {
-            position: absolute;
-            top: var(--spacing-md);
-            right: var(--spacing-md);
-            display: flex;
-            gap: var(--spacing-sm);
-            opacity: 0;
-            transition: opacity 0.3s ease;
+        .card-doctor-info { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            gap: var(--spacing-sm); 
+            margin-bottom: var(--spacing-md); 
         }
 
-        .review-card.is-active:hover .card-actions {
-            opacity: 1;
+        .card-doctor-info img { 
+            width: 60px; 
+            height: 60px; 
+            border-radius: var(--border-radius-full); 
+            object-fit: cover; 
+            box-shadow: var(--shadow-soft); 
         }
 
-        .action-btn {
-            background: var(--card-bg);
-            border: 1px solid var(--border-subtle);
-            border-radius: var(--border-radius-medium);
-            padding: var(--spacing-sm) var(--spacing-md);
-            cursor: pointer;
+        .card-doctor-info .name { 
+            font-weight: var(--font-weight-bold); 
+            font-size: 0.9rem;
+        }
+        
+        .review-card__title { 
+            font-size: 1.1rem; 
+            font-weight: var(--font-weight-bold); 
+            margin-bottom: var(--spacing-sm); 
+        }
+
+        .review-card__summary { 
+            color: var(--text-secondary); 
             font-size: 0.85rem;
-            font-weight: var(--font-weight-medium);
-            transition: all 0.2s ease;
-            box-shadow: var(--shadow-soft);
+            font-style: italic;
+            margin-bottom: var(--spacing-sm);
         }
 
-        .action-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-medium);
+        .card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            justify-content: center;
+            margin-bottom: var(--spacing-sm);
         }
 
-        .action-btn.accept {
-            background: var(--success-color);
-            color: white;
-            border-color: var(--success-color);
+        .card-tags .tag {
+            font-size: 0.75rem;
+            padding: 2px 8px;
         }
 
-        .action-btn.reject {
-            background: var(--danger-color);
-            color: white;
-            border-color: var(--danger-color);
-        }
-
-        .edit-icon {
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: var(--spacing-xl) var(--spacing-lg);
             background: var(--card-bg);
-            border: 1px solid var(--border-subtle);
+            border-radius: var(--border-radius-large);
+            box-shadow: var(--shadow-soft);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .empty-state-icon {
+            width: 64px;
+            height: 64px;
+            background: var(--background-color);
             border-radius: var(--border-radius-full);
-            width: 32px;
-            height: 32px;
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: var(--shadow-soft);
+            margin: 0 auto var(--spacing-md);
         }
 
-        .edit-icon:hover {
-            background: var(--accent-primary);
-            color: white;
-            border-color: var(--accent-primary);
+        .empty-state-title {
+            font-size: 1.25rem;
+            font-weight: var(--font-weight-bold);
+            margin-bottom: var(--spacing-sm);
         }
 
-        .edit-icon svg {
-            width: 16px;
-            height: 16px;
+        .empty-state-message {
+            color: var(--text-secondary);
         }
 
-        .doctor-info { display: flex; flex-direction: column; align-items: center; gap: var(--spacing-sm); margin-bottom: var(--spacing-md); }
-        .doctor-info img { width: 80px; height: 80px; border-radius: var(--border-radius-full); object-fit: cover; box-shadow: var(--shadow-soft); }
-        .doctor-info .name { font-weight: var(--font-weight-bold); }
-        
-        .review-card__title { font-size: 1.25rem; font-weight: var(--font-weight-bold); margin-bottom: var(--spacing-sm); }
-        .review-card__text { color: var(--text-secondary); }
-
-        /* Modal */
+        /* Modal styles remain the same as before */
         .modal {
             position: fixed;
             top: 0;
@@ -246,7 +550,6 @@
             position: relative;
         }
 
-        /* Small Modal for Accept/Reject */
         .modal-content.small {
             max-width: 500px;
             max-height: 400px;
@@ -275,61 +578,6 @@
         .modal-close:hover {
             background: var(--text-secondary);
             color: white;
-        }
-
-        .modal-section-title {
-            font-size: 1.1rem;
-            font-weight: var(--font-weight-bold);
-            margin-top: var(--spacing-lg);
-            margin-bottom: var(--spacing-md);
-            padding-bottom: var(--spacing-sm);
-            border-bottom: 1px solid var(--border-subtle);
-        }
-        
-        #modal-review-text p { margin-bottom: 1em; }
-        
-        #modal-research-list {
-            list-style: none;
-            display: grid;
-            gap: var(--spacing-md);
-        }
-        
-        .modal-research-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-subtle);
-            border-radius: var(--border-radius-medium);
-            padding: var(--spacing-md);
-        }
-        
-        .modal-research-card__title {
-            font-weight: var(--font-weight-bold);
-            margin-bottom: var(--spacing-sm);
-        }
-
-        .modal-research-card__source {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            margin-bottom: var(--spacing-sm);
-        }
-        .modal-research-card__source a { color: var(--accent-primary); text-decoration: none; }
-        .modal-research-card__source a:hover { text-decoration: underline; }
-        
-        .modal-research-card__excerpt {
-            font-size: 0.95rem;
-            padding-left: var(--spacing-md);
-            border-left: 3px solid var(--accent-primary);
-            color: var(--text-secondary);
-        }
-
-        .prompt-display {
-            background: var(--code-bg);
-            color: var(--code-text);
-            padding: var(--spacing-md);
-            border-radius: var(--border-radius-medium);
-            font-family: var(--font-family-mono);
-            font-size: 0.9rem;
-            white-space: pre-wrap;
-            word-wrap: break-word;
         }
 
         /* Success Modal Styles */
@@ -627,36 +875,31 @@
         <div class="container">
             <header class="page-header">
                 <h1 class="page-title">Generated Review Templates</h1>
-            </header>
-
-            <div class="carousel-container">
-                <button id="prev-btn" class="carousel-btn">
-                    <svg viewBox="0 0 24 24"><path fill="currentColor" d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" /></svg>
-                </button>
-                <div class="carousel-viewport" id="carousel-viewport">
-                    <div class="carousel-track" id="carousel-track">
-                        <!-- Review cards will be populated by JS -->
+                
+                <div class="tabs-container">
+                    <div class="tabs">
+                        <button class="tab-button active" data-tab="pending">Pending Reviews</button>
+                        <button class="tab-button" data-tab="accepted">Accepted Reviews</button>
                     </div>
                 </div>
-                <button id="next-btn" class="carousel-btn">
-                    <svg viewBox="0 0 24 24"><path fill="currentColor" d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" /></svg>
-                </button>
+            </header>
+
+            <!-- Pending Reviews Tab -->
+            <div class="tab-content active" id="pending-tab">
+                <div id="pending-content">
+                    <!-- Content will be populated by JS -->
+                </div>
+            </div>
+
+            <!-- Accepted Reviews Tab -->
+            <div class="tab-content" id="accepted-tab">
+                <div id="accepted-content">
+                    <!-- Content will be populated by JS -->
+                </div>
             </div>
         </div>
     </main>
     
-    <!-- Review Details Modal -->
-    <div class="modal" id="review-modal">
-        <div class="modal-content" id="modal-content">
-            <button class="modal-close" id="modal-close-btn">
-                <svg width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" /></svg>
-            </button>
-            <div class="modal-body" id="modal-body">
-                 <!-- Modal content populated by JS -->
-            </div>
-        </div>
-    </div>
-
     <!-- Accept Success Modal -->
     <div class="modal" id="accept-modal">
         <div class="modal-content small">
@@ -802,249 +1045,522 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const reviewsData = [
+            // Sample data with new metadata format
+            const pendingReviewsData = [
                 {
-                    doctorName: 'Dr. Evelyn Reed',
-                    doctorImg: 'https://images.pexels.com/photos/5215024/pexels-photo-5215024.jpeg?auto=compress&cs=tinysrgb&w=400',
-                    reviewTitle: 'A Breakthrough in Photoprotection',
-                    reviewText: `<p>As a dermatologist, I consistently emphasize the importance of daily sun protection. However, the stability and efficacy of topical antioxidants can be a significant concern. This serum addresses that issue head-on.</p><p>I often recommend this to patients looking to boost their defense against environmental aggressors. The formulation, which combines 15% L-Ascorbic Acid with 1% Vitamin E and 0.5% Ferulic Acid, is supported by strong clinical evidence showing it not only stabilizes the vitamins but also doubles the photoprotection of the skin. It's an excellent addition to any morning skincare routine after cleansing and before moisturizing and sunscreen.</p>`,
-                    research: [
-                        { title: 'Ferulic acid stabilizes a solution of vitamins C and E and doubles its photoprotection of skin.', source: 'Journal of Investigative Dermatology', url: '#', excerpt: "This study demonstrates that a solution of 15% L-ascorbic acid, 1% alpha-tocopherol, and 0.5% ferulic acid provides a significant eight-fold increase in photoprotection against solar-simulated radiation." }
-                    ],
-                    prompt: `Generate a review from a dermatologist focusing on the product's photoprotective qualities. Emphasize the stability of the Vitamin C formula due to Ferulic Acid. Mention the key study: "Ferulic acid stabilizes a solution...". Tone: Clinical, reassuring, and educational.`
+                    reviewer_name: 'Dr. Marcus Thorne',
+                    reviewer_title: 'MD, Urologist & Male Fertility Specialist',
+                    review_title: 'Evidence-Based Male Fertility Support',
+                    review_summary_line: 'Clinical data supports this formulation for improving key sperm parameters.',
+                    review_text: 'Clinical evidence strongly supports the use of antioxidant supplementation for male factor infertility. Research demonstrates that key ingredients like Coenzyme Q10, zinc, and folic acid significantly improve sperm parameters. A 2009 randomized controlled trial showed CoQ10 improved sperm density and motility. Furthermore, a comprehensive 2024 review confirmed that combining these antioxidants can increase total sperm count and reduce DNA damage. This formulation aligns with current data, offering a scientifically validated approach to enhancing male reproductive health and supporting conception.',
+                    highlights: ['Research Backed', 'Clinically Proven', 'Antioxidant Formula'],
+                    tone_type: 'clinical_authority',
+                    uses_clinical_research: true,
+                    target_word_count: 80,
+                    actual_word_count: 79,
+                    profile_image_url: 'https://images.pexels.com/photos/1486064/pexels-photo-1486064.jpeg',
+                    referenced_studies: [
+                        'https://pmc.ncbi.nlm.nih.gov/articles/PMC10869131/?utm_source=chatgpt.com',
+                        'https://pubmed.ncbi.nlm.nih.gov/19447425/'
+                    ]
                 },
                 {
-                    doctorName: 'Dr. Marcus Chen',
-                    doctorImg: 'https://images.pexels.com/photos/5407206/pexels-photo-5407206.jpeg?auto=compress&cs=tinysrgb&w=400',
-                    reviewTitle: 'Hydration is Key to Healthy Skin',
-                    reviewText: `<p>Many of my patients struggle with dehydrated skin, which can exacerbate fine lines and lead to a dull complexion. This product is one of my top recommendations for restoring that crucial moisture barrier.</p><p>The inclusion of Hyaluronic Acid is what makes it so effective. This molecule is a powerhouse of hydration, capable of holding many times its weight in water. By incorporating this serum into your daily regimen, you are actively helping your skin retain the moisture it needs to look plump, healthy, and resilient. It's suitable for most skin types and layers well with other products.</p>`,
-                    research: [
-                        { title: 'The Role of Hyaluronic Acid in Skin Health and Rejuvenation', source: 'Dermato-Endocrinology', url: '#', excerpt: "Hyaluronic acid's unique capacity to retain water makes it a key component in maintaining skin hydration, elasticity, and volume." }
-                    ],
-                    prompt: `Generate a review from a primary care physician focusing on hydration. Explain the role of Hyaluronic Acid in simple terms for a patient. Tone: Warm, approachable, and focused on patient outcomes (plump, healthy skin).`
-                },
-                {
-                    doctorName: 'Dr. Anya Sharma',
-                    doctorImg: 'https://images.pexels.com/photos/5327921/pexels-photo-5327921.jpeg?auto=compress&cs=tinysrgb&w=400',
-                    reviewTitle: 'Optimizing Vitamin C Delivery',
-                    reviewText: `<p>Patients often ask if expensive Vitamin C serums are worth it. My answer always depends on the formulation. For Vitamin C to be effective, it needs to be able to penetrate the skin, and that's where this product excels.</p><p>Clinical studies on percutaneous absorption have shown that an acidic pH is critical for topical L-Ascorbic Acid to be effective. This serum is formulated at an optimal pH, which means you're not just applying a nice ingredient, you're applying one that can actually get to where it needs to go to provide antioxidant benefits. I appreciate the science-first approach to its design.</p>`,
-                    research: [
-                        { title: 'Topical L-Ascorbic Acid: Percutaneous Absorption Studies', source: 'Dermatologic Surgery', url: '#', excerpt: "Maximum absorption was achieved with a 20% vitamin C concentration... an acidic pH (below 3.5) is required for optimal percutaneous absorption." }
-                    ],
-                    prompt: `Generate a review from a scientific, detail-oriented doctor. Focus on the importance of formulation and pH for Vitamin C absorption, referencing the "Percutaneous Absorption Studies". Tone: Technical but clear, precise, and authoritative.`
-                },
-                {
-                    doctorName: 'Dr. Ben Carter',
-                    doctorImg: 'https://images.pexels.com/photos/8442533/pexels-photo-8442533.jpeg?auto=compress&cs=tinysrgb&w=400',
-                    reviewTitle: 'A Gentle Giant for Skin Health',
-                    reviewText: `<p>In my practice, I see many patients with sensitive skin who are wary of trying active ingredients. This serum is a product I feel confident recommending for them to try.</p><p>While it is a potent antioxidant cocktail, the formulation is elegant and generally well-tolerated. The combination of ingredients works synergistically not just to protect the skin, but also to calm and support it. Patients report that over time their skin feels less reactive and looks healthier. It's a fantastic, gentle entry point into using targeted serums for long-term skin health.</p>`,
-                    research: [],
-                    prompt: `Generate a review from a family doctor for patients with sensitive skin. The focus should be on the product being "well-tolerated" and "gentle" despite being potent. Tone: Caring, gentle, and reassuring.`
-                },
-                {
-                    doctorName: 'Dr. Olivia Martinez',
-                    doctorImg: 'https://images.pexels.com/photos/5794711/pexels-photo-5794711.jpeg?auto=compress&cs=tinysrgb&w=400',
-                    reviewTitle: 'The Foundation of a Solid Routine',
-                    reviewText: `<p>When building a skincare routine, there are a few foundational pillars I recommend: cleansing, moisturizing, and sun protection. For those looking to elevate their routine, an antioxidant serum like this is the next logical step.</p><p>It provides a crucial layer of defense that sunscreen alone cannot. By neutralizing free radicals from UV and environmental exposure, it helps prevent the breakdown of collagen and supports the skin's natural repair processes. Think of it as an insurance policy for your skin's future health and appearance. This is a solid, evidence-based choice.</p>`,
-                    research: [
-                        { title: 'Ferulic acid stabilizes a solution of vitamins C and E...', source: 'Journal of Investigative Dermatology', url: '#', excerpt: "This study demonstrates that a solution of 15% L-ascorbic acid, 1% alpha-tocopherol, and 0.5% ferulic acid provides a significant eight-fold increase in photoprotection against solar-simulated radiation." },
-                        { title: 'The Role of Hyaluronic Acid in Skin Health...', source: 'Dermato-Endocrinology', url: '#', excerpt: "Hyaluronic acid's unique capacity to retain water makes it a key component in maintaining skin hydration, elasticity, and volume." }
-                    ],
-                    prompt: `Generate a review from a holistic health practitioner. Frame the product as a "foundational" part of a complete skincare routine, complementing sunscreen. Explain the concept of neutralizing free radicals in a simple, analogy-driven way. Tone: Holistic, preventative, and encouraging.`
+                    reviewer_name: 'Dr. Sarah Chen',
+                    reviewer_title: 'MD, Dermatologist',
+                    review_title: 'Advanced Skin Barrier Protection',
+                    review_summary_line: 'Innovative ceramide complex shows promising results for compromised skin barriers.',
+                    review_text: 'The skin barrier function is critical for maintaining healthy skin hydration and protection against environmental stressors. This ceramide-rich formulation addresses barrier dysfunction through a multi-layered approach. Clinical studies demonstrate that topical ceramides can restore barrier integrity within 2-4 weeks of consistent use. The inclusion of cholesterol and fatty acids creates a biomimetic lipid profile that closely resembles the skin\'s natural composition. For patients with compromised barriers due to age, environmental damage, or genetic predisposition, this represents an evidence-based therapeutic option.',
+                    highlights: ['Barrier Repair', 'Clinically Tested', 'Biomimetic'],
+                    tone_type: 'scientific_precision',
+                    uses_clinical_research: true,
+                    target_word_count: 85,
+                    actual_word_count: 87,
+                    profile_image_url: 'https://images.pexels.com/photos/5327921/pexels-photo-5327921.jpeg',
+                    referenced_studies: [
+                        'https://pubmed.ncbi.nlm.nih.gov/ceramide-barrier-function-2023/',
+                        'https://pubmed.ncbi.nlm.nih.gov/lipid-composition-skin-2022/'
+                    ]
                 }
             ];
 
-            const viewport = document.getElementById('carousel-viewport');
-            const track = document.getElementById('carousel-track');
-            const prevBtn = document.getElementById('prev-btn');
-            const nextBtn = document.getElementById('next-btn');
-            
-            // Existing modal elements
-            const modal = document.getElementById('review-modal');
-            const modalBody = document.getElementById('modal-body');
-            const modalCloseBtn = document.getElementById('modal-close-btn');
-            
-            // Action modal elements
-            const acceptModal = document.getElementById('accept-modal');
-            const acceptModalCloseBtn = document.getElementById('accept-modal-close-btn');
-            const rejectModal = document.getElementById('reject-modal');
-            const rejectModalCloseBtn = document.getElementById('reject-modal-close-btn');
-            const rejectSuccessModal = document.getElementById('reject-success-modal');
-            const rejectSuccessModalCloseBtn = document.getElementById('reject-success-modal-close-btn');
-            const rejectForm = document.getElementById('reject-form');
+            const acceptedReviewsData = [
+                {
+                    reviewer_name: 'Dr. Jennifer Walsh',
+                    reviewer_title: 'MD, Internal Medicine',
+                    review_title: 'Comprehensive Wellness Support',
+                    review_summary_line: 'Well-rounded formulation addresses multiple health markers effectively.',
+                    review_text: 'As an internist, I appreciate supplements that address multiple health parameters simultaneously. This formulation combines evidence-based ingredients in clinically relevant dosages. The B-vitamin complex supports energy metabolism, while the antioxidant blend provides cellular protection. Patient compliance improves when they can consolidate their supplement regimen, and this product allows for that simplification without compromising efficacy.',
+                    highlights: ['Multi-Target', 'Evidence-Based', 'Patient-Friendly'],
+                    tone_type: 'approachable_authority',
+                    uses_clinical_research: true,
+                    target_word_count: 70,
+                    actual_word_count: 68,
+                    profile_image_url: 'https://images.pexels.com/photos/5407206/pexels-photo-5407206.jpeg',
+                    referenced_studies: [
+                        'https://pubmed.ncbi.nlm.nih.gov/b-vitamin-metabolism-2023/'
+                    ]
+                }
+            ];
 
-            // Edit modal elements
-            const editModal = document.getElementById('edit-modal');
-            const editModalCloseBtn = document.getElementById('edit-modal-close-btn');
-            const editSuccessModal = document.getElementById('edit-success-modal');
-            const editSuccessModalCloseBtn = document.getElementById('edit-success-modal-close-btn');
-            const editForm = document.getElementById('edit-form');
-            const currentReviewContent = document.getElementById('current-review-content');
-            const updatedReviewContent = document.getElementById('updated-review-content');
-            const generateBtnText = document.getElementById('generate-btn-text');
-            const generateEditBtn = document.getElementById('generate-edit-btn');
-            const cancelEditBtn = document.getElementById('cancel-edit-btn');
-            const keepOriginalBtn = document.getElementById('keep-original-btn');
-            const useUpdatedBtn = document.getElementById('use-updated-btn');
-
-            let currentIndex = 0;
-            let cards = [];
+            let currentPendingIndex = 0;
+            let currentAcceptedIndex = 0;
             let currentEditingIndex = -1;
             let updatedReviewData = null;
-            
-            function renderCarousel() {
+
+            // Tab switching functionality
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetTab = button.dataset.tab;
+                    
+                    // Update active states
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    
+                    button.classList.add('active');
+                    document.getElementById(`${targetTab}-tab`).classList.add('active');
+                    
+                    // Render appropriate content
+                    if (targetTab === 'pending') {
+                        renderPendingReviews();
+                    } else {
+                        renderAcceptedReviews();
+                    }
+                });
+            });
+
+            function renderPendingReviews() {
+                const pendingContent = document.getElementById('pending-content');
+                
+                if (pendingReviewsData.length === 0) {
+                    pendingContent.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                                    <path fill="currentColor" d="M12,2A3,3 0 0,1 15,5V11A3,3 0 0,1 12,14A3,3 0 0,1 9,11V5A3,3 0 0,1 12,2M19,11C19,14.53 16.39,17.44 13,17.93V21H11V17.93C7.61,17.44 5,14.53 5,11H7A5,5 0 0,0 12,16A5,5 0 0,0 17,11H19Z"/>
+                                </svg>
+                            </div>
+                            <h3 class="empty-state-title">No Pending Reviews</h3>
+                            <p class="empty-state-message">No reviews were generated for this product.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const review = pendingReviewsData[currentPendingIndex];
+                const toneTypeFormatted = review.tone_type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                
+                const highlightTags = review.highlights.map(highlight => 
+                    `<span class="tag highlight">${highlight}</span>`
+                ).join('');
+                
+                const toneTag = `<span class="tag tone">${toneTypeFormatted}</span>`;
+                const researchTag = review.uses_clinical_research ? `<span class="tag research">Clinical Research</span>` : '';
+                
+                const studiesList = review.referenced_studies.map(url => 
+                    `<li class="study-item">
+                        <a href="${url}" target="_blank" class="study-link">${url}</a>
+                    </li>`
+                ).join('');
+
+                pendingContent.innerHTML = `
+                    <div class="pending-review-container">
+                        <div class="pending-review-navigation">
+                            <div class="review-counter">
+                                Review ${currentPendingIndex + 1} of ${pendingReviewsData.length}
+                            </div>
+                            <div class="nav-buttons">
+                                <button class="nav-btn" id="prev-pending-btn" ${currentPendingIndex === 0 ? 'disabled' : ''}>
+                                    <svg width="20" height="20" viewBox="0 0 24 24">
+                                        <path fill="currentColor" d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" />
+                                    </svg>
+                                </button>
+                                <button class="nav-btn" id="next-pending-btn" ${currentPendingIndex === pendingReviewsData.length - 1 ? 'disabled' : ''}>
+                                    <svg width="20" height="
+                                    <svg width="20" height="20" viewBox="0 0 24 24">
+                                        <path fill="currentColor" d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="review-content-container">
+                            <div class="doctor-info">
+                                <img src="${review.profile_image_url}" alt="${review.reviewer_name}">
+                                <div class="doctor-details">
+                                    <h3>${review.reviewer_name}</h3>
+                                    <div class="title">${review.reviewer_title}</div>
+                                </div>
+                            </div>
+
+                            <div class="review-header">
+                                <h2 class="review-title">${review.review_title}</h2>
+                                <p class="review-summary">${review.review_summary_line}</p>
+                                
+                                <div class="review-tags">
+                                    ${highlightTags}
+                                    ${toneTag}
+                                    ${researchTag}
+                                </div>
+                                
+                                <div class="word-count-display">
+                                    ${review.actual_word_count}/${review.target_word_count} words
+                                </div>
+                            </div>
+
+                            <div class="review-text">
+                                ${review.review_text}
+                            </div>
+
+                            <div class="referenced-studies-section">
+                                <h3 class="section-title">Referenced Clinical Studies</h3>
+                                <ul class="studies-list">
+                                    ${studiesList}
+                                </ul>
+                            </div>
+
+                            <div class="pending-actions">
+                                <button class="action-btn accept" onclick="acceptPendingReview(${currentPendingIndex})">Accept</button>
+                                <button class="action-btn edit" onclick="editPendingReview(${currentPendingIndex})">Edit</button>
+                                <button class="action-btn reject" onclick="rejectPendingReview(${currentPendingIndex})">Reject</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                // Add navigation event listeners
+                const prevBtn = document.getElementById('prev-pending-btn');
+                const nextBtn = document.getElementById('next-pending-btn');
+                
+                if (prevBtn && !prevBtn.disabled) {
+                    prevBtn.addEventListener('click', () => {
+                        currentPendingIndex = Math.max(0, currentPendingIndex - 1);
+                        renderPendingReviews();
+                    });
+                }
+                
+                if (nextBtn && !nextBtn.disabled) {
+                    nextBtn.addEventListener('click', () => {
+                        currentPendingIndex = Math.min(pendingReviewsData.length - 1, currentPendingIndex + 1);
+                        renderPendingReviews();
+                    });
+                }
+            }
+
+            function renderAcceptedReviews() {
+                const acceptedContent = document.getElementById('accepted-content');
+                
+                if (acceptedReviewsData.length === 0) {
+                    acceptedContent.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                                    <path fill="currentColor" d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+                                </svg>
+                            </div>
+                            <h3 class="empty-state-title">No Accepted Reviews</h3>
+                            <p class="empty-state-message">Yet to accept reviews for this product.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                acceptedContent.innerHTML = `
+                    <div class="carousel-container">
+                        <button id="prev-accepted-btn" class="carousel-btn">
+                            <svg viewBox="0 0 24 24"><path fill="currentColor" d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" /></svg>
+                        </button>
+                        <div class="carousel-viewport" id="accepted-carousel-viewport">
+                            <div class="carousel-track" id="accepted-carousel-track">
+                                <!-- Review cards will be populated by JS -->
+                            </div>
+                        </div>
+                        <button id="next-accepted-btn" class="carousel-btn">
+                            <svg viewBox="0 0 24 24"><path fill="currentColor" d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" /></svg>
+                        </button>
+                    </div>
+                `;
+
+                const track = document.getElementById('accepted-carousel-track');
+                const viewport = document.getElementById('accepted-carousel-viewport');
+                
                 track.innerHTML = '';
-                reviewsData.forEach((review, index) => {
+                acceptedReviewsData.forEach((review, index) => {
                     const card = document.createElement('div');
                     card.className = 'review-card';
                     card.dataset.index = index;
                     
-                    const shortText = review.reviewText.split('</p>')[0].replace('<p>', '') + '...';
+                    const toneTypeFormatted = review.tone_type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                    const highlightTags = review.highlights.slice(0, 2).map(highlight => 
+                        `<span class="tag highlight">${highlight}</span>`
+                    ).join('');
+                    const toneTag = `<span class="tag tone">${toneTypeFormatted}</span>`;
 
                     card.innerHTML = `
-                        <div class="card-actions">
-                            <button class="edit-icon" onclick="editReview(${index}); event.stopPropagation();">
-                                <svg viewBox="0 0 24 24"><path fill="currentColor" d="M3,17.25V21H6.75L17.81,9.94L14.06,6.19L3,17.25M20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18,2.9 17.35,2.9 16.96,3.29L15.13,5.12L18.88,8.87M5.92,19.08L5.92,19.08L18.88,6.12" /></svg>
-                            </button>
-                            <button class="action-btn accept" onclick="acceptReview(${index}); event.stopPropagation();">Accept</button>
-                            <button class="action-btn reject" onclick="rejectReview(${index}); event.stopPropagation();">Reject</button>
+                        <div class="card-doctor-info">
+                            <img src="${review.profile_image_url}" alt="${review.reviewer_name}">
+                            <span class="name">${review.reviewer_name}</span>
                         </div>
-                        <div class="doctor-info">
-                            <img src="${review.doctorImg}" alt="${review.doctorName}">
-                            <span class="name">${review.doctorName}</span>
+                        <h2 class="review-card__title">${review.review_title}</h2>
+                        <p class="review-card__summary">${review.review_summary_line}</p>
+                        <div class="card-tags">
+                            ${highlightTags}
+                            ${toneTag}
                         </div>
-                        <h2 class="review-card__title">${review.reviewTitle}</h2>
-                        <p class="review-card__text">${shortText}</p>
                     `;
-                    card.addEventListener('click', () => openModal(index));
+                    
+                    card.addEventListener('click', () => openAcceptedReviewModal(index));
                     track.appendChild(card);
                 });
-                cards = document.querySelectorAll('.review-card');
-                updateCarousel();
+
+                updateAcceptedCarousel();
+
+                // Add carousel navigation
+                const prevBtn = document.getElementById('prev-accepted-btn');
+                const nextBtn = document.getElementById('next-accepted-btn');
+                
+                prevBtn.addEventListener('click', () => {
+                    currentAcceptedIndex = (currentAcceptedIndex - 1 + acceptedReviewsData.length) % acceptedReviewsData.length;
+                    updateAcceptedCarousel();
+                });
+                
+                nextBtn.addEventListener('click', () => {
+                    currentAcceptedIndex = (currentAcceptedIndex + 1) % acceptedReviewsData.length;
+                    updateAcceptedCarousel();
+                });
             }
 
-            function updateCarousel() {
+            function updateAcceptedCarousel() {
+                const cards = document.querySelectorAll('#accepted-carousel-track .review-card');
+                const track = document.getElementById('accepted-carousel-track');
+                const viewport = document.getElementById('accepted-carousel-viewport');
+                
+                if (cards.length === 0) return;
+
                 const cardWidth = cards[0].offsetWidth;
                 const gap = 20;
-                const offset = -currentIndex * (cardWidth + gap) + (viewport.offsetWidth / 2 - cardWidth / 2);
+                const offset = -currentAcceptedIndex * (cardWidth + gap) + (viewport.offsetWidth / 2 - cardWidth / 2);
                 
                 track.style.transform = `translateX(${offset}px)`;
 
                 cards.forEach((card, index) => {
-                    card.classList.toggle('is-active', index === currentIndex);
+                    card.classList.toggle('is-active', index === currentAcceptedIndex);
                 });
             }
 
-            function showNext() {
-                currentIndex = (currentIndex + 1) % cards.length;
-                updateCarousel();
-            }
-
-            function showPrev() {
-                currentIndex = (currentIndex - 1 + cards.length) % cards.length;
-                updateCarousel();
-            }
-
-            function openModal(index) {
-                const review = reviewsData[index];
+            function openAcceptedReviewModal(index) {
+                const review = acceptedReviewsData[index];
                 
-                let researchHTML = '';
-                if (review.research.length > 0) {
-                    review.research.forEach(item => {
-                        researchHTML += `
-                        <li>
-                            <div class="modal-research-card">
-                                <h4 class="modal-research-card__title">${item.title}</h4>
-                                <p class="modal-research-card__source">Source: <a href="${item.url}" target="_blank">${item.source}</a></p>
-                                <p class="modal-research-card__excerpt">${item.excerpt}</p>
-                            </div>
-                        </li>`;
-                    });
-                } else {
-                    researchHTML = '<li>No specific studies cited for this review.</li>';
-                }
+                // Create modal content similar to the detailed view
+                const modal = document.createElement('div');
+                modal.className = 'modal';
+                modal.style.display = 'flex';
+                
+                const toneTypeFormatted = review.tone_type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                const highlightTags = review.highlights.map(highlight => 
+                    `<span class="tag highlight">${highlight}</span>`
+                ).join('');
+                const toneTag = `<span class="tag tone">${toneTypeFormatted}</span>`;
+                const researchTag = review.uses_clinical_research ? `<span class="tag research">Clinical Research</span>` : '';
+                
+                const studiesList = review.referenced_studies.map(url => 
+                    `<li class="study-item">
+                        <a href="${url}" target="_blank" class="study-link">${url}</a>
+                    </li>`
+                ).join('');
 
-                modalBody.innerHTML = `
-                    <div class="doctor-info" id="modal-doctor-info">
-                        <img src="${review.doctorImg}" alt="${review.doctorName}">
-                        <span id="modal-doctor-name" class="name">${review.doctorName}</span>
+                modal.innerHTML = `
+                    <div class="modal-content">
+                        <button class="modal-close">
+                            <svg width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" /></svg>
+                        </button>
+                        <div class="modal-body">
+                            <div class="doctor-info">
+                                <img src="${review.profile_image_url}" alt="${review.reviewer_name}">
+                                <div class="doctor-details">
+                                    <h3>${review.reviewer_name}</h3>
+                                    <div class="title">${review.reviewer_title}</div>
+                                </div>
+                            </div>
+
+                            <div class="review-header">
+                                <h2 class="review-title">${review.review_title}</h2>
+                                <p class="review-summary">${review.review_summary_line}</p>
+                                
+                                <div class="review-tags">
+                                    ${highlightTags}
+                                    ${toneTag}
+                                    ${researchTag}
+                                </div>
+                                
+                                <div class="word-count-display">
+                                    ${review.actual_word_count}/${review.target_word_count} words
+                                </div>
+                            </div>
+
+                            <div class="review-text">
+                                ${review.review_text}
+                            </div>
+
+                            <div class="referenced-studies-section">
+                                <h3 class="section-title">Referenced Clinical Studies</h3>
+                                <ul class="studies-list">
+                                    ${studiesList}
+                                </ul>
+                            </div>
+                        </div>
                     </div>
-                    <h2 id="modal-review-title" class="review-card__title">${review.reviewTitle}</h2>
-                    <div id="modal-review-text">${review.reviewText}</div>
-                    
-                    <h3 class="modal-section-title">Supporting Research</h3>
-                    <ul id="modal-research-list">${researchHTML}</ul>
-                    
-                    <h3 class="modal-section-title">Generation Prompt</h3>
-                    <pre id="modal-prompt" class="prompt-display">${review.prompt}</pre>
+                `;
+
+                document.body.appendChild(modal);
+                
+                // Add close functionality
+                const closeBtn = modal.querySelector('.modal-close');
+                closeBtn.addEventListener('click', () => {
+                    document.body.removeChild(modal);
+                });
+                
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) {
+                        document.body.removeChild(modal);
+                    }
+                });
+            }
+
+            // Global functions for pending review actions
+            window.acceptPendingReview = function(index) {
+                const review = pendingReviewsData[index];
+                console.log('Accepting pending review:', review.review_title);
+                
+                // Move to accepted reviews
+                acceptedReviewsData.push(review);
+                pendingReviewsData.splice(index, 1);
+                
+                // Reset current index if needed
+                if (currentPendingIndex >= pendingReviewsData.length) {
+                    currentPendingIndex = Math.max(0, pendingReviewsData.length - 1);
+                }
+                
+                // Show success modal then re-render
+                document.getElementById('accept-modal').classList.add('is-visible');
+            };
+
+            window.rejectPendingReview = function(index) {
+                const review = pendingReviewsData[index];
+                console.log('Rejecting pending review:', review.review_title);
+                document.getElementById('reject-modal').classList.add('is-visible');
+            };
+
+            window.editPendingReview = function(index) {
+                const review = pendingReviewsData[index];
+                currentEditingIndex = index;
+                
+                // Show current review content
+                const currentReviewContent = document.getElementById('current-review-content');
+                currentReviewContent.innerHTML = `
+                    <strong>${review.review_title}</strong> (${review.actual_word_count} words)<br><br>
+                    ${review.review_text}
                 `;
                 
-                modal.classList.add('is-visible');
-            }
+                document.getElementById('edit-modal').classList.add('is-visible');
+            };
 
-            function closeModal() {
-                modal.classList.remove('is-visible');
-            }
+            // Modal handlers
+            const modals = {
+                accept: document.getElementById('accept-modal'),
+                reject: document.getElementById('reject-modal'),
+                rejectSuccess: document.getElementById('reject-success-modal'),
+                edit: document.getElementById('edit-modal'),
+                editSuccess: document.getElementById('edit-success-modal')
+            };
 
-            function closeAcceptModal() {
-                acceptModal.classList.remove('is-visible');
-            }
+            // Accept modal handlers
+            document.getElementById('accept-modal-close-btn').addEventListener('click', () => {
+                modals.accept.classList.remove('is-visible');
+                renderPendingReviews(); // Re-render to show updated state
+            });
 
-            function closeRejectModal() {
-                rejectModal.classList.remove('is-visible');
-            }
+            modals.accept.addEventListener('click', (e) => {
+                if (e.target === modals.accept) {
+                    modals.accept.classList.remove('is-visible');
+                    renderPendingReviews();
+                }
+            });
 
-            function closeRejectSuccessModal() {
-                rejectSuccessModal.classList.remove('is-visible');
-            }
+            // Reject modal handlers
+            document.getElementById('reject-modal-close-btn').addEventListener('click', () => {
+                modals.reject.classList.remove('is-visible');
+            });
+
+            modals.reject.addEventListener('click', (e) => {
+                if (e.target === modals.reject) {
+                    modals.reject.classList.remove('is-visible');
+                }
+            });
+
+            // Reject success modal handlers
+            document.getElementById('reject-success-modal-close-btn').addEventListener('click', () => {
+                modals.rejectSuccess.classList.remove('is-visible');
+                renderPendingReviews(); // Re-render to show updated state
+            });
+
+            modals.rejectSuccess.addEventListener('click', (e) => {
+                if (e.target === modals.rejectSuccess) {
+                    modals.rejectSuccess.classList.remove('is-visible');
+                    renderPendingReviews();
+                }
+            });
+
+            // Reject form submission
+            document.getElementById('reject-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const reason = document.getElementById('reject-reason').value.trim();
+                
+                if (reason) {
+                    console.log('Rejection reason:', reason);
+                    
+                    // Remove the rejected review
+                    pendingReviewsData.splice(currentPendingIndex, 1);
+                    
+                    // Reset current index if needed
+                    if (currentPendingIndex >= pendingReviewsData.length) {
+                        currentPendingIndex = Math.max(0, pendingReviewsData.length - 1);
+                    }
+                    
+                    modals.reject.classList.remove('is-visible');
+                    modals.rejectSuccess.classList.add('is-visible');
+                    document.getElementById('reject-form').reset();
+                }
+            });
+
+            // Edit modal handlers
+            document.getElementById('edit-modal-close-btn').addEventListener('click', closeEditModal);
+            document.getElementById('cancel-edit-btn').addEventListener('click', closeEditModal);
+            modals.edit.addEventListener('click', (e) => {
+                if (e.target === modals.edit) closeEditModal();
+            });
 
             function closeEditModal() {
-                editModal.classList.remove('is-visible');
+                modals.edit.classList.remove('is-visible');
                 currentEditingIndex = -1;
-                editForm.reset();
+                document.getElementById('edit-form').reset();
                 document.getElementById('selected-word-count').value = '100';
                 document.querySelectorAll('.word-count-btn').forEach(btn => btn.classList.remove('active'));
                 document.querySelector('.word-count-btn[data-count="100"]').classList.add('active');
             }
 
+            // Edit success modal handlers
+            document.getElementById('edit-success-modal-close-btn').addEventListener('click', closeEditSuccessModal);
+            modals.editSuccess.addEventListener('click', (e) => {
+                if (e.target === modals.editSuccess) closeEditSuccessModal();
+            });
+
             function closeEditSuccessModal() {
-                editSuccessModal.classList.remove('is-visible');
+                modals.editSuccess.classList.remove('is-visible');
                 updatedReviewData = null;
             }
-
-            // Word count helper function
-            function countWords(text) {
-                return text.replace(/<[^>]*>/g, '').trim().split(/\s+/).length;
-            }
-
-            // Global functions for onclick handlers
-            window.openModal = openModal;
-            
-            window.acceptReview = function(index) {
-                const review = reviewsData[index];
-                console.log('Accepting review:', review.reviewTitle);
-                acceptModal.classList.add('is-visible');
-            };
-
-            window.rejectReview = function(index) {
-                const review = reviewsData[index];
-                console.log('Rejecting review:', review.reviewTitle);
-                rejectModal.classList.add('is-visible');
-            };
-
-            window.editReview = function(index) {
-                const review = reviewsData[index];
-                currentEditingIndex = index;
-                
-                // Show current review content
-                const currentWordCount = countWords(review.reviewText);
-                currentReviewContent.innerHTML = `
-                    <strong>${review.reviewTitle}</strong> (${currentWordCount} words)<br><br>
-                    ${review.reviewText}
-                `;
-                
-                editModal.classList.add('is-visible');
-            };
 
             // Word count button functionality
             document.querySelectorAll('.word-count-btn').forEach(btn => {
@@ -1055,62 +1571,8 @@
                 });
             });
 
-            // Event listeners
-            prevBtn.addEventListener('click', showPrev);
-            nextBtn.addEventListener('click', showNext);
-            
-            // Existing modal close handlers
-            modalCloseBtn.addEventListener('click', closeModal);
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) closeModal();
-            });
-
-            // Accept modal close handlers
-            acceptModalCloseBtn.addEventListener('click', closeAcceptModal);
-            acceptModal.addEventListener('click', (e) => {
-                if (e.target === acceptModal) closeAcceptModal();
-            });
-
-            // Reject modal close handlers
-            rejectModalCloseBtn.addEventListener('click', closeRejectModal);
-            rejectModal.addEventListener('click', (e) => {
-                if (e.target === rejectModal) closeRejectModal();
-            });
-
-            // Reject success modal close handlers
-            rejectSuccessModalCloseBtn.addEventListener('click', closeRejectSuccessModal);
-            rejectSuccessModal.addEventListener('click', (e) => {
-                if (e.target === rejectSuccessModal) closeRejectSuccessModal();
-            });
-
-            // Edit modal close handlers
-            editModalCloseBtn.addEventListener('click', closeEditModal);
-            editModal.addEventListener('click', (e) => {
-                if (e.target === editModal) closeEditModal();
-            });
-            cancelEditBtn.addEventListener('click', closeEditModal);
-
-            // Edit success modal close handlers
-            editSuccessModalCloseBtn.addEventListener('click', closeEditSuccessModal);
-            editSuccessModal.addEventListener('click', (e) => {
-                if (e.target === editSuccessModal) closeEditSuccessModal();
-            });
-
-            // Reject form submission
-            rejectForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const reason = document.getElementById('reject-reason').value.trim();
-                
-                if (reason) {
-                    console.log('Rejection reason:', reason);
-                    closeRejectModal();
-                    rejectSuccessModal.classList.add('is-visible');
-                    rejectForm.reset();
-                }
-            });
-
             // Edit form submission
-            editForm.addEventListener('submit', async (e) => {
+            document.getElementById('edit-form').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 
                 const wordCount = document.getElementById('selected-word-count').value;
@@ -1126,6 +1588,8 @@
                 const reviewContent = document.getElementById('current-review-content');
                 const editingAnimation = document.getElementById('editing-animation');
                 const progressFill = document.getElementById('progress-fill');
+                const generateEditBtn = document.getElementById('generate-edit-btn');
+                const generateBtnText = document.getElementById('generate-btn-text');
                 
                 // Start animation
                 currentReviewPreview.classList.add('editing');
@@ -1144,25 +1608,26 @@
                     if (progress >= 100) {
                         clearInterval(progressInterval);
                     }
-                }, 40); // 40ms * 50 = 2000ms (2 seconds)
+                }, 40);
 
                 try {
-                    // Simulate API call (replace with actual API call)
+                    // Simulate API call
                     await new Promise(resolve => setTimeout(resolve, 2000));
                     
-                    // Mock updated review (replace with actual API response)
-                    const originalReview = reviewsData[currentEditingIndex];
+                    // Mock updated review
+                    const originalReview = pendingReviewsData[currentPendingIndex];
                     updatedReviewData = {
                         ...originalReview,
-                        reviewText: `<p>This is a mock updated review with approximately ${wordCount} words. The tone has been adjusted based on: "${toneAdjustment}". ${originalReview.reviewText.substring(50)}</p>`,
-                        reviewTitle: originalReview.reviewTitle + ' (Edited)'
+                        review_text: `This is a mock updated review with approximately ${wordCount} words. The tone has been adjusted based on: "${toneAdjustment}". ${originalReview.review_text.substring(50)}`,
+                        review_title: originalReview.review_title + ' (Edited)',
+                        actual_word_count: parseInt(wordCount),
+                        target_word_count: parseInt(wordCount)
                     };
                     
-                    const newWordCount = countWords(updatedReviewData.reviewText);
-                    updatedReviewContent.innerHTML = `
-                        <div class="preview-title">Updated Review (${newWordCount} words):</div>
-                        <strong>${updatedReviewData.reviewTitle}</strong><br><br>
-                        ${updatedReviewData.reviewText}
+                    document.getElementById('updated-review-content').innerHTML = `
+                        <div class="preview-title">Updated Review (${updatedReviewData.actual_word_count} words):</div>
+                        <strong>${updatedReviewData.review_title}</strong><br><br>
+                        ${updatedReviewData.review_text}
                     `;
                     
                     // Reset animation state
@@ -1172,7 +1637,7 @@
                     progressFill.style.width = '0%';
                     
                     closeEditModal();
-                    editSuccessModal.classList.add('is-visible');
+                    modals.editSuccess.classList.add('is-visible');
                     
                 } catch (error) {
                     alert('Error generating edited review. Please try again.');
@@ -1191,29 +1656,23 @@
             });
 
             // Keep original button
-            keepOriginalBtn.addEventListener('click', () => {
+            document.getElementById('keep-original-btn').addEventListener('click', () => {
                 closeEditSuccessModal();
             });
 
             // Use updated version button
-            useUpdatedBtn.addEventListener('click', () => {
+            document.getElementById('use-updated-btn').addEventListener('click', () => {
                 if (updatedReviewData && currentEditingIndex >= 0) {
                     // Update the review data
-                    reviewsData[currentEditingIndex] = updatedReviewData;
-                    
-                    // Re-render the carousel to show updated content
-                    renderCarousel();
-                    
-                    // Update current index to the edited card
-                    currentIndex = currentEditingIndex;
-                    updateCarousel();
+                    pendingReviewsData[currentEditingIndex] = updatedReviewData;
                     
                     closeEditSuccessModal();
+                    renderPendingReviews(); // Re-render to show updated content
                 }
             });
 
-            renderCarousel();
-            window.addEventListener('resize', updateCarousel);
+            // Initialize with pending reviews
+            renderPendingReviews();
         });
     </script>
 </body>

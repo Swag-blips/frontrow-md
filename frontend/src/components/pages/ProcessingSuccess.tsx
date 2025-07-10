@@ -1,50 +1,190 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import "../styling/ProcessingSuccess.css";
 
 interface ProductData {
-  name: string;
-  image: string;
-  description: string;
-  ingredients: string[];
-  clinicianReviews?: string;
+  product_name: string;
+  product_image_url: string;
+  product_description: string;
+  ingredients: Array<{ 
+    ingredient_name: string;
+    ingredient_location?: string[];
+    sources?: string;
+    source?: string;
+    sources_text?: string;
+  }>;
+  clinician_reviews?: Array<{ review_text: string; reviewer_name: string; reviewer_title: string }>;
 }
 
 const ProcessingSuccess: React.FC = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const [productData, setProductData] = useState<ProductData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [retryAttempt, setRetryAttempt] = useState(0);
+  const [hasMinimalData, setHasMinimalData] = useState(false);
 
   const url = searchParams.get("url") || "";
   const productId = searchParams.get("productId");
 
-  // Demo data - in real implementation this would come from API/state
-  const productData: ProductData = {
-    name: "Prenatal Gummies For Him + Her",
-    image:
-      "https://www.mateandme.com/cdn/shop/files/duo_front.webp?v=1715284608&width=1646",
-    description:
-      "A bundle of goodness, designed for the both of you and your fertility journey. Effective and great tasting with clinically proven ingredients, this perfect prenatal pairing can help boost sperm health and support Mom and baby with key nutrients during preconception and pregnancy. Taking care of each other's health and wellness has never been so sexy.",
-    ingredients: [
-      "CoQ10",
-      "Methylated Folate",
-      "Choline",
-      "Vitamin D3",
-      "Vitamin B12",
-      "Vitamin K2",
-      "Antioxidants",
-    ],
-    clinicianReviews: undefined,
+  // Helper function to check if product data is minimal
+  const checkDataCompleteness = (data: ProductData) => {
+    const hasName = data.product_name && data.product_name.trim() !== "" && data.product_name !== "Unknown Product";
+    const hasDescription = data.product_description && data.product_description.trim() !== "";
+    const hasIngredients = data.ingredients && data.ingredients.length > 0;
+    const hasImage = data.product_image_url && data.product_image_url.trim() !== "";
+    
+    return hasName || hasDescription || hasIngredients || hasImage;
   };
+
+  useEffect(() => {
+    const fetchProductData = async (retryCount = 0) => {
+      const MAX_RETRIES = 5;
+      const RETRY_DELAY = 3000; // 3 seconds
+      
+      if (!productId) {
+        setError("No product ID provided");
+        setIsLoading(false);
+        return;
+      }
+
+      // Fetch product data from database using the correct endpoint
+      try {
+        const response = await fetch(`/frontrowmd/get_product_by_id/${productId}`);
+        
+        if (!response.ok) {
+          throw new Error(`Failed to fetch product: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (!data.product || !data.product.product_info) {
+          throw new Error('Product not found in database.');
+        }
+        
+        const product = data.product;
+        
+        setProductData({
+          product_name: product.product_info.product_name || "Unknown Product",
+          product_image_url: product.product_info.product_image_url || "",
+          product_description: product.product_info.product_description || "",
+          ingredients: product.product_info.ingredients || [],
+          clinician_reviews: product.product_info.clinician_reviews || []
+        });
+        
+        // Check if the data is minimal
+        const finalProductData = {
+          product_name: product.product_info.product_name || "Unknown Product",
+          product_image_url: product.product_info.product_image_url || "",
+          product_description: product.product_info.product_description || "",
+          ingredients: product.product_info.ingredients || [],
+          clinician_reviews: product.product_info.clinician_reviews || []
+        };
+        
+        setProductData(finalProductData);
+        setHasMinimalData(!checkDataCompleteness(finalProductData));
+        
+        setIsLoading(false);
+        
+      } catch (err: any) {
+        setError(err.message || 'Failed to load product data');
+        setIsLoading(false);
+      }
+    };
+
+    fetchProductData();
+  }, [productId]);
 
   const handleReject = () => {
-    // Navigate to rejection feedback page
-    navigate("/rejection-feedback");
+    // Navigate to rejection feedback page with productId
+    navigate(`/rejection-feedback?productId=${productId}`);
   };
 
-  const handleAccept = () => {
-    // Navigate to review results to see generated reviews
-    navigate("/review-configuration");
+  const handleAccept = async () => {
+    if (!productId) {
+      return;
+    }
+
+    try {
+      // Call the add_human_review endpoint with is_accurate: true and empty context
+      const response = await fetch(`/frontrowmd/add_human_review`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          product_id: productId,
+          is_accurate: true,
+          context: "",
+        }),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      // Navigate to review results to see generated reviews
+      navigate(`/review-configuration?productId=${productId}`);
+    } catch (error) {
+      alert('Failed to accept product. Please try again.');
+    }
   };
+
+  if (isLoading) {
+    return (
+      <div className="processing-success-wrapper">
+        <header className="header">
+          <div className="container header__container">
+            <Link to="/" className="logo">
+              <span className="logo__icon">+</span>
+              <span>FrontrowMD</span>
+            </Link>
+          </div>
+        </header>
+        <div className="container page-content">
+          <div className="loading-state">
+            <div className="loading-spinner"></div>
+            <p>
+              {retryAttempt > 0 
+                ? `Loading product data... (Retry attempt ${retryAttempt}/5)`
+                : "Loading product data..."
+              }
+            </p>
+            {retryAttempt > 0 && (
+              <p className="retry-info">
+                The product is still being processed. Please wait while we fetch the latest data.
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !productData) {
+    return (
+      <div className="processing-success-wrapper">
+        <header className="header">
+          <div className="container header__container">
+            <Link to="/" className="logo">
+              <span className="logo__icon">+</span>
+              <span>FrontrowMD</span>
+            </Link>
+          </div>
+        </header>
+        <div className="container page-content">
+          <div className="error-state">
+            <h1>Error Loading Product Data</h1>
+            <p className="error-message">{error || 'Product data not found'}</p>
+            <Link to="/product-input" className="button-primary">
+              Return to Homepage
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="processing-success-wrapper">
@@ -72,14 +212,14 @@ const ProcessingSuccess: React.FC = () => {
             <div className="panel-scrollable">
               <div className="section">
                 <h2 className="section-title">Product Name</h2>
-                <p className="product-name">{productData.name}</p>
+                <p className="product-name">{productData.product_name}</p>
               </div>
 
               <div className="section">
                 <h2 className="section-title">Product Image</h2>
                 <img
-                  src={productData.image}
-                  alt={productData.name}
+                  src={productData.product_image_url}
+                  alt={productData.product_name}
                   className="product-image"
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
@@ -90,26 +230,48 @@ const ProcessingSuccess: React.FC = () => {
 
               <div className="section">
                 <h2 className="section-title">Product Description</h2>
-                <p className="product-description">{productData.description}</p>
+                <p className="product-description">{productData.product_description}</p>
               </div>
 
               <div className="section">
                 <h2 className="section-title">Key Ingredients & Features</h2>
                 <div className="ingredients-list">
-                  {productData.ingredients.map((ingredient, index) => (
-                    <span key={index} className="ingredient-tag">
-                      {ingredient}
+                  {(() => {
+                    return productData.ingredients.map((ingredient, index) => {
+                      // Check for ingredient_location array first, then fallback to other source fields
+                      const sources = ingredient.ingredient_location 
+                        ? ingredient.ingredient_location.join(', ')
+                        : ingredient.sources || ingredient.source || ingredient.sources_text || '';
+                      return (
+                        <div key={index} className="ingredient-item">
+                          <span className="ingredient-tag">
+                            {ingredient.ingredient_name}
+                          </span>
+                          {sources && sources.trim() && (
+                            <span className="ingredient-sources">
+                              {sources}
                     </span>
-                  ))}
+                          )}
+                        </div>
+                      );
+                    });
+                  })()}
                 </div>
               </div>
 
               <div className="section">
                 <h2 className="section-title">Clinician Reviews</h2>
-                {productData.clinicianReviews ? (
-                  <p className="product-description">
-                    {productData.clinicianReviews}
-                  </p>
+                {productData.clinician_reviews && productData.clinician_reviews.length > 0 ? (
+                  <div className="clinician-reviews-list">
+                    {productData.clinician_reviews.map((review, index) => (
+                      <div key={index} className="review-item">
+                        <p className="review-text">"{review.review_text}"</p>
+                        <p className="reviewer-info">
+                          {review.reviewer_name} ({review.reviewer_title})
+                        </p>
+                      </div>
+                    ))}
+                  </div>
                 ) : (
                   <div className="no-data-placeholder">
                     No data found for clinician reviews.
@@ -124,8 +286,8 @@ const ProcessingSuccess: React.FC = () => {
             <div className="external-link-icon">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                width="48"
-                height="48"
+                width="64"
+                height="64"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"

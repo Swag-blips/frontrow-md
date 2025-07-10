@@ -219,8 +219,18 @@
 
         .ingredients-list {
             display: flex;
-            flex-wrap: wrap;
-            gap: var(--spacing-sm);
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+
+        .ingredient-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-sm) var(--spacing-md);
+            background-color: var(--background-color);
+            border-radius: var(--border-radius-medium);
+            border: 1px solid var(--border-subtle);
         }
 
         .ingredient-tag {
@@ -230,6 +240,16 @@
             border-radius: 16px;
             font-size: 0.9rem;
             font-weight: var(--font-weight-medium);
+        }
+
+        .ingredient-sources {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-style: italic;
+            background-color: var(--card-bg);
+            padding: 2px 8px;
+            border-radius: 8px;
+            border: 1px solid var(--border-subtle);
         }
         
         .no-data-placeholder {
@@ -327,13 +347,34 @@
                     <div class="section">
                         <h2 class="section-title">Key Ingredients & Features</h2>
                         <div class="ingredients-list">
-                            <span class="ingredient-tag">CoQ10</span>
-                            <span class="ingredient-tag">Methylated Folate</span>
-                            <span class="ingredient-tag">Choline</span>
-                            <span class="ingredient-tag">Vitamin D3</span>
-                            <span class="ingredient-tag">Vitamin B12</span>
-                            <span class="ingredient-tag">Vitamin K2</span>
-                            <span class="ingredient-tag">Antioxidants</span>
+                            <div class="ingredient-item">
+                                <span class="ingredient-tag">CoQ10</span>
+                                <span class="ingredient-sources">reviews, description</span>
+                            </div>
+                            <div class="ingredient-item">
+                                <span class="ingredient-tag">Methylated Folate</span>
+                                <span class="ingredient-sources">description</span>
+                            </div>
+                            <div class="ingredient-item">
+                                <span class="ingredient-tag">Choline</span>
+                                <span class="ingredient-sources">reviews, description</span>
+                            </div>
+                            <div class="ingredient-item">
+                                <span class="ingredient-tag">Vitamin D3</span>
+                                <span class="ingredient-sources">reviews</span>
+                            </div>
+                            <div class="ingredient-item">
+                                <span class="ingredient-tag">Vitamin B12</span>
+                                <span class="ingredient-sources">description</span>
+                            </div>
+                            <div class="ingredient-item">
+                                <span class="ingredient-tag">Vitamin K2</span>
+                                <span class="ingredient-sources">description</span>
+                            </div>
+                            <div class="ingredient-item">
+                                <span class="ingredient-tag">Antioxidants</span>
+                                <span class="ingredient-sources">general</span>
+                            </div>
                         </div>
                     </div>
                     
@@ -363,8 +404,8 @@
     </div>
 
     <footer class="validation-footer">
-        <button class="action-button reject-button">Reject & Retry</button>
-        <button class="action-button accept-button">Accept & Continue</button>
+        <button class="action-button reject-button">Reject</button>
+        <button class="action-button accept-button">Accept</button>
     </footer>
 </body>
 </html>
