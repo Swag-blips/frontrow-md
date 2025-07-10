@@ -22,6 +22,7 @@ interface ReviewData {
   actual_word_count: number;
   profile_image_url: string;
   referenced_studies: string[];
+  review_id: string;
 }
 
 const ReviewResults: React.FC = () => {
@@ -73,6 +74,12 @@ const ReviewResults: React.FC = () => {
     []
   );
 
+  // Add new state for regenerated review modal
+  const [isRegeneratedModalOpen, setIsRegeneratedModalOpen] = useState(false);
+  const [regeneratedReviewText, setRegeneratedReviewText] = useState<
+    string | null
+  >(null);
+
   // Fetch reviews when component mounts
   useEffect(() => {
     const fetchReviews = async () => {
@@ -97,10 +104,24 @@ const ReviewResults: React.FC = () => {
 
         console.log("product", product);
 
-        // Use enhanced_generated_reviews as pending reviews
-        setPendingReviewsData(product.product.enhanced_generated_reviews || []);
-        // Optionally clear accepted reviews on load
-        setAcceptedReviewsData([]);
+        const allReviews = product.product.enhanced_generated_reviews || [];
+        const acceptedIds = product.product.accepted_review_ids || [];
+        const rejectedIds = product.product.rejected_review_ids || [];
+
+        // Remove rejected reviews first
+        const notRejected = allReviews.filter(
+          (r: any) => !rejectedIds.includes(r.review_id)
+        );
+
+        const accepted = notRejected.filter((r: any) =>
+          acceptedIds.includes(r.review_id)
+        );
+        const pending = notRejected.filter(
+          (r: any) => !acceptedIds.includes(r.review_id)
+        );
+
+        setPendingReviewsData(pending);
+        setAcceptedReviewsData(accepted);
       } catch (err) {
         setPendingReviewsData([]);
         setAcceptedReviewsData([]);
@@ -409,18 +430,35 @@ const ReviewResults: React.FC = () => {
     );
   };
 
-  const acceptPendingReview = (index: number) => {
+  // Accept review: call backend, then update UI
+  const acceptPendingReview = async (index: number) => {
     const review = pendingReviewsData[index];
+
+    if (!productId || !review || !review.review_title) return;
+    try {
+      const response = await fetch("/product_management/update_review_status", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          product_id: productId,
+          review_id: review.review_id, // fallback if no explicit id
+          action: "accept",
+        }),
+      });
+      if (!response.ok) throw new Error("Failed to accept review");
+      // Optionally handle response
+    } catch (err) {
+      // Optionally show error toast
+    }
     setAcceptedReviewsData((prev) => [...prev, review]);
     setPendingReviewsData((prev) => prev.filter((_, i) => i !== index));
-
     if (currentPendingIndex >= pendingReviewsData.length - 1) {
       setCurrentPendingIndex(Math.max(0, pendingReviewsData.length - 2));
     }
-
     setIsAcceptModalOpen(true);
   };
 
+  // Reject review: open modal to get reason, then call backend on submit
   const rejectPendingReview = (index: number) => {
     setCurrentEditingIndex(index);
     setIsRejectModalOpen(true);
@@ -431,21 +469,36 @@ const ReviewResults: React.FC = () => {
     setIsEditModalOpen(true);
   };
 
-  const handleRejectSubmit = (e: React.FormEvent) => {
+  const handleRejectSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (rejectReason.trim()) {
-      setPendingReviewsData((prev) =>
-        prev.filter((_, i) => i !== currentEditingIndex)
-      );
-
-      if (currentPendingIndex >= pendingReviewsData.length - 1) {
-        setCurrentPendingIndex(Math.max(0, pendingReviewsData.length - 2));
-      }
-
-      setIsRejectModalOpen(false);
-      setIsRejectSuccessModalOpen(true);
-      setRejectReason("");
+    if (!rejectReason.trim()) return;
+    const review = pendingReviewsData[currentEditingIndex];
+    if (!productId || !review || !review.review_title) return;
+    try {
+      const response = await fetch("/product_management/update_review_status", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          product_id: productId,
+          review_id: review.review_id, // fallback if no explicit id
+          action: "reject",
+          reason: rejectReason,
+        }),
+      });
+      if (!response.ok) throw new Error("Failed to reject review");
+      // Optionally handle response
+    } catch (err) {
+      // Optionally show error toast
     }
+    setPendingReviewsData((prev) =>
+      prev.filter((_, i) => i !== currentEditingIndex)
+    );
+    if (currentPendingIndex >= pendingReviewsData.length - 1) {
+      setCurrentPendingIndex(Math.max(0, pendingReviewsData.length - 2));
+    }
+    setIsRejectModalOpen(false);
+    setIsRejectSuccessModalOpen(true);
+    setRejectReason("");
   };
 
   const handleEditSubmit = async (e: React.FormEvent) => {
@@ -458,28 +511,86 @@ const ReviewResults: React.FC = () => {
     setIsGenerating(true);
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
+      // Call backend to regenerate review
       const originalReview = pendingReviewsData[currentEditingIndex];
-      const updatedReview = {
-        ...originalReview,
-        review_text: `This is a mock updated review with approximately ${selectedWordCount} words. The tone has been adjusted based on: "${toneAdjustment}". ${originalReview.review_text.substring(
-          50
-        )}`,
-        review_title: originalReview.review_title + " (Edited)",
-        actual_word_count: selectedWordCount,
-        target_word_count: selectedWordCount,
-      };
+      const response = await fetch(
+        "/product_metadata_extraction/regenerate_review",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            product_id: productId,
+            review_id: originalReview.review_id,
+            target_word_count: selectedWordCount,
+            tone_adjustment: toneAdjustment,
+          }),
+        }
+      );
 
-      setUpdatedReviewData(updatedReview);
+      if (!response.ok) throw new Error("Failed to regenerate review");
+      const data = await response.json();
+
+      setRegeneratedReviewText(data.regenerated_review_text);
+      setIsRegeneratedModalOpen(true);
       setIsEditModalOpen(false);
-      setIsEditSuccessModalOpen(true);
     } catch (error) {
       alert("Error generating edited review. Please try again.");
     } finally {
       setIsGenerating(false);
     }
+  };
+
+  // Accept regenerated review
+  const acceptRegeneratedReview = async () => {
+    if (
+      regeneratedReviewText &&
+      currentEditingIndex >= 0 &&
+      productId &&
+      pendingReviewsData[currentEditingIndex]
+    ) {
+      const review = pendingReviewsData[currentEditingIndex];
+      try {
+        const response = await fetch(
+          "/product_metadata_extraction/save_regenerated_review",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              product_id: productId,
+              review_id: review.review_id,
+              regenerated_review_text: regeneratedReviewText,
+            }),
+          }
+        );
+        if (!response.ok) throw new Error("Failed to save regenerated review");
+        // Optionally handle response or show a success message
+        setPendingReviewsData((prev) =>
+          prev.map((r, idx) =>
+            idx === currentEditingIndex
+              ? {
+                  ...r,
+                  review_text: regeneratedReviewText,
+                  review_title: r.review_title + " (Edited)",
+                  actual_word_count: selectedWordCount,
+                  target_word_count: selectedWordCount,
+                }
+              : r
+          )
+        );
+      } catch (error) {
+        alert("Error saving regenerated review. Please try again.");
+      }
+    }
+    setIsRegeneratedModalOpen(false);
+    setRegeneratedReviewText(null);
+    setCurrentEditingIndex(-1);
+    setToneAdjustment("");
+  };
+
+  // Reject regenerated review (close modal, keep original)
+  const rejectRegeneratedReview = () => {
+    setIsRegeneratedModalOpen(false);
+    setRegeneratedReviewText(null);
   };
 
   const useUpdatedVersion = () => {
@@ -913,6 +1024,54 @@ const ReviewResults: React.FC = () => {
                 </div>
               </>
             )}
+          </div>
+        </div>
+      </div>
+
+      {/* Regenerated Review Modal */}
+      <div className={`modal ${isRegeneratedModalOpen ? "is-visible" : ""}`}>
+        <div className="modal-content">
+          <button className="modal-close" onClick={rejectRegeneratedReview}>
+            <svg width="24" height="24" viewBox="0 0 24 24">
+              <path
+                fill="currentColor"
+                d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"
+              />
+            </svg>
+          </button>
+          <div className="modal-body">
+            <h2 className="modal-title">Regenerated Review</h2>
+            <div className="current-review-preview">
+              <div className="preview-title">
+                Updated Review ({selectedWordCount} words):
+              </div>
+              <strong>
+                {currentEditingIndex >= 0 &&
+                  pendingReviewsData[currentEditingIndex]?.review_title +
+                    " (Edited)"}
+              </strong>
+              <br />
+              <br />
+              {regeneratedReviewText}
+            </div>
+            <div
+              style={{
+                display: "flex",
+                gap: "var(--spacing-md)",
+                justifyContent: "center",
+                marginTop: "var(--spacing-lg)",
+              }}
+            >
+              <button className="form-submit" onClick={rejectRegeneratedReview}>
+                Reject
+              </button>
+              <button
+                className="form-submit primary"
+                onClick={acceptRegeneratedReview}
+              >
+                Accept
+              </button>
+            </div>
           </div>
         </div>
       </div>

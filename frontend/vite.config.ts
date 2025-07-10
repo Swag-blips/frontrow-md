@@ -1,7 +1,8 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import path from 'path'
-import { fileURLToPath } from 'url';
+// ...existing code...
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import path from "path";
+import { fileURLToPath } from "url";
 
 // Correctly resolve __dirname in ESM
 const __filename = fileURLToPath(import.meta.url);
@@ -17,6 +18,12 @@ export default defineConfig({
   },
   server: {
     proxy: {
+      "/product_management/update_review_status": {
+        target: "https://65.108.49.212/",
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path, // Keep the full path
+      },
       // Updated to new backend
       "/frontrowmd/products": {
         target: "https://65.108.49.212/",
@@ -30,10 +37,10 @@ export default defineConfig({
       },
       "/frontrowmd/product_metadata_extraction": {
         target: "https://65.108.49.212/",
-        changeOrigin: true, 
+        changeOrigin: true,
         secure: false,
         rewrite: (path) =>
-          path.replace( 
+          path.replace(
             "/frontrowmd/product_metadata_extraction",
             "/product_metadata_extraction"
           ),
@@ -87,14 +94,25 @@ export default defineConfig({
       "/frontrowmd/get_reviews_by_task": {
         target: "https://65.108.49.212/",
         changeOrigin: true,
-        secure: false, 
+        secure: false,
         rewrite: (path) =>
           path.replace(
             "/frontrowmd/get_reviews_by_task",
             "/product_metadata_extraction/get_reviews_by_task"
           ),
       },
+      "/product_metadata_extraction/regenerate_review": {
+        target: "https://65.108.49.212/",
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path, // Keep the full path
+      },
+      "/product_metadata_extraction/save_regenerated_review": {
+        target: "https://65.108.49.212/",
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path, // Keep the full path
+      },
     },
   },
 });
- 

@@ -14,7 +14,7 @@
         },
         { "key": "Access-Control-Allow-Headers", "value": "*" },
         { "key": "Access-Control-Max-Age", "value": "86400" }
-      ]
+      ] 
     }
   ],
   "rewrites": [
