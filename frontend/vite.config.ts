@@ -30,10 +30,10 @@ export default defineConfig({
       },
       "/frontrowmd/product_metadata_extraction": {
         target: "https://65.108.49.212/",
-        changeOrigin: true,
+        changeOrigin: true, 
         secure: false,
         rewrite: (path) =>
-          path.replace(
+          path.replace( 
             "/frontrowmd/product_metadata_extraction",
             "/product_metadata_extraction"
           ),

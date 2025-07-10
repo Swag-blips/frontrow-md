@@ -6,14 +6,18 @@ interface ProductData {
   product_name: string;
   product_image_url: string;
   product_description: string;
-  ingredients: Array<{ 
+  ingredients: Array<{
     ingredient_name: string;
     ingredient_location?: string[];
     sources?: string;
     source?: string;
     sources_text?: string;
   }>;
-  clinician_reviews?: Array<{ review_text: string; reviewer_name: string; reviewer_title: string }>;
+  clinician_reviews?: Array<{
+    review_text: string;
+    reviewer_name: string;
+    reviewer_title: string;
+  }>;
 }
 
 const ProcessingSuccess: React.FC = () => {
@@ -30,11 +34,16 @@ const ProcessingSuccess: React.FC = () => {
 
   // Helper function to check if product data is minimal
   const checkDataCompleteness = (data: ProductData) => {
-    const hasName = data.product_name && data.product_name.trim() !== "" && data.product_name !== "Unknown Product";
-    const hasDescription = data.product_description && data.product_description.trim() !== "";
+    const hasName =
+      data.product_name &&
+      data.product_name.trim() !== "" &&
+      data.product_name !== "Unknown Product";
+    const hasDescription =
+      data.product_description && data.product_description.trim() !== "";
     const hasIngredients = data.ingredients && data.ingredients.length > 0;
-    const hasImage = data.product_image_url && data.product_image_url.trim() !== "";
-    
+    const hasImage =
+      data.product_image_url && data.product_image_url.trim() !== "";
+
     return hasName || hasDescription || hasIngredients || hasImage;
   };
 
@@ -42,7 +51,7 @@ const ProcessingSuccess: React.FC = () => {
     const fetchProductData = async (retryCount = 0) => {
       const MAX_RETRIES = 5;
       const RETRY_DELAY = 3000; // 3 seconds
-      
+
       if (!productId) {
         setError("No product ID provided");
         setIsLoading(false);
@@ -51,44 +60,48 @@ const ProcessingSuccess: React.FC = () => {
 
       // Fetch product data from database using the correct endpoint
       try {
-        const response = await fetch(`/frontrowmd/get_product_by_id/${productId}`);
-        
+        const response = await fetch(
+          `/frontrowmd/get_product_by_id/${productId}`
+        );
+
         if (!response.ok) {
           throw new Error(`Failed to fetch product: ${response.status}`);
         }
-        
+        console.log("RESPONSE", response)
+
         const data = await response.json();
-        
+
+        console.log("PROCESSING SUCCESS", data);
+
         if (!data.product || !data.product.product_info) {
-          throw new Error('Product not found in database.');
+          throw new Error("Product not found in database.");
         }
-        
+
         const product = data.product;
-        
+
         setProductData({
           product_name: product.product_info.product_name || "Unknown Product",
           product_image_url: product.product_info.product_image_url || "",
           product_description: product.product_info.product_description || "",
           ingredients: product.product_info.ingredients || [],
-          clinician_reviews: product.product_info.clinician_reviews || []
+          clinician_reviews: product.product_info.clinician_reviews || [],
         });
-        
+
         // Check if the data is minimal
         const finalProductData = {
           product_name: product.product_info.product_name || "Unknown Product",
           product_image_url: product.product_info.product_image_url || "",
           product_description: product.product_info.product_description || "",
           ingredients: product.product_info.ingredients || [],
-          clinician_reviews: product.product_info.clinician_reviews || []
+          clinician_reviews: product.product_info.clinician_reviews || [],
         };
-        
+
         setProductData(finalProductData);
         setHasMinimalData(!checkDataCompleteness(finalProductData));
-        
+
         setIsLoading(false);
-        
       } catch (err: any) {
-        setError(err.message || 'Failed to load product data');
+        setError(err.message || "Failed to load product data");
         setIsLoading(false);
       }
     };
@@ -109,9 +122,9 @@ const ProcessingSuccess: React.FC = () => {
     try {
       // Call the add_human_review endpoint with is_accurate: true and empty context
       const response = await fetch(`/frontrowmd/add_human_review`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           product_id: productId,
@@ -119,15 +132,15 @@ const ProcessingSuccess: React.FC = () => {
           context: "",
         }),
       });
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      
+
       // Navigate to review results to see generated reviews
       navigate(`/review-configuration?productId=${productId}`);
     } catch (error) {
-      alert('Failed to accept product. Please try again.');
+      alert("Failed to accept product. Please try again.");
     }
   };
 
@@ -146,14 +159,14 @@ const ProcessingSuccess: React.FC = () => {
           <div className="loading-state">
             <div className="loading-spinner"></div>
             <p>
-              {retryAttempt > 0 
+              {retryAttempt > 0
                 ? `Loading product data... (Retry attempt ${retryAttempt}/5)`
-                : "Loading product data..."
-              }
+                : "Loading product data..."}
             </p>
             {retryAttempt > 0 && (
               <p className="retry-info">
-                The product is still being processed. Please wait while we fetch the latest data.
+                The product is still being processed. Please wait while we fetch
+                the latest data.
               </p>
             )}
           </div>
@@ -176,7 +189,7 @@ const ProcessingSuccess: React.FC = () => {
         <div className="container page-content">
           <div className="error-state">
             <h1>Error Loading Product Data</h1>
-            <p className="error-message">{error || 'Product data not found'}</p>
+            <p className="error-message">{error || "Product data not found"}</p>
             <Link to="/product-input" className="button-primary">
               Return to Homepage
             </Link>
@@ -230,7 +243,9 @@ const ProcessingSuccess: React.FC = () => {
 
               <div className="section">
                 <h2 className="section-title">Product Description</h2>
-                <p className="product-description">{productData.product_description}</p>
+                <p className="product-description">
+                  {productData.product_description}
+                </p>
               </div>
 
               <div className="section">
@@ -239,9 +254,12 @@ const ProcessingSuccess: React.FC = () => {
                   {(() => {
                     return productData.ingredients.map((ingredient, index) => {
                       // Check for ingredient_location array first, then fallback to other source fields
-                      const sources = ingredient.ingredient_location 
-                        ? ingredient.ingredient_location.join(', ')
-                        : ingredient.sources || ingredient.source || ingredient.sources_text || '';
+                      const sources = ingredient.ingredient_location
+                        ? ingredient.ingredient_location.join(", ")
+                        : ingredient.sources ||
+                          ingredient.source ||
+                          ingredient.sources_text ||
+                          "";
                       return (
                         <div key={index} className="ingredient-item">
                           <span className="ingredient-tag">
@@ -250,7 +268,7 @@ const ProcessingSuccess: React.FC = () => {
                           {sources && sources.trim() && (
                             <span className="ingredient-sources">
                               {sources}
-                    </span>
+                            </span>
                           )}
                         </div>
                       );
@@ -261,7 +279,8 @@ const ProcessingSuccess: React.FC = () => {
 
               <div className="section">
                 <h2 className="section-title">Clinician Reviews</h2>
-                {productData.clinician_reviews && productData.clinician_reviews.length > 0 ? (
+                {productData.clinician_reviews &&
+                productData.clinician_reviews.length > 0 ? (
                   <div className="clinician-reviews-list">
                     {productData.clinician_reviews.map((review, index) => (
                       <div key={index} className="review-item">
