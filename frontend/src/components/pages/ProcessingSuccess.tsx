@@ -61,13 +61,13 @@ const ProcessingSuccess: React.FC = () => {
       // Fetch product data from database using the correct endpoint
       try {
         const response = await fetch(
-          `/frontrowmd/get_product_by_id/${productId}`
+          `https://65.108.49.212/product_management/get_product_by_id/${productId}`
         );
 
         if (!response.ok) {
           throw new Error(`Failed to fetch product: ${response.status}`);
         }
-        console.log("RESPONSE", response)
+        console.log("RESPONSE", response.body);
 
         const data = await response.json();
 
