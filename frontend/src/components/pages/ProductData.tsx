@@ -2,15 +2,28 @@ import React, { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import "@/components/styling/ProductData.css";
 
+// Add to Product interface
+interface KeyTerm {
+  term: string;
+  term_location: string[];
+}
+interface HealthClaim {
+  claim: string;
+  category: string;
+  claim_type: string;
+  claim_location: string[];
+}
+
 interface Product {
   product_id: string;
   product_name: string;
   product_description: string;
   product_image_url: string;
   product_url?: string;
-  ingredients: Array<
-    string | { ingredient_name: string; ingredient_location: string[] }
-  >;
+  ingredients: Array<{
+    ingredient_name: string;
+    ingredient_location: string[];
+  }>;
   search_queries: Array<{
     term: string;
     rationale: string;
@@ -34,6 +47,8 @@ interface Product {
     reviewer_name: string;
     reviewer_title: string;
   }>;
+  key_terms?: KeyTerm[];
+  health_claims?: HealthClaim[];
 }
 
 const ProductData: React.FC = () => {
@@ -95,10 +110,12 @@ const ProductData: React.FC = () => {
           product_image_url:
             product.product_info?.product_image_url ||
             product.product_image_url ||
-            "",  
-          product_url: 
+            "",
+          product_url:
             product.product_url || product.product_info?.source_url || "",
-          ingredients: product.product_info?.ingredients,
+          ingredients: product.product_info?.ingredients || [],
+          key_terms: product.product_info.key_terms || [],
+          health_claims: product.product_info.health_claims || [],
           search_queries: product.search_queries || product.search_terms || [],
           clinical_research:
             product.combined_research_studies ||
@@ -295,30 +312,96 @@ const ProductData: React.FC = () => {
                   <div className="ingredients-list">
                     {(productData.ingredients || []).map(
                       (ingredient, index) => {
-                        // Handle both string and object formats
-                        const ingredientName =
-                          typeof ingredient === "string"
-                            ? ingredient
-                            : (ingredient as any).ingredient_name || ingredient;
-                        const ingredientSources =
-                          typeof ingredient === "object" &&
-                          (ingredient as any).ingredient_location
-                            ? (ingredient as any).ingredient_location
-                            : ["description"];
-
+                        const ingredientName = ingredient.ingredient_name;
+                        const ingredientSources = Array.isArray(
+                          ingredient.ingredient_location
+                        )
+                          ? ingredient.ingredient_location.join(", ")
+                          : "";
                         return (
                           <div key={index} className="ingredient-item">
                             <span className="ingredient-tag">
                               {ingredientName}
                             </span>
                             <span className="ingredient-sources">
-                              {ingredientSources.join(", ")}
+                              {ingredientSources}
                             </span>
                           </div>
                         );
                       }
                     )}
                   </div>
+                </div>
+                {/* --- Key Terms --- */}
+                <h3 className="section-title" style={{ marginTop: 16 }}>
+                  Key Terms & Features
+                </h3>
+                <div className="key-terms-grid">
+                  {productData.key_terms && productData.key_terms.length > 0 ? (
+                    productData.key_terms.map((keyTerm, idx) => (
+                      <div key={idx} className="key-term-item">
+                        <span className="key-term-tag">{keyTerm.term}</span>
+                        <span className="key-term-sources">
+                          {Array.isArray(keyTerm.term_location)
+                            ? keyTerm.term_location.join(", ")
+                            : keyTerm.term_location}
+                        </span>
+                      </div>
+                    ))
+                  ) : (
+                    <div
+                      style={{
+                        fontStyle: "italic",
+                        color: "var(--text-secondary)",
+                        textAlign: "center",
+                        padding: "var(--spacing-md)",
+                      }}
+                    >
+                      No key terms data available.
+                    </div>
+                  )}
+                </div>
+                {/* --- Health Claims --- */}
+                <h3 className="section-title" style={{ marginTop: 16 }}>
+                  Health Claims
+                </h3>
+                <div className="health-claims-list">
+                  {productData.health_claims &&
+                  productData.health_claims.length > 0 ? (
+                    productData.health_claims.map((claim, idx) => (
+                      <div key={idx} className="health-claim-item">
+                        <div className="health-claim-header">
+                          <span className="health-claim-text">
+                            {claim.claim}
+                          </span>
+                          <span className="health-claim-category">
+                            {claim.category}
+                          </span>
+                        </div>
+                        <div className="health-claim-meta">
+                          <span className="health-claim-type">
+                            {claim.claim_type}
+                          </span>
+                          <span className="health-claim-locations">
+                            {Array.isArray(claim.claim_location)
+                              ? claim.claim_location.join(", ")
+                              : claim.claim_location}
+                          </span>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div
+                      style={{
+                        fontStyle: "italic",
+                        color: "var(--text-secondary)",
+                        textAlign: "center",
+                        padding: "var(--spacing-md)",
+                      }}
+                    >
+                      No health claims data available.
+                    </div>
+                  )}
                 </div>
               </div>
               <button
