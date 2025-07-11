@@ -53,126 +53,65 @@ const ProductData: React.FC = () => {
       if (!productId || hasFetched.current) return;
       hasFetched.current = true;
 
-      // Check localStorage first
-      const cachedProducts = localStorage.getItem("frontrow_products");
-      const cachedTimestamp = localStorage.getItem(
-        "frontrow_products_timestamp"
-      );
-      const now = Date.now();
-
-      // Use cache if it's less than 5 seconds old
-      if (
-        cachedProducts &&
-        cachedTimestamp &&
-        now - parseInt(cachedTimestamp) < 5000
-      ) {
-        const products = JSON.parse(cachedProducts);
-        const product = products.find((p: any) => p.product_id === productId);
-        if (product) {
-          // Normalize the product data to handle nested structure
-          const normalizedProduct: Product = {
-            product_id: product.product_id,
-            product_name:
-              product.product_info?.product_name ||
-              product.product_name ||
-              "Unnamed Product",
-            product_description:
-              product.product_info?.product_description ||
-              product.product_description ||
-              "",
-            product_image_url:
-              product.product_info?.product_image_url ||
-              product.product_image_url ||
-              "",
-            product_url:
-              product.product_url || product.product_info?.source_url || "",
-            ingredients:
-              product.product_info?.ingredients?.map(
-                (ing: any) => ing.ingredient_name || ing
-              ) ||
-              product.ingredients ||
-              [],
-            search_queries:
-              product.search_queries || product.search_terms || [],
-            clinical_research:
-              product.combined_research_studies ||
-              product.clinical_research ||
-              [],
-            clinician_reviews:
-              product.product_info?.clinician_reviews ||
-              product.clinician_reviews ||
-              [],
-          };
-
-          setProductData(normalizedProduct);
-          setError(null);
-          setIsLoading(false);
-          return;
-        }
-      }
-
       try {
-        const response = await fetch("/frontrowmd/products", {
-          method: "GET",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-        });
+        setIsLoading(true);
+        setError(null);
+
+        // Fetch the product by ID from the new endpoint
+        const response = await fetch(
+          `${window.location.origin}/frontrowmd/get_product_by_id/${productId}`,
+          {
+            method: "GET",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
         if (!response.ok) {
-          throw new Error(`Failed to fetch products: ${response.status}`);
+          throw new Error(`Failed to fetch product: ${response.status}`);
         }
 
         const data = await response.json();
-        if (!data.products || !Array.isArray(data.products)) {
-          throw new Error("No products found in the database.");
-        }
+        const product = data.product;
+        console.log("PRODUCT", product);
 
-        const product = data.products.find(
-          (p: any) => p.product_id === productId
-        );
-        if (product) {
-          // Normalize the product data to handle nested structure
-          const normalizedProduct: Product = {
-            product_id: product.product_id,
-            product_name:
-              product.product_info?.product_name ||
-              product.product_name ||
-              "Unnamed Product",
-            product_description:
-              product.product_info?.product_description ||
-              product.product_description ||
-              "",
-            product_image_url:
-              product.product_info?.product_image_url ||
-              product.product_image_url ||
-              "",
-            product_url:
-              product.product_url || product.product_info?.source_url || "",
-            ingredients:
-              product.product_info?.ingredients?.map(
-                (ing: any) => ing.ingredient_name || ing
-              ) ||
-              product.ingredients ||
-              [],
-            search_queries:
-              product.search_queries || product.search_terms || [],
-            clinical_research:
-              product.combined_research_studies ||
-              product.clinical_research ||
-              [],
-            clinician_reviews:
-              product.product_info?.clinician_reviews ||
-              product.clinician_reviews ||
-              [],
-          };
-
-          setProductData(normalizedProduct);
-          setError(null);
-        } else {
+        if (!product) {
           throw new Error(`Product with ID ${productId} not found.`);
         }
+
+        // Normalize the product data to match the expected Product interface
+        const normalizedProduct: Product = {
+          product_id: product.product_id,
+          product_name:
+            product.product_info?.product_name ||
+            product.product_name ||
+            "Unnamed Product",
+          product_description:
+            product.product_info?.product_description ||
+            product.product_description ||
+            "",
+          product_image_url:
+            product.product_info?.product_image_url ||
+            product.product_image_url ||
+            "",
+          product_url:
+            product.product_url || product.product_info?.source_url || "",
+          ingredients: product.product_info?.ingredients,
+          search_queries: product.search_queries || product.search_terms || [],
+          clinical_research:
+            product.combined_research_studies ||
+            product.clinical_research ||
+            [],
+          clinician_reviews:
+            product.product_info?.clinician_reviews ||
+            product.clinician_reviews ||
+            [],
+        };
+
+        setProductData(normalizedProduct);
+        setError(null);
       } catch (err: any) {
         setError(err.message || "Failed to load product data");
       } finally {
@@ -263,7 +202,7 @@ const ProductData: React.FC = () => {
     );
   }
 
-  console.log(productData)
+  console.log(productData);
 
   return (
     <div className="product-data-wrapper">

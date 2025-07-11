@@ -477,6 +477,8 @@ const ReviewConfiguration: React.FC = () => {
         ),
       };
 
+      console.log("payload", payload);
+
       const response = await fetch("/frontrowmd/generate_reviews_async", {
         method: "POST",
         headers: {
