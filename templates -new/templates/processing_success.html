@@ -38,7 +38,11 @@
             --shadow-medium: 0px 8px 24px rgba(0, 0, 0, 0.1);
         }
 
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        *, *::before, *::after { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+        }
         
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
@@ -171,8 +175,8 @@
             max-width: 400px;
             margin-bottom: var(--spacing-lg);
         }
- 
-        .external-link-button {    
+
+        .external-link-button {
             display: inline-block;
             background-color: var(--accent-primary);
             color: white;
@@ -191,7 +195,10 @@
             box-shadow: var(--shadow-medium);
         }
 
-        .section { margin-bottom: var(--spacing-lg); }
+        .section { 
+            margin-bottom: var(--spacing-lg); 
+        }
+        
         .section-title {
             font-size: 1.1rem;
             font-weight: var(--font-weight-bold);
@@ -217,6 +224,7 @@
             color: var(--text-secondary);
         }
 
+        /* Ingredients Styles */
         .ingredients-list {
             display: flex;
             flex-direction: column;
@@ -250,6 +258,119 @@
             padding: 2px 8px;
             border-radius: 8px;
             border: 1px solid var(--border-subtle);
+        }
+
+        /* Key Terms Styles */
+        .key-terms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-sm);
+        }
+
+        .key-term-item {
+            display: flex;
+            flex-direction: column;
+            padding: var(--spacing-sm);
+            background-color: var(--background-color);
+            border-radius: var(--border-radius-medium);
+            border: 1px solid var(--border-subtle);
+            transition: all 0.2s ease;
+        }
+
+        .key-term-item:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .key-term-tag {
+            background-color: #E3F2FD;
+            color: #1565C0;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 0.85rem;
+            font-weight: var(--font-weight-medium);
+            margin-bottom: 4px;
+            text-align: center;
+            border: 1px solid #BBDEFB;
+        }
+
+        .key-term-sources {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            font-style: italic;
+            text-align: center;
+        }
+
+        /* Health Claims Styles */
+        .health-claims-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+
+        .health-claim-item {
+            padding: var(--spacing-md);
+            background-color: var(--background-color);
+            border-radius: var(--border-radius-medium);
+            border-left: 4px solid var(--accent-primary);
+            transition: all 0.2s ease;
+        }
+
+        .health-claim-item:hover {
+            transform: translateX(2px);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .health-claim-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--spacing-sm);
+            gap: var(--spacing-sm);
+        }
+
+        .health-claim-text {
+            font-size: 0.9rem;
+            font-weight: var(--font-weight-medium);
+            color: var(--text-primary);
+            line-height: 1.4;
+            flex: 1;
+        }
+
+        .health-claim-category {
+            background-color: #FFF3E0;
+            color: #E65100;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: var(--font-weight-medium);
+            white-space: nowrap;
+            border: 1px solid #FFE0B2;
+        }
+
+        .health-claim-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: var(--spacing-sm);
+            padding-top: var(--spacing-sm);
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        .health-claim-type {
+            background-color: var(--tag-bg);
+            color: var(--text-secondary);
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            font-weight: var(--font-weight-medium);
+        }
+
+        .health-claim-locations {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            font-style: italic;
         }
         
         .no-data-placeholder {
@@ -305,6 +426,22 @@
             background-color: var(--success-color-hover);
             transform: translateY(-2px);
         }
+
+        @media (max-width: 768px) {
+            .validation-container {
+                grid-template-columns: 1fr;
+                gap: var(--spacing-md);
+            }
+            
+            .key-terms-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+            
+            .health-claim-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
     </style>
 </head>
 <body>
@@ -329,51 +466,166 @@
                 <div class="panel-scrollable">
                     <div class="section">
                         <h2 class="section-title">Product Name</h2>
-                        <p class="product-name">Prenatal Gummies For Him + Her</p>
+                        <p class="product-name">LEIAMOON Steam Seat</p>
                     </div>
                     
                     <div class="section">
                         <h2 class="section-title">Product Image</h2>
-                        <img src="https://www.mateandme.com/cdn/shop/files/duo_front.webp?v=1715284608&width=1646" alt="Prenatal Gummies" class="product-image">
+                        <img src="https://www.leiamoon.com/product/order-leiamoon-steam-seat/" alt="LEIAMOON Steam Seat" class="product-image">
                     </div>
 
                     <div class="section">
                         <h2 class="section-title">Product Description</h2>
                         <p class="product-description">
-                            A bundle of goodness, designed for the both of you and your fertility journey. Effective and great tasting with clinically proven ingredients, this perfect prenatal pairing can help boost sperm health and support Mom and baby with key nutrients during preconception and pregnancy. Taking care of each other's health and wellness has never been so sexy.
+                            The LEIAMOON Steam Seat offers ultimate self-care, designed for every stage of womanhood, from menstruation to fertility support, postpartum, and pre/post menopause. It provides transformative benefits including pelvic comfort through fragrant herb-infused steam for soothing relief and gentle cleansing. It enhances relaxation and wellness, offering a mind-body connection and a bonus facial steam for skin health. The seat features therapeutic heat from dual combination near infrared + red light LEDs, which improve circulation, cellular regeneration, and reduce inflammation.
                         </p>
                     </div>
 
                     <div class="section">
-                        <h2 class="section-title">Key Ingredients & Features</h2>
+                        <h2 class="section-title">Key Ingredients</h2>
                         <div class="ingredients-list">
                             <div class="ingredient-item">
-                                <span class="ingredient-tag">CoQ10</span>
-                                <span class="ingredient-sources">reviews, description</span>
-                            </div>
-                            <div class="ingredient-item">
-                                <span class="ingredient-tag">Methylated Folate</span>
+                                <span class="ingredient-tag">Organic V-Steam Herbs</span>
                                 <span class="ingredient-sources">description</span>
                             </div>
-                            <div class="ingredient-item">
-                                <span class="ingredient-tag">Choline</span>
-                                <span class="ingredient-sources">reviews, description</span>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h2 class="section-title">Key Terms & Features</h2>
+                        <div class="key-terms-grid">
+                            <div class="key-term-item">
+                                <span class="key-term-tag">Steam Seat</span>
+                                <span class="key-term-sources">title, description</span>
                             </div>
-                            <div class="ingredient-item">
-                                <span class="ingredient-tag">Vitamin D3</span>
-                                <span class="ingredient-sources">reviews</span>
+                            <div class="key-term-item">
+                                <span class="key-term-tag">SteamSafe® Temp Control</span>
+                                <span class="key-term-sources">description</span>
                             </div>
-                            <div class="ingredient-item">
-                                <span class="ingredient-tag">Vitamin B12</span>
-                                <span class="ingredient-sources">description</span>
+                            <div class="key-term-item">
+                                <span class="key-term-tag">Near Infrared LEDs</span>
+                                <span class="key-term-sources">description</span>
                             </div>
-                            <div class="ingredient-item">
-                                <span class="ingredient-tag">Vitamin K2</span>
-                                <span class="ingredient-sources">description</span>
+                            <div class="key-term-item">
+                                <span class="key-term-tag">Red Light LEDs</span>
+                                <span class="key-term-sources">description</span>
                             </div>
-                            <div class="ingredient-item">
-                                <span class="ingredient-tag">Antioxidants</span>
-                                <span class="ingredient-sources">general</span>
+                            <div class="key-term-item">
+                                <span class="key-term-tag">660nm red light</span>
+                                <span class="key-term-sources">description</span>
+                            </div>
+                            <div class="key-term-item">
+                                <span class="key-term-tag">850nm near infrared light</span>
+                                <span class="key-term-sources">description</span>
+                            </div>
+                            <div class="key-term-item">
+                                <span class="key-term-tag">Facial Steam Attachment</span>
+                                <span class="key-term-sources">description</span>
+                            </div>
+                            <div class="key-term-item">
+                                <span class="key-term-tag">Stainless Steel Herb Infusion Cup</span>
+                                <span class="key-term-sources">description</span>
+                            </div>
+                            <div class="key-term-item">
+                                <span class="key-term-tag">ABS plastic</span>
+                                <span class="key-term-sources">description</span>
+                            </div>
+                            <div class="key-term-item">
+                                <span class="key-term-tag">Saddle-seat design</span>
+                                <span class="key-term-sources">description</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section">
+                        <h2 class="section-title">Health Claims</h2>
+                        <div class="health-claims-list">
+                            <div class="health-claim-item">
+                                <div class="health-claim-header">
+                                    <span class="health-claim-text">Supports women through all stages of womanhood.</span>
+                                    <span class="health-claim-category">Women's Holistic Health</span>
+                                </div>
+                                <div class="health-claim-meta">
+                                    <span class="health-claim-type">direct</span>
+                                    <span class="health-claim-locations">description</span>
+                                </div>
+                            </div>
+                            
+                            <div class="health-claim-item">
+                                <div class="health-claim-header">
+                                    <span class="health-claim-text">Provides soothing relief and gentle cleansing.</span>
+                                    <span class="health-claim-category">Pelvic Comfort & Cleansing</span>
+                                </div>
+                                <div class="health-claim-meta">
+                                    <span class="health-claim-type">direct</span>
+                                    <span class="health-claim-locations">description</span>
+                                </div>
+                            </div>
+
+                            <div class="health-claim-item">
+                                <div class="health-claim-header">
+                                    <span class="health-claim-text">Enhances mind-body connection and promotes skin health.</span>
+                                    <span class="health-claim-category">Mental & Skin Wellness</span>
+                                </div>
+                                <div class="health-claim-meta">
+                                    <span class="health-claim-type">direct</span>
+                                    <span class="health-claim-locations">description</span>
+                                </div>
+                            </div>
+
+                            <div class="health-claim-item">
+                                <div class="health-claim-header">
+                                    <span class="health-claim-text">Improves circulation.</span>
+                                    <span class="health-claim-category">Circulation Support</span>
+                                </div>
+                                <div class="health-claim-meta">
+                                    <span class="health-claim-type">direct</span>
+                                    <span class="health-claim-locations">description</span>
+                                </div>
+                            </div>
+
+                            <div class="health-claim-item">
+                                <div class="health-claim-header">
+                                    <span class="health-claim-text">Supports cellular regeneration.</span>
+                                    <span class="health-claim-category">Cellular Health</span>
+                                </div>
+                                <div class="health-claim-meta">
+                                    <span class="health-claim-type">direct</span>
+                                    <span class="health-claim-locations">description</span>
+                                </div>
+                            </div>
+
+                            <div class="health-claim-item">
+                                <div class="health-claim-header">
+                                    <span class="health-claim-text">Reduces inflammation.</span>
+                                    <span class="health-claim-category">Inflammation Reduction</span>
+                                </div>
+                                <div class="health-claim-meta">
+                                    <span class="health-claim-type">direct</span>
+                                    <span class="health-claim-locations">description</span>
+                                </div>
+                            </div>
+
+                            <div class="health-claim-item">
+                                <div class="health-claim-header">
+                                    <span class="health-claim-text">Offers feminine care and overall well-being.</span>
+                                    <span class="health-claim-category">Feminine & General Wellness</span>
+                                </div>
+                                <div class="health-claim-meta">
+                                    <span class="health-claim-type">direct</span>
+                                    <span class="health-claim-locations">description</span>
+                                </div>
+                            </div>
+
+                            <div class="health-claim-item">
+                                <div class="health-claim-header">
+                                    <span class="health-claim-text">Soothes muscles and skin.</span>
+                                    <span class="health-claim-category">Muscle & Skin Soothing</span>
+                                </div>
+                                <div class="health-claim-meta">
+                                    <span class="health-claim-type">direct</span>
+                                    <span class="health-claim-locations">description</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -396,7 +648,7 @@
                 <p class="external-link-text">
                     Click the button below to open the original product page in a new tab. Compare it with the extracted data on the left to ensure accuracy.
                 </p>
-                <a href="https://www.mateandme.com/products/prenatal-gummies-for-him-her" target="_blank" rel="noopener noreferrer" class="external-link-button">
+                <a href="https://www.leiamoon.com/product/order-leiamoon-steam-seat/" target="_blank" rel="noopener noreferrer" class="external-link-button">
                     Open Page in New Tab
                 </a>
             </div>

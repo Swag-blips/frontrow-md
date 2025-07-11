@@ -95,8 +95,8 @@ const ProductData: React.FC = () => {
           product_image_url:
             product.product_info?.product_image_url ||
             product.product_image_url ||
-            "",
-          product_url:
+            "",  
+          product_url: 
             product.product_url || product.product_info?.source_url || "",
           ingredients: product.product_info?.ingredients,
           search_queries: product.search_queries || product.search_terms || [],

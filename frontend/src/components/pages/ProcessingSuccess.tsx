@@ -2,6 +2,18 @@ import React, { useState, useEffect } from "react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import "../styling/ProcessingSuccess.css";
 
+interface HealthClaim {
+  category: string;
+  claim: string;
+  claim_location: string[];
+  claim_type: string;
+  original_text: string;
+}
+interface KeyTerm {
+  term: string;
+  term_location: string[];
+}
+
 interface ProductData {
   product_name: string;
   product_image_url: string;
@@ -18,6 +30,8 @@ interface ProductData {
     reviewer_name: string;
     reviewer_title: string;
   }>;
+  health_claims?: HealthClaim[];
+  key_terms?: KeyTerm[];
 }
 
 const ProcessingSuccess: React.FC = () => {
@@ -48,12 +62,12 @@ const ProcessingSuccess: React.FC = () => {
   };
 
   useEffect(() => {
-    const fetchProductData = async (retryCount = 0) => {
+    const fetchProductData = async () => {
       const MAX_RETRIES = 5;
       const RETRY_DELAY = 3000; // 3 seconds
 
       if (!productId) {
-        setError("No product ID provided");
+        setError("No prodwuct ID provided");
         setIsLoading(false);
         return;
       }
@@ -66,17 +80,14 @@ const ProcessingSuccess: React.FC = () => {
         if (!response.ok) {
           throw new Error(`Failed to fetch product: ${response.status}`);
         }
-        console.log("RESPONSE", response.body);
-
         const data = await response.json();
-
-        console.log("PROCESSING SUCCESS", data);
 
         if (!data.product || !data.product.product_info) {
           throw new Error("Product not found in database.");
         }
 
         const product = data.product;
+        console.log("prduct", product.product_info.health_claims);
 
         setProductData({
           product_name: product.product_info.product_name || "Unknown Product",
@@ -84,19 +95,21 @@ const ProcessingSuccess: React.FC = () => {
           product_description: product.product_info.product_description || "",
           ingredients: product.product_info.ingredients || [],
           clinician_reviews: product.product_info.clinician_reviews || [],
+          health_claims: product.product_info.health_claims || [],
+          key_terms: product.product_info.key_terms || [],
         });
 
         // Check if the data is minimal
-        const finalProductData = {
-          product_name: product.product_info.product_name || "Unknown Product",
-          product_image_url: product.product_info.product_image_url || "",
-          product_description: product.product_info.product_description || "",
-          ingredients: product.product_info.ingredients || [],
-          clinician_reviews: product.product_info.clinician_reviews || [],
-        };
+        // const finalProductData = {
+        //   product_name: product.product_info.product_name || "Unknown Product",
+        //   product_image_url: product.product_info.product_image_url || "",
+        //   product_description: product.product_info.product_description || "",
+        //   ingredients: product.product_info.ingredients || [],
+        //   clinician_reviews: product.product_info.clinician_reviews || [],
+        // };
 
-        setProductData(finalProductData);
-        setHasMinimalData(!checkDataCompleteness(finalProductData));
+        // setProductData(finalProductData);
+        // setHasMinimalData(!checkDataCompleteness(finalProductData));
 
         setIsLoading(false);
       } catch (err: any) {
@@ -108,6 +121,7 @@ const ProcessingSuccess: React.FC = () => {
     fetchProductData();
   }, [productId]);
 
+  console.log(productData);
   const handleReject = () => {
     // Navigate to rejection feedback page with productId
     navigate(`/rejection-feedback?productId=${productId}`);
@@ -208,7 +222,6 @@ const ProcessingSuccess: React.FC = () => {
           </Link>
         </div>
       </header>
-
       <div className="container page-content">
         <div className="page-title-section">
           <h1 className="success-page-title">Confirm Product Details</h1>
@@ -217,7 +230,6 @@ const ProcessingSuccess: React.FC = () => {
             the right. Accept if it's accurate, or reject to try again.
           </p>
         </div>
-
         <main className="validation-container">
           {/* Left Panel: Extracted Data */}
           <div className="panel left-panel">
@@ -226,7 +238,6 @@ const ProcessingSuccess: React.FC = () => {
                 <h2 className="section-title">Product Name</h2>
                 <p className="product-name">{productData.product_name}</p>
               </div>
-
               <div className="section">
                 <h2 className="section-title">Product Image</h2>
                 <img
@@ -239,43 +250,92 @@ const ProcessingSuccess: React.FC = () => {
                   }}
                 />
               </div>
-
               <div className="section">
                 <h2 className="section-title">Product Description</h2>
                 <p className="product-description">
                   {productData.product_description}
                 </p>
               </div>
-
               <div className="section">
                 <h2 className="section-title">Key Ingredients & Features</h2>
                 <div className="ingredients-list">
-                  {(() => {
-                    return productData.ingredients.map((ingredient, index) => {
-                      // Check for ingredient_location array first, then fallback to other source fields
-                      const sources = ingredient.ingredient_location
-                        ? ingredient.ingredient_location.join(", ")
-                        : ingredient.sources ||
-                          ingredient.source ||
-                          ingredient.sources_text ||
-                          "";
-                      return (
-                        <div key={index} className="ingredient-item">
-                          <span className="ingredient-tag">
-                            {ingredient.ingredient_name}
-                          </span>
-                          {sources && sources.trim() && (
-                            <span className="ingredient-sources">
-                              {sources}
-                            </span>
-                          )}
-                        </div>
-                      );
-                    });
-                  })()}
+                  {productData.ingredients.map((ingredient, index) => {
+                    const sources = Array.isArray(
+                      ingredient.ingredient_location
+                    )
+                      ? ingredient.ingredient_location.join(", ")
+                      : ingredient.sources ||
+                        ingredient.source ||
+                        ingredient.sources_text ||
+                        "";
+                    return (
+                      <div key={index} className="ingredient-item">
+                        <span className="ingredient-tag">
+                          {ingredient.ingredient_name}
+                        </span>
+                        {sources && sources.trim() && (
+                          <span className="ingredient-sources">{sources}</span>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
-
+              <div className="section">
+                <h2 className="section-title">Key Terms & Features</h2>
+                <div className="key-terms-grid">
+                  {productData.key_terms && productData.key_terms.length > 0 ? (
+                    productData.key_terms.map((term, idx) => (
+                      <div key={idx} className="key-term-item">
+                        <span className="key-term-tag">{term.term}</span>
+                        <span className="key-term-sources">
+                          {Array.isArray(term.term_location)
+                            ? term.term_location.join(", ")
+                            : term.term_location}
+                        </span>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="no-data-placeholder">
+                      No data found for key terms.
+                    </div>
+                  )}
+                </div>
+              </div>
+              <div className="section">
+                <h2 className="section-title">Health Claims</h2>
+                <div className="health-claims-list">
+                  {productData.health_claims &&
+                  productData.health_claims.length > 0 ? (
+                    productData.health_claims.map((claim, idx) => (
+                      <div key={idx} className="health-claim-item">
+                        <div className="health-claim-header">
+                          <span className="health-claim-text">
+                            {claim.claim}
+                          </span>
+                          <span className="health-claim-category">
+                            {claim.category}
+                          </span>
+                        </div>
+                        <div className="health-claim-meta">
+                          <span className="health-claim-type">
+                            {claim.claim_type}
+                          </span>
+                          <span className="health-claim-locations">
+                            {Array.isArray(claim.claim_location)
+                              ? claim.claim_location.join(", ")
+                              : claim.claim_location}
+                          </span>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="no-data-placeholder">
+                      No data found for health claims.
+                    </div>
+                  )}
+                </div>
+              </div>
               <div className="section">
                 <h2 className="section-title">Clinician Reviews</h2>
                 {productData.clinician_reviews &&
@@ -298,7 +358,6 @@ const ProcessingSuccess: React.FC = () => {
               </div>
             </div>
           </div>
-
           {/* Right Panel: External Link */}
           <div className="panel right-panel">
             <div className="external-link-icon">
@@ -338,7 +397,6 @@ const ProcessingSuccess: React.FC = () => {
           </div>
         </main>
       </div>
-
       <footer className="validation-footer">
         <button className="action-button reject-button" onClick={handleReject}>
           Reject & Retry
