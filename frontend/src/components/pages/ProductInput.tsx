@@ -17,6 +17,8 @@ interface Product {
 
 const API_BASE_URL = ""; // Use relative URLs to let Vercel handle routing
 
+const PRODUCTS_PER_PAGE = 3;
+
 const ProductInput: React.FC = () => {
   const [url, setUrl] = useState("");
   const navigate = useNavigate();
@@ -31,6 +33,9 @@ const ProductInput: React.FC = () => {
   // Polling state for processing product IDs
   const [processingIds, setProcessingIds] = useState<string[]>([]);
   const pollingRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
 
   // Helper to get processing IDs from sessionStorage
   const getProcessingIds = () => {
@@ -165,8 +170,8 @@ const ProductInput: React.FC = () => {
       });
 
       // Convert map to array and sort by created_time
-      const uniqueProducts = Array.from(uniqueProductsMap.values())
-        .sort((a, b) => {
+      const uniqueProducts = Array.from(uniqueProductsMap.values()).sort(
+        (a, b) => {
           const timeA =
             typeof a.created_time === "string"
               ? new Date(a.created_time).getTime()
@@ -176,8 +181,8 @@ const ProductInput: React.FC = () => {
               ? new Date(b.created_time).getTime()
               : b.created_time;
           return timeB - timeA;
-        })
-        .slice(0, 6);
+        }
+      );
 
       setProducts(uniqueProducts);
       setError(null);
@@ -258,6 +263,26 @@ const ProductInput: React.FC = () => {
     navigate(`/product-data/${productId}`);
   };
 
+
+  const totalPages = Math.ceil(products.length / PRODUCTS_PER_PAGE);
+  const paginatedProducts = products.slice(
+    (currentPage - 1) * PRODUCTS_PER_PAGE,
+    currentPage * PRODUCTS_PER_PAGE
+  );
+
+  const handlePrevPage = () => {
+    setCurrentPage((prev) => Math.max(prev - 1, 1));
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  };
+
+  // Reset to first page if products change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [products.length]);
+
   return (
     <>
       <Toaster position="top-center" />
@@ -325,7 +350,7 @@ const ProductInput: React.FC = () => {
                   </p>
                 </div>
               ) : (
-                products.map((product) => (
+                paginatedProducts.map((product) => (
                   <div
                     key={product.product_id}
                     className="product-card"
@@ -358,6 +383,28 @@ const ProductInput: React.FC = () => {
                 ))
               )}
             </div>
+            {/* Pagination Controls */}
+            {products.length > PRODUCTS_PER_PAGE && (
+              <div className="pagination-controls">
+                <button
+                  className="pagination-btn"
+                  onClick={handlePrevPage}
+                  disabled={currentPage === 1}
+                >
+                  Previous
+                </button>
+                <span className="pagination-info">
+                  Page {currentPage} of {totalPages}
+                </span>
+                <button
+                  className="pagination-btn"
+                  onClick={handleNextPage}
+                  disabled={currentPage === totalPages}
+                >
+                  Next
+                </button>
+              </div>
+            )}
           </section>
         </div>
       </main>

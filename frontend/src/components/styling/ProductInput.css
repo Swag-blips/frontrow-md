@@ -114,7 +114,7 @@ body {
 }
 
 .input-card__subtitle {
-  color: var(--text-secondary); 
+  color: var(--text-secondary);
   margin-bottom: var(--spacing-lg);
 }
 
@@ -343,4 +343,48 @@ body {
   color: var(--text-primary);
   font-weight: var(--font-weight-medium);
   margin-bottom: var(--spacing-sm);
+}
+
+.pagination-btn {
+  background: var(--accent-primary, #1565c0);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 20px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 1px 4px rgba(21, 101, 192, 0.08);
+  outline: none;
+}
+
+.pagination-btn:active {
+  background: #0d47a1;
+}
+
+.pagination-btn:focus {
+  box-shadow: 0 0 0 2px #90caf9;
+}
+
+.pagination-btn:disabled {
+  background: #e0e0e0;
+  color: #888;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 18px;
+  margin-top: 32px;
+}
+
+.pagination-info {
+  font-size: 1rem;
+  color: var(--text-secondary, #555);
+  font-weight: 500;
+  letter-spacing: 0.01em;
 }

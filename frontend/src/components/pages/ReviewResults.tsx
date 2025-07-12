@@ -392,8 +392,26 @@ const ReviewResults: React.FC = () => {
                   </div>
                 </div>
 
-                <h4 className="card-review-title">{review.review_title}</h4>
-                <p className="card-review-summary">
+                <h4
+                  className="card-review-title"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    copyToClipboard(review.review_title);
+                  }}
+                  title="Click to copy"
+                  style={{ cursor: "copy" }}
+                >
+                  {review.review_title}
+                </h4>
+                <p
+                  className="card-review-summary"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    copyToClipboard(review.review_summary_line);
+                  }}
+                  title="Click to copy"
+                  style={{ cursor: "copy" }}
+                >
                   {review.review_summary_line}
                 </p>
 
@@ -623,6 +641,10 @@ const ReviewResults: React.FC = () => {
     setToneAdjustment("");
     setRejectReason("");
     setSelectedWordCount(100);
+  };
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
   };
 
   return (
@@ -878,7 +900,9 @@ const ReviewResults: React.FC = () => {
                   className="form-submit primary"
                   disabled={isGenerating}
                 >
-                  {isGenerating && <span className="loading-spinner-alt"></span>}
+                  {isGenerating && (
+                    <span className="loading-spinner-alt"></span>
+                  )}
                   {isGenerating ? "Generating..." : "Generate Edited Review"}
                 </button>
               </div>
