@@ -1160,6 +1160,48 @@ body {
   box-shadow: none;
 }
 
+.copy-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  align-items: center;
+  margin: 24px 0;
+}
+
+.copy-action-btn,
+.copy-highlights-btn {
+  background: var(--accent-primary, #1565c0);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 20px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 1px 4px rgba(21, 101, 192, 0.08);
+  outline: none;
+  letter-spacing: 0.01em;
+}
+
+.copy-action-btn:active,
+.copy-highlights-btn:active {
+  background: #0d47a1;
+}
+
+.copy-action-btn:focus,
+.copy-highlights-btn:focus {
+  box-shadow: 0 0 0 2px #90caf9;
+}
+
+.copy-action-btn:disabled,
+.copy-highlights-btn:disabled {
+  background: #e0e0e0;
+  color: #888;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .container {

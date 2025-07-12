@@ -420,20 +420,6 @@ const ReviewResults: React.FC = () => {
                   {toneTag}
                   {researchTag}
                 </div>
-                <button
-                  className="copy-highlights-btn"
-                  style={{ marginTop: "8px", marginBottom: "8px" }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    copyToClipboard(review.highlights.join(", "));
-                  }}
-                >
-                  Copy Highlights
-                </button>
-
-                <div className="card-word-count">
-                  {review.actual_word_count}/{review.target_word_count} words
-                </div>
               </div>
             ))}
           </div>
@@ -1026,6 +1012,49 @@ const ReviewResults: React.FC = () => {
                   {selectedAcceptedReview.uses_clinical_research && (
                     <span className="tag research">Clinical Research</span>
                   )}
+                </div>
+
+                <div
+                  className="copy-actions"
+                  style={{
+                    margin: "24px 0",
+                    display: "flex",
+                    gap: "16px",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <button
+                    className="copy-action-btn"
+                    onClick={() =>
+                      copyToClipboard(selectedAcceptedReview.review_title)
+                    }
+                    title="Copy Title"
+                  >
+                    Copy Title
+                  </button>
+                  <button
+                    className="copy-action-btn"
+                    onClick={() =>
+                      copyToClipboard(
+                        selectedAcceptedReview.review_summary_line
+                      )
+                    }
+                    title="Copy Description"
+                  >
+                    Copy Description
+                  </button>
+                  <button
+                    className="copy-highlights-btn"
+                    onClick={() =>
+                      copyToClipboard(
+                        selectedAcceptedReview.highlights.join(", ")
+                      )
+                    }
+                    title="Copy Highlights"
+                  >
+                    Copy Highlights
+                  </button>
                 </div>
 
                 <div className="card-word-count">

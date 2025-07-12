@@ -17,7 +17,7 @@ interface Product {
 
 const API_BASE_URL = ""; // Use relative URLs to let Vercel handle routing
 
-const PRODUCTS_PER_PAGE = 3;
+const PRODUCTS_PER_PAGE = 6;
 
 const ProductInput: React.FC = () => {
   const [url, setUrl] = useState("");
