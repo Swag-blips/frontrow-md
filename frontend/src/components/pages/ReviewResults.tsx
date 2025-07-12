@@ -420,6 +420,16 @@ const ReviewResults: React.FC = () => {
                   {toneTag}
                   {researchTag}
                 </div>
+                <button
+                  className="copy-highlights-btn"
+                  style={{ marginTop: "8px", marginBottom: "8px" }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    copyToClipboard(review.highlights.join(", "));
+                  }}
+                >
+                  Copy Highlights
+                </button>
 
                 <div className="card-word-count">
                   {review.actual_word_count}/{review.target_word_count} words

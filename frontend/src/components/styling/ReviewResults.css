@@ -1,19 +1,19 @@
 :root {
-  --background-color: #F8F9FA;
+  --background-color: #f8f9fa;
   --text-primary: #121212;
   --text-secondary: #555;
-  --accent-primary: #FF6B00;
-  --border-subtle: #E0E0E0;
-  --card-bg: #FFFFFF;
+  --accent-primary: #ff6b00;
+  --border-subtle: #e0e0e0;
+  --card-bg: #ffffff;
   --code-bg: #2d333b;
   --code-text: #cdd9e5;
-  --success-color: #10B981;
-  --danger-color: #EF4444;
-  --info-color: #3B82F6;
-  --warning-color: #F59E0B;
+  --success-color: #10b981;
+  --danger-color: #ef4444;
+  --info-color: #3b82f6;
+  --warning-color: #f59e0b;
 
-  --font-family-sans: 'Inter', sans-serif;
-  --font-family-mono: 'Menlo', 'Consolas', monospace;
+  --font-family-sans: "Inter", sans-serif;
+  --font-family-mono: "Menlo", "Consolas", monospace;
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-bold: 700;
@@ -31,15 +31,21 @@
   --shadow-medium: 0px 8px 24px rgba(0, 0, 0, 0.1);
 }
 
-*, *::before, *::after { 
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; } 
-  to { opacity: 1; } 
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 body {
@@ -100,9 +106,9 @@ body {
 }
 
 .page-title {
-  font-size: 2.1rem; 
+  font-size: 2.1rem;
   font-weight: var(--font-weight-bold);
-  margin-bottom: var(--spacing-md); 
+  margin-bottom: var(--spacing-md);
 }
 
 /* Tabs */
@@ -388,7 +394,7 @@ body {
 }
 
 .action-btn.reject:hover {
-  background: #DC2626;
+  background: #dc2626;
   transform: translateY(-1px);
 }
 
@@ -481,9 +487,9 @@ body {
   opacity: 1;
 }
 
-.card-doctor-info { 
+.card-doctor-info {
   display: flex;
-  flex-direction: column; 
+  flex-direction: column;
   align-items: center;
   gap: var(--spacing-sm);
   margin-bottom: var(--spacing-md);
@@ -703,7 +709,7 @@ body {
 }
 
 .form-submit:hover {
-  background: #DC2626;
+  background: #dc2626;
   transform: translateY(-1px);
 }
 
@@ -799,7 +805,7 @@ body {
 }
 
 .form-submit.primary:hover {
-  background: #E55A00;
+  background: #e55a00;
 }
 
 .loading-spinner {
@@ -824,8 +830,12 @@ body {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .current-review-preview.editing {
@@ -872,12 +882,20 @@ body {
   animation: typingPulse 1.4s infinite ease-in-out;
 }
 
-.typing-dot:nth-child(1) { animation-delay: -0.32s; }
-.typing-dot:nth-child(2) { animation-delay: -0.16s; }
-.typing-dot:nth-child(3) { animation-delay: 0s; }
+.typing-dot:nth-child(1) {
+  animation-delay: -0.32s;
+}
+.typing-dot:nth-child(2) {
+  animation-delay: -0.16s;
+}
+.typing-dot:nth-child(3) {
+  animation-delay: 0s;
+}
 
 @keyframes typingPulse {
-  0%, 80%, 100% {
+  0%,
+  80%,
+  100% {
     transform: scale(0.8);
     opacity: 0.5;
   }
@@ -1050,8 +1068,12 @@ body {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .loading-state p {
@@ -1104,6 +1126,40 @@ body {
   background: #0056b3;
 }
 
+/* Add to ReviewResults.css or your global button styles */
+
+.copy-highlights-btn {
+  background: var(--accent-primary, #1565c0);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 20px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 1px 4px rgba(21, 101, 192, 0.08);
+  outline: none;
+  margin-top: 8px;
+  margin-bottom: 8px;
+  letter-spacing: 0.01em;
+}
+
+.copy-highlights-btn:active {
+  background: #0d47a1;
+}
+
+.copy-highlights-btn:focus {
+  box-shadow: 0 0 0 2px #90caf9;
+}
+
+.copy-highlights-btn:disabled {
+  background: #e0e0e0;
+  color: #888;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .container {
@@ -1140,20 +1196,20 @@ body {
   .btn {
     width: 100%;
   }
-  
+
   .pending-actions {
     flex-direction: column;
     gap: var(--spacing-sm);
   }
-  
+
   .action-btn {
     width: 100%;
   }
-  
+
   .nav-buttons {
     gap: var(--spacing-sm);
   }
-  
+
   .nav-btn {
     width: 36px;
     height: 36px;
