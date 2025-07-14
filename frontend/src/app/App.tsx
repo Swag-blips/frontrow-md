@@ -1,10 +1,6 @@
-import {
-  createBrowserRouter,
-  RouterProvider,
-  type FutureConfig,
-} from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import Home from "@/components/pages/Home";
+
 import ProductInput from "@/components/pages/ProductInput";
 import ProductData from "@/components/pages/ProductData";
 import Processing from "@/components/pages/Processing";
@@ -13,6 +9,7 @@ import ProcessingSuccess from "@/components/pages/ProcessingSuccess";
 import ReviewConfiguration from "@/components/pages/ReviewConfiguration";
 import ReviewResults from "@/components/pages/ReviewResults";
 import RejectionFeedback from "@/components/pages/RejectionFeedback";
+import Home from "@/features/home";
 
 const queryClient = new QueryClient({
   defaultOptions: {
