@@ -1,7 +1,6 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ProductData from "@/components/pages/ProductData";
-import Processing from "@/components/pages/Processing";
 import ProcessingFailed from "@/components/pages/ProcessingFailed";
 import ProcessingSuccess from "@/components/pages/ProcessingSuccess";
 import ReviewConfiguration from "@/components/pages/ReviewConfiguration";
@@ -10,6 +9,7 @@ import RejectionFeedback from "@/components/pages/RejectionFeedback";
 import Home from "@/features/home";
 import ProductInput from "@/features/productInput";
 import { Toaster } from "react-hot-toast";
+import Processing from "@/features/processing";
 
 const queryClient = new QueryClient({
   defaultOptions: {
