@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import type { Status } from "../types";
 import { stages } from "../utils";
+import DOMPurify from "dompurify";
 
 const API_BASE_URL = "";
 export const useProcessing = () => {
@@ -258,7 +259,11 @@ export const useProcessing = () => {
     } else {
       // Future stage - show icon
       return (
-        <div dangerouslySetInnerHTML={{ __html: stages[stageIndex].icon }} />
+        <div
+          dangerouslySetInnerHTML={{
+            __html: DOMPurify.sanitize(stages[stageIndex].icon),
+          }}
+        />
       );
     }
   };

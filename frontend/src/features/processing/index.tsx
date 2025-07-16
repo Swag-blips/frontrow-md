@@ -40,7 +40,7 @@ const Processing: React.FC = () => {
                   <span className="stage-text">{stage.text}</span>
                 </div>
               ))}
-            </div>
+            </div> 
           )}
 
           {(status === "analyzing" || status === "complete") && (
