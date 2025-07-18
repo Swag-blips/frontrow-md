@@ -10,6 +10,8 @@ import Home from "@/features/home";
 import ProductInput from "@/features/productInput";
 import { Toaster } from "react-hot-toast";
 import Processing from "@/features/processing";
+import ProductHome from "@/features/product-home";
+import ProductInputV2 from "@/features/productInputv2";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -33,6 +35,14 @@ const router = createBrowserRouter(
     {
       path: "/product-input",
       element: <ProductInput />,
+    },
+    {
+      path: "/product-home",
+      element: <ProductHome />,
+    },
+    {
+      path: "/product-input-v2",
+      element: <ProductInputV2 />,
     },
     {
       path: "/processing",

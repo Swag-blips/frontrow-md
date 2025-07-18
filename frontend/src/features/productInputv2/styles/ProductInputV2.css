@@ -1,0 +1,309 @@
+:root {
+  --background-color: #f8f9fa;
+  --text-primary: #121212;
+  --text-secondary: #555;
+  --accent-primary: #ff6b00;
+  --accent-primary-hover: #e66000;
+  --border-subtle: #e0e0e0;
+  --card-bg: #ffffff;
+  --input-bg: #f1f3f5;
+  --success-color: #28a745;
+  --success-color-hover: #218838;
+
+  --font-family-sans: "Inter", sans-serif;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 32px;
+  --spacing-xl: 48px;
+  --spacing-xxl: 64px;
+
+  --border-radius-medium: 12px;
+  --border-radius-large: 16px;
+
+  --shadow-soft: 0px 4px 12px rgba(0, 0, 0, 0.05);
+  --shadow-medium: 0px 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.product-input-v2-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-lg);
+}
+
+/* Header */
+.product-input-v2-header {
+  padding: var(--spacing-md) 0;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.product-input-v2-header__container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.product-input-v2-logo {
+  font-size: 1.5rem;
+  font-weight: var(--font-weight-bold);
+  text-decoration: none;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.product-input-v2-logo__icon {
+  color: var(--accent-primary);
+}
+
+/* Modal Styles */
+.product-input-v2-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 1;
+  visibility: visible;
+  padding: var(--spacing-md);
+}
+
+.product-input-v2-modal-content {
+  background: var(--card-bg);
+  border-radius: var(--border-radius-large);
+  max-width: 700px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: var(--spacing-xl);
+  position: relative;
+  animation: modalSlideIn 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.product-input-v2-modal-close {
+  position: absolute;
+  top: var(--spacing-md);
+  right: var(--spacing-md);
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  padding: var(--spacing-sm);
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.product-input-v2-modal-close:hover {
+  background-color: var(--input-bg);
+  color: var(--text-primary);
+}
+
+.product-input-v2-modal-title {
+  font-size: 1.5rem;
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--spacing-sm);
+}
+
+.product-input-v2-modal-subtitle {
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-lg);
+}
+
+.product-input-v2-form-group {
+  margin-bottom: var(--spacing-lg);
+  text-align: left;
+}
+
+.product-input-v2-form-label {
+  display: block;
+  font-weight: var(--font-weight-medium);
+  margin-bottom: var(--spacing-sm);
+  color: var(--text-primary);
+}
+
+.product-input-v2-required::after {
+  content: " *";
+  color: #dc3545;
+}
+
+.product-input-v2-form-input {
+  width: 100%;
+  padding: 16px;
+  font-size: 1rem;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--border-radius-medium);
+  background-color: var(--input-bg);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  font-family: var(--font-family-sans);
+}
+
+.product-input-v2-form-input:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.2);
+  background-color: var(--card-bg);
+}
+
+.product-input-v2-form-textarea {
+  min-height: 200px;
+  resize: vertical;
+  font-family: var(--font-family-sans);
+}
+
+.product-input-v2-form-help {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-top: var(--spacing-sm);
+}
+
+.product-input-v2-modal-actions {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: flex-end;
+  margin-top: var(--spacing-xl);
+  padding-top: var(--spacing-lg);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.btn {
+  padding: 12px 24px;
+  border-radius: var(--border-radius-medium);
+  border: none;
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.btn-secondary {
+  background-color: var(--input-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
+}
+
+.btn-secondary:hover {
+  background-color: var(--border-subtle);
+}
+
+.btn-primary {
+  background-color: var(--accent-primary);
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: var(--accent-primary-hover);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Success Actions */
+.product-input-v2-success-actions {
+  text-align: center;
+  padding: var(--spacing-lg);
+  border-top: 1px solid var(--border-subtle);
+  margin-top: var(--spacing-lg);
+}
+
+.product-input-v2-success-message {
+  color: var(--success-color);
+  font-weight: var(--font-weight-medium);
+  margin-bottom: var(--spacing-lg);
+  padding: var(--spacing-md);
+  background-color: #f0f9f0;
+  border-radius: var(--border-radius-medium);
+  border: 1px solid #c3e6c3;
+}
+
+.product-input-v2-success-buttons {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: center;
+}
+
+.btn-success {
+  background-color: var(--success-color);
+  color: white;
+}
+
+.btn-success:hover {
+  background-color: var(--success-color-hover);
+}
+
+/* Confirmation Modal */
+.product-input-v2-confirmation-modal .product-input-v2-modal-content {
+  max-width: 450px;
+  text-align: center;
+}
+
+.product-input-v2-confirmation-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto var(--spacing-lg);
+  background-color: #f0f9f0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--success-color);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .product-input-v2-modal-content {
+    margin: var(--spacing-md);
+    padding: var(--spacing-lg);
+  }
+
+  .product-input-v2-modal-actions,
+  .product-input-v2-success-buttons {
+    flex-direction: column;
+  }
+
+  .btn {
+    width: 100%;
+  }
+}
