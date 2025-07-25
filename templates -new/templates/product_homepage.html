@@ -1,474 +1,542 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Product Dashboard - FrontrowMD</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
     <style>
-        :root {
-            --background-color: #F8F9FA;
-            --text-primary: #121212;
-            --text-secondary: #555;
-            --accent-primary: #FF6B00;
-            --accent-primary-hover: #E66000;
-            --border-subtle: #E0E0E0;
-            --card-bg: #FFFFFF;
-            --success-color: #28a745;
-            --success-bg-soft: #e9f5ea;
-            --error-color: #EF4444;
-            --error-bg-soft: #FEE2E2;
+      :root {
+        --background-color: #f8f9fa;
+        --text-primary: #121212;
+        --text-secondary: #555;
+        --accent-primary: #ff6b00;
+        --accent-primary-hover: #e66000;
+        --border-subtle: #e0e0e0;
+        --card-bg: #ffffff;
+        --success-color: #28a745;
+        --success-bg-soft: #e9f5ea;
+        --error-color: #ef4444;
+        --error-bg-soft: #fee2e2;
 
-            --font-family-sans: 'Inter', sans-serif;
-            --font-weight-regular: 400;
-            --font-weight-medium: 500;
-            --font-weight-bold: 700;
+        --font-family-sans: "Inter", sans-serif;
+        --font-weight-regular: 400;
+        --font-weight-medium: 500;
+        --font-weight-bold: 700;
 
-            --spacing-sm: 8px;
-            --spacing-md: 16px;
-            --spacing-lg: 24px;
-            --spacing-xl: 32px;
-            --spacing-xxl: 48px;
+        --spacing-sm: 8px;
+        --spacing-md: 16px;
+        --spacing-lg: 24px;
+        --spacing-xl: 32px;
+        --spacing-xxl: 48px;
 
-            --border-radius-medium: 12px;
-            --border-radius-large: 16px;
-            
-            --shadow-soft: 0px 4px 12px rgba(0, 0, 0, 0.05);
-            --shadow-medium: 0px 8px 24px rgba(0, 0, 0, 0.1);
+        --border-radius-medium: 12px;
+        --border-radius-large: 16px;
+
+        --shadow-soft: 0px 4px 12px rgba(0, 0, 0, 0.05);
+        --shadow-medium: 0px 8px 24px rgba(0, 0, 0, 0.1);
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
         }
-
-        *, *::before, *::after {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
+        to {
+          opacity: 1;
+          transform: translateY(0);
         }
+      }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+      body {
+        font-family: var(--font-family-sans);
+        background-color: var(--background-color);
+        color: var(--text-primary);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
 
-        body {
-            font-family: var(--font-family-sans);
-            background-color: var(--background-color);
-            color: var(--text-primary);
-            line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
+      .container {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 var(--spacing-lg);
+      }
 
-        .container {
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 var(--spacing-lg);
-        }
+      /* Header */
+      .header {
+        padding: var(--spacing-md) 0;
+        border-bottom: 1px solid var(--border-subtle);
+        background-color: var(--card-bg);
+        animation: fadeIn 0.5s ease-out;
+      }
 
-        /* Header */
-        .header {
-            padding: var(--spacing-md) 0;
-            border-bottom: 1px solid var(--border-subtle);
-            background-color: var(--card-bg);
-            animation: fadeIn 0.5s ease-out;
-        }
+      .header__container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
 
-        .header__container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+      .logo {
+        font-size: 1.5rem;
+        font-weight: var(--font-weight-bold);
+        text-decoration: none;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-sm);
+      }
 
-        .logo {
-            font-size: 1.5rem;
-            font-weight: var(--font-weight-bold);
-            text-decoration: none;
-            color: var(--text-primary);
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-        }
-        
-        .logo__icon {
-            color: var(--accent-primary);
-        }
+      .logo__icon {
+        color: var(--accent-primary);
+      }
 
-        .add-product-btn {
-            background-color: var(--accent-primary);
-            color: white;
-            padding: 12px 24px;
-            border-radius: var(--border-radius-medium);
-            text-decoration: none;
-            font-weight: var(--font-weight-medium);
-            transition: all 0.3s ease;
-            box-shadow: var(--shadow-soft);
-        }
+      .add-product-btn {
+        background-color: var(--accent-primary);
+        color: white;
+        padding: 12px 24px;
+        border-radius: var(--border-radius-medium);
+        text-decoration: none;
+        font-weight: var(--font-weight-medium);
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow-soft);
+      }
 
-        .add-product-btn:hover {
-            background-color: var(--accent-primary-hover);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-medium);
-        }
+      .add-product-btn:hover {
+        background-color: var(--accent-primary-hover);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-medium);
+      }
 
-        /* Main Content */
-        .main-content {
-            padding: var(--spacing-xl) 0 var(--spacing-xxl) 0;
-        }
+      /* Main Content */
+      .main-content {
+        padding: var(--spacing-xl) 0 var(--spacing-xxl) 0;
+      }
 
-        .page-header {
-            text-align: center;
-            margin-bottom: var(--spacing-xl);
-            animation: fadeIn 0.5s ease-out 0.1s backwards;
+      .page-header {
+        text-align: center;
+        margin-bottom: var(--spacing-xl);
+        animation: fadeIn 0.5s ease-out 0.1s backwards;
+      }
+
+      .page-title {
+        font-size: 2rem;
+        font-weight: var(--font-weight-bold);
+        margin-bottom: var(--spacing-sm);
+      }
+
+      .page-subtitle {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+      }
+
+      /* Tabs */
+      .tabs-container {
+        display: flex;
+        justify-content: center;
+        margin-bottom: var(--spacing-xl);
+        animation: fadeIn 0.5s ease-out 0.2s backwards;
+      }
+
+      .tabs {
+        display: flex;
+        background: var(--card-bg);
+        border-radius: var(--border-radius-large);
+        padding: 4px;
+        box-shadow: var(--shadow-soft);
+        border: 1px solid var(--border-subtle);
+      }
+
+      .tab-button {
+        background: transparent;
+        border: none;
+        padding: var(--spacing-md) var(--spacing-xl);
+        border-radius: var(--border-radius-medium);
+        cursor: pointer;
+        font-weight: var(--font-weight-medium);
+        transition: all 0.3s ease;
+        color: var(--text-secondary);
+        font-size: 1rem;
+      }
+
+      .tab-button.active {
+        background: var(--accent-primary);
+        color: white;
+        box-shadow: var(--shadow-soft);
+      }
+
+      .tab-button:not(.active):hover {
+        background: var(--background-color);
+        color: var(--text-primary);
+      }
+
+      /* Tab Content */
+      .tab-content {
+        display: none;
+        animation: fadeIn 0.4s ease-out;
+      }
+
+      .tab-content.active {
+        display: block;
+      }
+
+      /* Product Grid */
+      .products-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--spacing-lg);
+        animation: fadeIn 0.5s ease-out 0.3s backwards;
+      }
+
+      .product-card {
+        background: var(--card-bg);
+        border-radius: var(--border-radius-large);
+        box-shadow: var(--shadow-soft);
+        overflow: hidden;
+        text-decoration: none;
+        color: var(--text-primary);
+        transition: all 0.3s ease;
+        display: block;
+        position: relative;
+      }
+
+      .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-medium);
+      }
+
+      .product-card__image {
+        height: 200px;
+        background-color: var(--background-color);
+        overflow: hidden;
+        position: relative;
+      }
+
+      .product-card__image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .product-card__content {
+        padding: var(--spacing-md);
+      }
+
+      .product-card__title {
+        font-weight: var(--font-weight-bold);
+        margin-bottom: var(--spacing-sm);
+        font-size: 1rem;
+        line-height: 1.4;
+      }
+
+      .product-card__url {
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      /* Status Tags */
+      .status-tag {
+        position: absolute;
+        top: var(--spacing-sm);
+        right: var(--spacing-sm);
+        padding: 4px 8px;
+        border-radius: var(--border-radius-medium);
+        font-size: 0.75rem;
+        font-weight: var(--font-weight-bold);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .status-tag--success {
+        background-color: var(--success-bg-soft);
+        color: var(--success-color);
+      }
+
+      .status-tag--error {
+        background-color: var(--error-bg-soft);
+        color: var(--error-color);
+      }
+
+      /* Footer */
+      .footer {
+        padding: var(--spacing-lg) 0;
+        text-align: center;
+        font-size: 0.9rem;
+        color: #aaa;
+      }
+
+      /* Responsive */
+      @media (max-width: 1024px) {
+        .products-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      @media (max-width: 640px) {
+        .products-grid {
+          grid-template-columns: 1fr;
         }
 
         .page-title {
-            font-size: 2rem;
-            font-weight: var(--font-weight-bold);
-            margin-bottom: var(--spacing-sm);
-        }
-
-        .page-subtitle {
-            color: var(--text-secondary);
-            font-size: 1.1rem;
-        }
-
-        /* Tabs */
-        .tabs-container {
-            display: flex;
-            justify-content: center;
-            margin-bottom: var(--spacing-xl);
-            animation: fadeIn 0.5s ease-out 0.2s backwards;
+          font-size: 1.6rem;
         }
 
         .tabs {
-            display: flex;
-            background: var(--card-bg);
-            border-radius: var(--border-radius-large);
-            padding: 4px;
-            box-shadow: var(--shadow-soft);
-            border: 1px solid var(--border-subtle);
+          width: 100%;
         }
 
         .tab-button {
-            background: transparent;
-            border: none;
-            padding: var(--spacing-md) var(--spacing-xl);
-            border-radius: var(--border-radius-medium);
-            cursor: pointer;
-            font-weight: var(--font-weight-medium);
-            transition: all 0.3s ease;
-            color: var(--text-secondary);
-            font-size: 1rem;
+          flex: 1;
+          text-align: center;
         }
-
-        .tab-button.active {
-            background: var(--accent-primary);
-            color: white;
-            box-shadow: var(--shadow-soft);
-        }
-
-        .tab-button:not(.active):hover {
-            background: var(--background-color);
-            color: var(--text-primary);
-        }
-
-        /* Tab Content */
-        .tab-content {
-            display: none;
-            animation: fadeIn 0.4s ease-out;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        /* Product Grid */
-        .products-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: var(--spacing-lg);
-            animation: fadeIn 0.5s ease-out 0.3s backwards;
-        }
-
-        .product-card {
-            background: var(--card-bg);
-            border-radius: var(--border-radius-large);
-            box-shadow: var(--shadow-soft);
-            overflow: hidden;
-            text-decoration: none;
-            color: var(--text-primary);
-            transition: all 0.3s ease;
-            display: block;
-            position: relative;
-        }
-
-        .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-medium);
-        }
-
-        .product-card__image {
-            height: 200px;
-            background-color: var(--background-color);
-            overflow: hidden;
-            position: relative;
-        }
-
-        .product-card__image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .product-card__content {
-            padding: var(--spacing-md);
-        }
-
-        .product-card__title {
-            font-weight: var(--font-weight-bold);
-            margin-bottom: var(--spacing-sm);
-            font-size: 1rem;
-            line-height: 1.4;
-        }
-
-        .product-card__url {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        /* Status Tags */
-        .status-tag {
-            position: absolute;
-            top: var(--spacing-sm);
-            right: var(--spacing-sm);
-            padding: 4px 8px;
-            border-radius: var(--border-radius-medium);
-            font-size: 0.75rem;
-            font-weight: var(--font-weight-bold);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .status-tag--success {
-            background-color: var(--success-bg-soft);
-            color: var(--success-color);
-        }
-
-        .status-tag--error {
-            background-color: var(--error-bg-soft);
-            color: var(--error-color);
-        }
-
-        /* Footer */
-        .footer {
-            padding: var(--spacing-lg) 0;
-            text-align: center;
-            font-size: 0.9rem;
-            color: #aaa;
-        }
-
-        /* Responsive */
-        @media (max-width: 1024px) {
-            .products-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-
-        @media (max-width: 640px) {
-            .products-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .page-title {
-                font-size: 1.6rem;
-            }
-            
-            .tabs {
-                width: 100%;
-            }
-            
-            .tab-button {
-                flex: 1;
-                text-align: center;
-            }
-        }
-
+      }
     </style>
-</head>
-<body>
-
+  </head>
+  <body>
     <header class="header">
-        <div class="container header__container">
-            <a href="/" class="logo">
-                <span class="logo__icon">+</span>
-                <span>FrontrowMD</span>
-            </a>
-            <a href="product_input.html" class="add-product-btn">Add New Product</a>
-        </div>
+      <div class="container header__container">
+        <a href="/" class="logo">
+          <span class="logo__icon">+</span>
+          <span>FrontrowMD</span>
+        </a>
+        <a href="product_input.html" class="add-product-btn">Add New Product</a>
+      </div>
     </header>
 
     <main class="main-content">
-        <div class="container">
-            <div class="page-header">
-                <h1 class="page-title">Product Dashboard</h1>
-                <p class="page-subtitle">Manage your analyzed products and generated reviews</p>
-            </div>
-
-            <div class="tabs-container">
-                <div class="tabs">
-                    <button class="tab-button active" data-tab="generated">Generated</button>
-                    <button class="tab-button" data-tab="drafts">Drafts</button>
-                </div>
-            </div>
-
-            <!-- Generated Products Tab -->
-            <div class="tab-content active" id="generated-tab">
-                <div class="products-grid">
-                    <!-- Sample Generated Product Cards -->
-                    <a href="product_data.html" class="product-card">
-                        <div class="product-card__image">
-                            <img src="https://images.pexels.com/photos/1460838/pexels-photo-1460838.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Vitamin C Serum">
-                        </div>
-                        <div class="product-card__content">
-                            <h3 class="product-card__title">Vitamin C Brightening Serum</h3>
-                            <p class="product-card__url">sephora.com/product/vitamin-c-serum</p>
-                        </div>
-                    </a>
-
-                    <a href="product_data.html" class="product-card">
-                        <div class="product-card__image">
-                            <img src="https://images.pexels.com/photos/6621472/pexels-photo-6621472.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Daily Moisturizer">
-                        </div>
-                        <div class="product-card__content">
-                            <h3 class="product-card__title">Daily Moisturizer SPF 30</h3>
-                            <p class="product-card__url">ultabeauty.com/product/moisturizer-spf30</p>
-                        </div>
-                    </a>
-
-                    <a href="product_data.html" class="product-card">
-                        <div class="product-card__image">
-                            <img src="https://images.pexels.com/photos/7262911/pexels-photo-7262911.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Retinol Night Cream">
-                        </div>
-                        <div class="product-card__content">
-                            <h3 class="product-card__title">Retinol Night Renewal Cream</h3>
-                            <p class="product-card__url">amazon.com/product/retinol-cream</p>
-                        </div>
-                    </a>
-
-                    <a href="product_data.html" class="product-card">
-                        <div class="product-card__image">
-                            <img src="https://images.pexels.com/photos/3735782/pexels-photo-3735782.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Hyaluronic Acid">
-                        </div>
-                        <div class="product-card__content">
-                            <h3 class="product-card__title">Hyaluronic Acid Hydrating Serum</h3>
-                            <p class="product-card__url">theordinary.com/product/hyaluronic-acid</p>
-                        </div>
-                    </a>
-
-                    <a href="product_data.html" class="product-card">
-                        <div class="product-card__image">
-                            <img src="https://images.pexels.com/photos/6621328/pexels-photo-6621328.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Niacinamide">
-                        </div>
-                        <div class="product-card__content">
-                            <h3 class="product-card__title">Niacinamide 10% + Zinc Serum</h3>
-                            <p class="product-card__url">paulaschoice.com/product/niacinamide</p>
-                        </div>
-                    </a>
-
-                    <a href="product_data.html" class="product-card">
-                        <div class="product-card__image">
-                            <img src="https://images.pexels.com/photos/6620943/pexels-photo-6620943.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Gentle Cleanser">
-                        </div>
-                        <div class="product-card__content">
-                            <h3 class="product-card__title">Gentle Foaming Cleanser</h3>
-                            <p class="product-card__url">cerave.com/product/gentle-cleanser</p>
-                        </div>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Drafts Tab -->
-            <div class="tab-content" id="drafts-tab">
-                <div class="products-grid">
-                    <!-- Sample Draft Product Cards -->
-                    <a href="processing_success.html" class="product-card">
-                        <div class="product-card__image">
-                            <img src="https://images.pexels.com/photos/8134857/pexels-photo-8134857.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Collagen Supplement">
-                            <span class="status-tag status-tag--success">Success</span>
-                        </div>
-                        <div class="product-card__content">
-                            <h3 class="product-card__title">Marine Collagen Peptides</h3>
-                            <p class="product-card__url">vitalnaturals.com/marine-collagen</p>
-                        </div>
-                    </a>
-
-                    <a href="processing_failed.html" class="product-card">
-                        <div class="product-card__image">
-                            <img src="https://images.pexels.com/photos/5938567/pexels-photo-5938567.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Omega-3 Supplement">
-                            <span class="status-tag status-tag--error">Failed</span>
-                        </div>
-                        <div class="product-card__content">
-                            <h3 class="product-card__title">Omega-3 Fish Oil Capsules</h3>
-                            <p class="product-card__url">nordicnaturals.com/omega-3</p>
-                        </div>
-                    </a>
-
-                    <a href="processing_success.html" class="product-card">
-                        <div class="product-card__image">
-                            <img src="https://images.pexels.com/photos/6620945/pexels-photo-6620945.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Probiotic">
-                            <span class="status-tag status-tag--success">Success</span>
-                        </div>
-                        <div class="product-card__content">
-                            <h3 class="product-card__title">Daily Probiotic 50 Billion CFU</h3>
-                            <p class="product-card__url">gardenoflife.com/probiotic-daily</p>
-                        </div>
-                    </a>
-
-                    <a href="processing_success.html" class="product-card">
-                        <div class="product-card__image">
-                            <img src="https://www.leiamoon.com/product/order-leiamoon-steam-seat/" alt="LEIAMOON Steam Seat">
-                            <span class="status-tag status-tag--success">Success</span>
-                        </div>
-                        <div class="product-card__content">
-                            <h3 class="product-card__title">LEIAMOON Steam Seat</h3>
-                            <p class="product-card__url">leiamoon.com/product/order-leiamoon-steam-seat</p>
-                        </div>
-                    </a>
-                </div>
-            </div>
+      <div class="container">
+        <div class="page-header">
+          <h1 class="page-title">Product Dashboard</h1>
+          <p class="page-subtitle">
+            Manage your analyzed products and generated reviews
+          </p>
         </div>
+
+        <div class="tabs-container">
+          <div class="tabs">
+            <button class="tab-button active" data-tab="generated">
+              Generated
+            </button>
+            <button class="tab-button" data-tab="drafts">Drafts</button>
+          </div>
+        </div>
+
+        <!-- Generated Products Tab -->
+        <div class="tab-content active" id="generated-tab">
+          <div class="products-grid">
+            <!-- Sample Generated Product Cards -->
+            <a href="product_data.html" class="product-card">
+              <div class="product-card__image">
+                <img
+                  src="https://images.pexels.com/photos/1460838/pexels-photo-1460838.jpeg?auto=compress&cs=tinysrgb&w=600"
+                  alt="Vitamin C Serum"
+                />
+              </div>
+              <div class="product-card__content">
+                <h3 class="product-card__title">Vitamin C Brightening Serum</h3>
+                <p class="product-card__url">
+                  sephora.com/product/vitamin-c-serum
+                </p>
+              </div>
+            </a>
+
+            <a href="product_data.html" class="product-card">
+              <div class="product-card__image">
+                <img
+                  src="https://images.pexels.com/photos/6621472/pexels-photo-6621472.jpeg?auto=compress&cs=tinysrgb&w=600"
+                  alt="Daily Moisturizer"
+                />
+              </div>
+              <div class="product-card__content">
+                <h3 class="product-card__title">Daily Moisturizer SPF 30</h3>
+                <p class="product-card__url">
+                  ultabeauty.com/product/moisturizer-spf30
+                </p>
+              </div>
+            </a>
+
+            <a href="product_data.html" class="product-card">
+              <div class="product-card__image">
+                <img
+                  src="https://images.pexels.com/photos/7262911/pexels-photo-7262911.jpeg?auto=compress&cs=tinysrgb&w=600"
+                  alt="Retinol Night Cream"
+                />
+              </div>
+              <div class="product-card__content">
+                <h3 class="product-card__title">Retinol Night Renewal Cream</h3>
+                <p class="product-card__url">
+                  amazon.com/product/retinol-cream
+                </p>
+              </div>
+            </a>
+
+            <a href="product_data.html" class="product-card">
+              <div class="product-card__image">
+                <img
+                  src="https://images.pexels.com/photos/3735782/pexels-photo-3735782.jpeg?auto=compress&cs=tinysrgb&w=600"
+                  alt="Hyaluronic Acid"
+                />
+              </div>
+              <div class="product-card__content">
+                <h3 class="product-card__title">
+                  Hyaluronic Acid Hydrating Serum
+                </h3>
+                <p class="product-card__url">
+                  theordinary.com/product/hyaluronic-acid
+                </p>
+              </div>
+            </a>
+
+            <a href="product_data.html" class="product-card">
+              <div class="product-card__image">
+                <img
+                  src="https://images.pexels.com/photos/6621328/pexels-photo-6621328.jpeg?auto=compress&cs=tinysrgb&w=600"
+                  alt="Niacinamide"
+                />
+              </div>
+              <div class="product-card__content">
+                <h3 class="product-card__title">
+                  Niacinamide 10% + Zinc Serum
+                </h3>
+                <p class="product-card__url">
+                  paulaschoice.com/product/niacinamide
+                </p>
+              </div>
+            </a>
+
+            <a href="product_data.html" class="product-card">
+              <div class="product-card__image">
+                <img
+                  src="https://images.pexels.com/photos/6620943/pexels-photo-6620943.jpeg?auto=compress&cs=tinysrgb&w=600"
+                  alt="Gentle Cleanser"
+                />
+              </div>
+              <div class="product-card__content">
+                <h3 class="product-card__title">Gentle Foaming Cleanser</h3>
+                <p class="product-card__url">
+                  cerave.com/product/gentle-cleanser
+                </p>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- Drafts Tab -->
+        <div class="tab-content" id="drafts-tab">
+          <div class="products-grid">
+            <!-- Sample Draft Product Cards -->
+            <a href="processing_success.html" class="product-card">
+              <div class="product-card__image">
+                <img
+                  src="https://images.pexels.com/photos/8134857/pexels-photo-8134857.jpeg?auto=compress&cs=tinysrgb&w=600"
+                  alt="Collagen Supplement"
+                />
+                <span class="status-tag status-tag--success">Success</span>
+              </div>
+              <div class="product-card__content">
+                <h3 class="product-card__title">Marine Collagen Peptides</h3>
+                <p class="product-card__url">
+                  vitalnaturals.com/marine-collagen
+                </p>
+              </div>
+            </a>
+
+            <a href="processing_failed.html" class="product-card">
+              <div class="product-card__image">
+                <img
+                  src="https://images.pexels.com/photos/5938567/pexels-photo-5938567.jpeg?auto=compress&cs=tinysrgb&w=600"
+                  alt="Omega-3 Supplement"
+                />
+                <span class="status-tag status-tag--error">Failed</span>
+              </div>
+              <div class="product-card__content">
+                <h3 class="product-card__title">Omega-3 Fish Oil Capsules</h3>
+                <p class="product-card__url">nordicnaturals.com/omega-3</p>
+              </div>
+            </a>
+
+            <a href="processing_success.html" class="product-card">
+              <div class="product-card__image">
+                <img
+                  src="https://images.pexels.com/photos/6620945/pexels-photo-6620945.jpeg?auto=compress&cs=tinysrgb&w=600"
+                  alt="Probiotic"
+                />
+                <span class="status-tag status-tag--success">Success</span>
+              </div>
+              <div class="product-card__content">
+                <h3 class="product-card__title">
+                  Daily Probiotic 50 Billion CFU
+                </h3>
+                <p class="product-card__url">
+                  gardenoflife.com/probiotic-daily
+                </p>
+              </div>
+            </a>
+
+            <a href="processing_success.html" class="product-card">
+              <div class="product-card__image">
+                <img
+                  src="https://www.leiamoon.com/product/order-leiamoon-steam-seat/"
+                  alt="LEIAMOON Steam Seat"
+                />
+                <span class="status-tag status-tag--success">Success</span>
+              </div>
+              <div class="product-card__content">
+                <h3 class="product-card__title">LEIAMOON Steam Seat</h3>
+                <p class="product-card__url">
+                  leiamoon.com/product/order-leiamoon-steam-seat
+                </p>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
     </main>
-    
+
     <footer class="footer">
-        <div class="container">
-            <p>&copy; 2024 FrontrowMD. All rights reserved.</p>
-        </div>
+      <div class="container">
+        <p>&copy; 2024 FrontrowMD. All rights reserved.</p>
+      </div>
     </footer>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const tabButtons = document.querySelectorAll('.tab-button');
-            const tabContents = document.querySelectorAll('.tab-content');
+      document.addEventListener("DOMContentLoaded", () => {
+        const tabButtons = document.querySelectorAll(".tab-button");
+        const tabContents = document.querySelectorAll(".tab-content");
 
-            tabButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const targetTab = button.getAttribute('data-tab');
-                    
-                    // Remove active class from all buttons and contents
-                    tabButtons.forEach(btn => btn.classList.remove('active'));
-                    tabContents.forEach(content => content.classList.remove('active'));
-                    
-                    // Add active class to clicked button and corresponding content
-                    button.classList.add('active');
-                    document.getElementById(`${targetTab}-tab`).classList.add('active');
-                });
-            });
-        }); 
+        tabButtons.forEach((button) => {
+          button.addEventListener("click", () => {
+            const targetTab = button.getAttribute("data-tab");
+
+            // Remove active class from all buttons and contents
+            tabButtons.forEach((btn) => btn.classList.remove("active"));
+            tabContents.forEach((content) =>
+              content.classList.remove("active")
+            );
+
+            // Add active class to clicked button and corresponding content
+            button.classList.add("active");
+            document.getElementById(`${targetTab}-tab`).classList.add("active");
+          });
+        });
+      });
     </script>
-
-</body>
+  </body>
 </html>

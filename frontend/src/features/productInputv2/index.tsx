@@ -71,7 +71,6 @@ export default function ProductInputV2() {
         body: JSON.stringify({
           product_metadata_list: [...savedProducts],
         }),
-        signal: AbortSignal.timeout(30000),
       });
 
       const data = await response.json();
