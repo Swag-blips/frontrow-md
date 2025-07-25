@@ -1,13 +1,13 @@
 import React from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import "../styling/ProcessingFailed.css";
- 
+
 const ProcessingFailed: React.FC = () => {
   const [searchParams] = useSearchParams();
   const url = searchParams.get("url") || "";
   const errorMessage =
     searchParams.get("error") ||
-    "We couldn't process this URL. Please try a different product page.";
+    "We couldn't process this URL. Please try a different product";
 
   return (
     <>
@@ -41,7 +41,7 @@ const ProcessingFailed: React.FC = () => {
           <h1 className="failure-card__title">URL Analysis Failed</h1>
           <p className="failure-card__text">{errorMessage}</p>
 
-          <Link to="/product-input" className="button-primary">
+          <Link to="/product-home" className="button-primary">
             Try Another Page
           </Link>
         </div>

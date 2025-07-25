@@ -509,8 +509,8 @@ const ReviewConfiguration: React.FC = () => {
           processingIds.push(productId);
         }
         sessionStorage.setItem(processingKey, JSON.stringify(processingIds));
-        // Redirect to product input page for polling/feedback
-        navigate("/product-input");
+        
+        navigate("/product-home");
       } else {
         throw new Error("Failed to get task ID from response");
       }

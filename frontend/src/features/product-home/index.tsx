@@ -18,6 +18,7 @@ export default function ProductHome() {
     isLoading,
   } = useProductInput();
 
+  console.log(isLoading);
   const fetchProductDrafts = async () => {
     try {
       const response = await fetch(
@@ -159,7 +160,11 @@ export default function ProductHome() {
                   {draft.length > 0 &&
                     draft.map((item) => (
                       <Link
-                        to={`/processing-success?productId=${item.product_id}`}
+                        to={
+                          item.product_info.error
+                            ? `/processing-failed?productId=${item.product_id}`
+                            : `/processing-success?productId=${item.product_id}`
+                        }
                         key={item.product_id}
                         className="product-home-product-card"
                       >

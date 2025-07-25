@@ -54,6 +54,8 @@ export default function ProductInputV2() {
     setShowSuccess(true);
   };
 
+  console.log(savedProducts);
+
   async function batchExtractProductInfo() {
     console.log("Saved proucts here", savedProducts);
     if (!savedProducts.length) return;

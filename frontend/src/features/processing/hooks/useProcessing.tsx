@@ -48,7 +48,6 @@ export const useProcessing = () => {
           product_url: url,
         };
 
-        const startTime = Date.now();
         const response = await fetch(
           `${API_BASE_URL}/frontrowmd/product_metadata_extraction/extract_product_info`,
           {
@@ -61,7 +60,6 @@ export const useProcessing = () => {
             body: JSON.stringify(payload),
           }
         );
-        const endTime = Date.now();
 
         if (!response.ok) {
           let errorText = `HTTP ${response.status}: ${response.statusText}`;
