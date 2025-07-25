@@ -87,6 +87,12 @@ export default defineConfig({
         secure: false,
         rewrite: (path) => path, // Keep the full path including the product ID
       },
+      "/product_management/delete_product": {
+        target: "https://65.108.49.212/",
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path, // Keep the full path including the product ID
+      },
       "/frontrowmd/get_product_by_id": {
         target: "https://65.108.49.212/",
         changeOrigin: true,

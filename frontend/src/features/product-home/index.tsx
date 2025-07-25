@@ -3,10 +3,12 @@ import "./styles/ProductHome.css";
 import { useProductInput } from "../productInput/hooks/useProductInput";
 import type { ProductType } from "./types/types";
 import { Link } from "react-router-dom";
+import toast from "react-hot-toast";
 
 export default function ProductHome() {
   const [activeTab, setActiveTab] = useState("generated");
   const [draft, setDraft] = useState<ProductType[]>([]);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
   const {
     products,
@@ -19,6 +21,7 @@ export default function ProductHome() {
   } = useProductInput();
 
   console.log(isLoading);
+
   const fetchProductDrafts = async () => {
     try {
       const response = await fetch(
@@ -36,17 +39,68 @@ export default function ProductHome() {
       );
 
       const data = await response.json();
-
       setDraft(data.product_drafts);
     } catch (error) {
       console.error(error);
     }
   };
 
+  const handleDeleteProduct = async (productId: string) => {
+    try {
+      const response = await fetch(
+        `/product_management/delete_product/${productId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.ok) {
+        setDraft((prevDrafts) =>
+          prevDrafts.filter((item) => item.product_id !== productId)
+        );
+        setOpenDropdown(null);
+        console.log("Product deleted successfully");
+      } else {
+        console.error("Failed to delete product");
+      }
+
+      const data = await response.json();
+      if (data.success) {
+        toast.success(data.message);
+      }
+    } catch (error: any) {
+      console.error("Error deleting product:", error.message);
+    }
+  };
+
+  const toggleDropdown = (productId: string, e: React.MouseEvent) => {
+    e.preventDefault(); // Prevent the Link navigation
+    e.stopPropagation();
+    setOpenDropdown(openDropdown === productId ? null : productId);
+  };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => {
+      setOpenDropdown(null);
+    };
+
+    if (openDropdown) {
+      document.addEventListener("click", handleClickOutside);
+      return () => document.removeEventListener("click", handleClickOutside);
+    }
+  }, [openDropdown]);
+
   useEffect(() => {
     fetchProductDrafts();
   }, []);
+
   console.log(draft);
+
   return (
     <>
       <header className="product-home-header">
@@ -167,6 +221,7 @@ export default function ProductHome() {
                         }
                         key={item.product_id}
                         className="product-home-product-card"
+                        style={{ position: "relative" }}
                       >
                         <div className="product-home-product-card__image">
                           <img
@@ -192,6 +247,74 @@ export default function ProductHome() {
                           <p className="product-home-product-card__url">
                             {item.product_url}
                           </p>
+                        </div>
+
+                        {/* Three-dot menu */}
+                        <div
+                          style={{
+                            position: "absolute",
+                            top: "8px",
+                            right: "8px",
+                            zIndex: 10,
+                          }}
+                        >
+                          <button
+                            style={{
+                              background: "rgba(255, 255, 255, 0.9)",
+                              border: "none",
+                              borderRadius: "50%",
+                              width: "32px",
+                              height: "32px",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              cursor: "pointer",
+                              fontSize: "18px",
+                              fontWeight: "bold",
+                              color: "#666",
+                              boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+                            }}
+                            onClick={(e) => toggleDropdown(item.product_id, e)}
+                          >
+                            ⋮
+                          </button>
+
+                          {openDropdown === item.product_id && (
+                            <div
+                              style={{
+                                position: "absolute",
+                                top: "100%",
+                                right: "0",
+                                background: "white",
+                                border: "1px solid #e0e0e0",
+                                borderRadius: "6px",
+                                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                                minWidth: "140px",
+                                zIndex: 1000,
+                                overflow: "hidden",
+                              }}
+                            >
+                              <button
+                                style={{
+                                  width: "100%",
+                                  padding: "12px 16px",
+                                  border: "none",
+                                  background: "none",
+                                  textAlign: "left",
+                                  cursor: "pointer",
+                                  fontSize: "14px",
+                                  color: "#dc3545",
+                                }}
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  handleDeleteProduct(item.product_id);
+                                }}
+                              >
+                                Delete Product
+                              </button>
+                            </div>
+                          )}
                         </div>
                       </Link>
                     ))}
