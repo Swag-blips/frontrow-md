@@ -50,13 +50,16 @@ export default function ProductHome() {
     <>
       <header className="product-home-header">
         <div className="product-home-container product-home-header__container">
-          <a href="/" className="product-home-logo">
+          <Link to="/" className="product-home-logo">
             <span className="product-home-logo__icon">+</span>
             <span>FrontrowMD</span>
-          </a>
-          <a href="product_input.html" className="product-home-add-product-btn">
+          </Link>
+          <Link
+            to={"/product-input-v2"}
+            className="product-home-add-product-btn"
+          >
             Add New Product
-          </a>
+          </Link>
         </div>
       </header>
 
