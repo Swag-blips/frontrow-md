@@ -31,7 +31,7 @@ const Home: React.FC = () => {
                 Transform product pages into authentic, clinically-informed
                 reviews that build trust and drive conversions.
               </p>
-              <Link to="/product-input" className="hero__cta">
+              <Link to="/product-home" className="hero__cta">
                 Get Started
               </Link>
             </div>
@@ -56,7 +56,7 @@ const Home: React.FC = () => {
                   className="visual-element icon-bubble icon-bubble--shield"
                   data-depth="0.2"
                 >
-                 <Shield />
+                  <Shield />
                 </div>
               </div>
             </div>

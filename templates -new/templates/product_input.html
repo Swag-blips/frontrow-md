@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>New Review - FrontrowMD</title>
+    <title>Add Products - FrontrowMD</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
@@ -17,6 +17,8 @@
             --border-subtle: #E0E0E0;
             --card-bg: #FFFFFF;
             --input-bg: #F1F3F5;
+            --success-color: #28a745;
+            --success-color-hover: #218838;
 
             --font-family-sans: 'Inter', sans-serif;
             --font-weight-regular: 400;
@@ -47,6 +49,11 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        @keyframes modalSlideIn {
+            from { opacity: 0; transform: translateY(20px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
         body {
             font-family: var(--font-family-sans);
             background-color: var(--background-color);
@@ -54,6 +61,7 @@
             line-height: 1.6;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            overflow: hidden;
         }
 
         .container {
@@ -89,43 +97,83 @@
             color: var(--accent-primary);
         }
 
-        /* Main Content */
-        .main-content {
-            padding: var(--spacing-xl) 0 var(--spacing-xxl) 0;
-        }
-        
-        .input-section {
-            max-width: 800px;
-            margin: 0 auto;
-            animation: fadeIn 0.5s ease-out 0.2s backwards;
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 1;
+            visibility: visible;
+            padding: var(--spacing-md);
         }
 
-        .input-card {
+        .modal-content {
             background: var(--card-bg);
-            padding: var(--spacing-lg);
             border-radius: var(--border-radius-large);
-            box-shadow: var(--shadow-soft);
-            text-align: center;
+            max-width: 700px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: var(--spacing-xl);
+            position: relative;
+            animation: modalSlideIn 0.4s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
-        .input-card__title {
-            font-size: 1.8rem;
+        .modal-close {
+            position: absolute;
+            top: var(--spacing-md);
+            right: var(--spacing-md);
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            padding: var(--spacing-sm);
+            border-radius: 50%;
+            transition: all 0.2s ease;
+        }
+
+        .modal-close:hover {
+            background-color: var(--input-bg);
+            color: var(--text-primary);
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
             font-weight: var(--font-weight-bold);
             margin-bottom: var(--spacing-sm);
         }
 
-        .input-card__subtitle {
+        .modal-subtitle {
             color: var(--text-secondary);
             margin-bottom: var(--spacing-lg);
         }
-        
-        .url-form {
-            display: flex;
-            flex-direction: column;
-            gap: var(--spacing-md);
+
+        .form-group {
+            margin-bottom: var(--spacing-lg);
+            text-align: left;
         }
 
-        .url-input {
+        .form-label {
+            display: block;
+            font-weight: var(--font-weight-medium);
+            margin-bottom: var(--spacing-sm);
+            color: var(--text-primary);
+        }
+
+        .form-label.required::after {
+            content: " *";
+            color: #dc3545;
+        }
+
+        .form-input {
             width: 100%;
             padding: 16px;
             font-size: 1rem;
@@ -133,103 +181,142 @@
             border-radius: var(--border-radius-medium);
             background-color: var(--input-bg);
             transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            font-family: var(--font-family-sans);
         }
 
-        .url-input:focus {
+        .form-input:focus {
             outline: none;
             border-color: var(--accent-primary);
             box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.2);
+            background-color: var(--card-bg);
         }
-        
-        .generate-btn {
+
+        .form-textarea {
+            min-height: 200px;
+            resize: vertical;
+            font-family: var(--font-family-sans);
+        }
+
+        .form-help {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: var(--spacing-sm);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: var(--spacing-md);
+            justify-content: flex-end;
+            margin-top: var(--spacing-xl);
+            padding-top: var(--spacing-lg);
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: var(--border-radius-medium);
+            border: none;
+            font-weight: var(--font-weight-medium);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .btn-secondary {
+            background-color: var(--input-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--border-subtle);
+        }
+
+        .btn-primary {
             background-color: var(--accent-primary);
             color: white;
-            padding: 16px;
-            border-radius: var(--border-radius-medium);
-            text-decoration: none;
-            font-size: 1.1rem;
-            font-weight: var(--font-weight-bold);
-            transition: all 0.3s ease;
-            box-shadow: var(--shadow-medium);
-            border: none;
-            cursor: pointer;
         }
-        
-        .generate-btn:hover {
+
+        .btn-primary:hover {
             background-color: var(--accent-primary-hover);
-            transform: translateY(-2px);
-            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.12);
         }
 
-        /* Recents Section */
-        .recents-section {
-            margin-top: var(--spacing-xxl);
-            animation: fadeIn 0.5s ease-out 0.4s backwards;
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
 
-        .recents-section__title {
-            font-size: 1.5rem;
-            font-weight: var(--font-weight-bold);
-            margin-bottom: var(--spacing-lg);
+        /* Success Actions */
+        .success-actions {
+            display: none;
             text-align: center;
+            padding: var(--spacing-lg);
+            border-top: 1px solid var(--border-subtle);
+            margin-top: var(--spacing-lg);
         }
 
-        .recents-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: var(--spacing-lg);
-        }
-        
-        .product-card {
-            background: var(--card-bg);
-            border-radius: var(--border-radius-large);
-            box-shadow: var(--shadow-soft);
-            overflow: hidden;
-            text-decoration: none;
-            color: var(--text-primary);
-            transition: all 0.3s ease;
+        .success-actions.active {
             display: block;
         }
 
-        .product-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-medium);
-        }
-
-        .product-card__image {
-            height: 180px;
-            background-color: var(--input-bg);
-        }
-
-        .product-card__image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .product-card__content {
+        .success-message {
+            color: var(--success-color);
+            font-weight: var(--font-weight-medium);
+            margin-bottom: var(--spacing-lg);
             padding: var(--spacing-md);
+            background-color: #f0f9f0;
+            border-radius: var(--border-radius-medium);
+            border: 1px solid #c3e6c3;
         }
 
-        .product-card__title {
-            font-weight: var(--font-weight-bold);
-            margin-bottom: var(--spacing-sm);
+        .success-buttons {
+            display: flex;
+            gap: var(--spacing-md);
+            justify-content: center;
         }
 
-        .product-card__url {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
         }
 
-        /* Footer */
-        .footer {
-            padding: var(--spacing-lg) 0;
+        .btn-success:hover {
+            background-color: var(--success-color-hover);
+        }
+
+        /* Confirmation Modal */
+        .confirmation-modal .modal-content {
+            max-width: 450px;
             text-align: center;
-            font-size: 0.9rem;
-            color: #aaa;
+        }
+
+        .confirmation-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto var(--spacing-lg);
+            background-color: #f0f9f0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--success-color);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .modal-content {
+                margin: var(--spacing-md);
+                padding: var(--spacing-lg);
+            }
+
+            .modal-actions,
+            .success-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
         }
 
     </style>
@@ -238,69 +325,198 @@
 
     <header class="header">
         <div class="container header__container">
-            <a href="/" class="logo">
+            <a href="product_homepage.html" class="logo">
                 <span class="logo__icon">+</span>
                 <span>FrontrowMD</span>
             </a>
         </div>
     </header>
 
-    <main class="main-content">
-        <div class="container">
-            <section class="input-section">
-                <div class="input-card">
-                    <h1 class="input-card__title">Start a New Review Generation</h1>
-                    <p class="input-card__subtitle">Enter a product page URL to begin the analysis and review creation process.</p>
-                    <form class="url-form" action="processing.html" method="GET">
-                        <input type="url" class="url-input" placeholder="https://www.example.com/product/item-123" required>
-                        <button type="submit" class="generate-btn">Generate Reviews</button>
-                    </form>
+    <!-- Add Product Modal -->
+    <div class="modal-overlay" id="product-modal">
+        <div class="modal-content">
+            <button class="modal-close" id="close-modal-btn">&times;</button>
+            <h2 class="modal-title">Add Product Information</h2>
+            <p class="modal-subtitle">Enter the product URL and optionally paste the raw product page text for better analysis.</p>
+            
+            <form id="product-form">
+                <div class="form-group">
+                    <label for="product-url" class="form-label required">Product URL</label>
+                    <input type="text" id="product-url" class="form-input" placeholder="www.example.com/product/item-123" required>
+                    <p class="form-help">Enter the product page URL (https:// will be added automatically if needed)</p>
                 </div>
-            </section>
 
-            <section class="recents-section">
-                <h2 class="recents-section__title">Recent Products</h2>
-                <div class="recents-grid">
-                    <!-- Placeholder Card 1 -->
-                    <a href="#" class="product-card">
-                        <div class="product-card__image">
-                            <img src="https://images.pexels.com/photos/1460838/pexels-photo-1460838.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Product 1">
-                        </div>
-                        <div class="product-card__content">
-                            <h3 class="product-card__title">Vitamin C Serum</h3>
-                            <p class="product-card__url">sephora.com/product/...</p>
-                        </div>
-                    </a>
-                    <!-- Placeholder Card 2 -->
-                    <a href="#" class="product-card">
-                        <div class="product-card__image">
-                           <img src="https://images.pexels.com/photos/6621472/pexels-photo-6621472.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Product 2">
-                        </div>
-                        <div class="product-card__content">
-                            <h3 class="product-card__title">Daily Moisturizer SPF 30</h3>
-                            <p class="product-card__url">ultabeauty.com/product/...</p>
-                        </div>
-                    </a>
-                    <!-- Placeholder Card 3 -->
-                    <a href="#" class="product-card">
-                        <div class="product-card__image">
-                           <img src="https://images.pexels.com/photos/7262911/pexels-photo-7262911.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Product 3">
-                        </div>
-                        <div class="product-card__content">
-                            <h3 class="product-card__title">Retinol Night Cream</h3>
-                            <p class="product-card__url">amazon.com/product/...</p>
-                        </div>
-                    </a>
+                <div class="form-group">
+                    <label for="product-text" class="form-label">Raw Product Text (Optional)</label>
+                    <textarea id="product-text" class="form-input form-textarea" placeholder="Paste the raw text content from the product page here. This can include product descriptions, ingredients, benefits, and any other relevant information..."></textarea>
+                    <p class="form-help">Providing raw text can improve analysis accuracy, especially for complex product pages</p>
                 </div>
-            </section>
+
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="cancel-btn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Submit Product</button>
+                </div>
+            </form>
+
+            <div class="success-actions" id="success-actions">
+                <div class="success-message">
+                    Product information saved successfully!
+                </div>
+                <div class="success-buttons">
+                    <button type="button" class="btn btn-secondary" id="add-another-btn">Add Another</button>
+                    <button type="button" class="btn btn-success" id="done-btn">Done</button>
+                </div>
+            </div>
         </div>
-    </main>
-    
-    <footer class="footer">
-        <div class="container">
-            <p>&copy; 2024 FrontrowMD. All rights reserved.</p>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div class="modal-overlay confirmation-modal" id="confirmation-modal" style="display: none;">
+        <div class="modal-content">
+            <div class="confirmation-icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+            </div>
+            <h2 class="modal-title">Products Sent for Processing</h2>
+            <p class="modal-subtitle">Your products are being sent for extraction and analysis. You'll be able to view the results in your dashboard.</p>
+            <div class="modal-actions">
+                <button type="button" class="btn btn-primary" id="go-to-dashboard-btn">Back to Products</button>
+            </div>
         </div>
-    </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const productModal = document.getElementById('product-modal');
+            const confirmationModal = document.getElementById('confirmation-modal');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+            const cancelBtn = document.getElementById('cancel-btn');
+            const productForm = document.getElementById('product-form');
+            const successActions = document.getElementById('success-actions');
+            const addAnotherBtn = document.getElementById('add-another-btn');
+            const doneBtn = document.getElementById('done-btn');
+            const goToDashboardBtn = document.getElementById('go-to-dashboard-btn');
+
+            let savedProducts = [];
+
+            // Auto-focus on URL input when page loads
+            setTimeout(() => {
+                document.getElementById('product-url').focus();
+            }, 300);
+
+            // Close modal functions
+            const closeModal = () => {
+                window.location.href = 'product_homepage.html';
+            };
+
+            const closeConfirmationModal = () => {
+                confirmationModal.style.display = 'none';
+            };
+
+            closeModalBtn.addEventListener('click', closeModal);
+            cancelBtn.addEventListener('click', closeModal);
+
+            // Reset form
+            const resetForm = () => {
+                productForm.style.display = 'block';
+                successActions.classList.remove('active');
+                productForm.reset();
+                setTimeout(() => {
+                    document.getElementById('product-url').focus();
+                }, 100);
+            };
+
+            // Close modal on overlay click
+            productModal.addEventListener('click', (e) => {
+                if (e.target === productModal) {
+                    closeModal();
+                }
+            });
+
+            confirmationModal.addEventListener('click', (e) => {
+                if (e.target === confirmationModal) {
+                    closeConfirmationModal();
+                }
+            });
+
+            // URL validation and formatting
+            const formatUrl = (url) => {
+                if (!url) return '';
+                
+                // Remove whitespace
+                url = url.trim();
+                
+                // If it doesn't start with http:// or https://, add https://
+                if (!url.match(/^https?:\/\//)) {
+                    url = 'https://' + url;
+                }
+                
+                return url;
+            };
+
+            // Form submission
+            productForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const urlInput = document.getElementById('product-url');
+                const textInput = document.getElementById('product-text');
+                
+                const originalUrl = urlInput.value;
+                const formattedUrl = formatUrl(originalUrl);
+                const text = textInput.value;
+
+                // Basic URL validation
+                if (!originalUrl.trim()) {
+                    urlInput.focus();
+                    return;
+                }
+
+                // Save product data
+                savedProducts.push({
+                    originalUrl: originalUrl,
+                    formattedUrl: formattedUrl,
+                    text: text,
+                    timestamp: new Date().toISOString()
+                });
+
+                console.log('Product saved:', { originalUrl, formattedUrl, text });
+
+                // Show success actions
+                productForm.style.display = 'none';
+                successActions.classList.add('active');
+            });
+
+            // Add another product
+            addAnotherBtn.addEventListener('click', () => {
+                resetForm();
+            });
+
+            // Done - show confirmation modal
+            doneBtn.addEventListener('click', () => {
+                productModal.style.display = 'none';
+                confirmationModal.style.display = 'flex';
+            });
+
+            // Back to products
+            goToDashboardBtn.addEventListener('click', () => {
+                // In a real application, you would send the savedProducts to your backend here
+                console.log('Sending products for processing:', savedProducts);
+                window.location.href = 'product_homepage.html';
+            });
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    if (confirmationModal.style.display === 'flex') {
+                        closeConfirmationModal();
+                    } else {
+                        closeModal();
+                    }
+                }
+            });
+        });
+    </script>
 
 </body>
 </html>

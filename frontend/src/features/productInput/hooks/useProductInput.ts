@@ -101,6 +101,7 @@ export const useProductInput = () => {
       }
 
       const data = await response.json();
+      console.log("DATA", data);
 
       if (!data.products || !Array.isArray(data.products)) {
         throw new Error("No products found");
@@ -223,29 +224,29 @@ export const useProductInput = () => {
         const urlObj = new URL(validatedUrl);
         if (!urlObj.protocol.startsWith("http")) {
           validatedUrl = `https://${validatedUrl}`;
-        } 
+        }
       } catch (err) {
         throw new Error("Please enter a valid URL");
       }
 
       navigate(`/processing?url=${encodeURIComponent(validatedUrl)}`);
-    } catch (err: any) {  
-      setError(err.message); 
-    } finally { 
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
       setIsSubmitting(false);
     }
   };
- 
-   const handleProductClick = (productId: string) => {
+
+  const handleProductClick = (productId: string) => {
     navigate(`/product-data/${productId}`);
   };
+  
 
   const totalPages = Math.ceil(products.length / PRODUCTS_PER_PAGE);
   const paginatedProducts = products.slice(
-    (currentPage - 1) * PRODUCTS_PER_PAGE, 
+    (currentPage - 1) * PRODUCTS_PER_PAGE,
     currentPage * PRODUCTS_PER_PAGE
-  );   
-   
+  );
 
   const handlePrevPage = () => {
     setCurrentPage((prev) => Math.max(prev - 1, 1));
@@ -255,7 +256,7 @@ export const useProductInput = () => {
     setCurrentPage((prev) => Math.min(prev + 1, totalPages));
   };
 
-  useEffect(() => { 
+  useEffect(() => {
     setCurrentPage(1);
   }, [products.length]);
 

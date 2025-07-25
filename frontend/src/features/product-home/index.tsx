@@ -1,8 +1,51 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./styles/ProductHome.css";
+import { useProductInput } from "../productInput/hooks/useProductInput";
+import type { ProductType } from "./types/types";
+import { Link } from "react-router-dom";
 
 export default function ProductHome() {
   const [activeTab, setActiveTab] = useState("generated");
+  const [draft, setDraft] = useState<ProductType[]>([]);
+
+  const {
+    products,
+    paginatedProducts,
+    currentPage,
+    totalPages,
+    handleNextPage,
+    handlePrevPage,
+    isLoading,
+  } = useProductInput();
+
+
+  const fetchProductDrafts = async () => {
+    try {
+      const response = await fetch(
+        "/product_management/get_all_product_drafts",
+        {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            Pragma: "no-cache",
+            Expires: "0",
+          },
+        }
+      );
+
+      const data = await response.json();
+
+      setDraft(data.product_drafts);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchProductDrafts();
+  }, []);
 
   return (
     <>
@@ -51,224 +94,103 @@ export default function ProductHome() {
           {activeTab === "generated" && (
             <div className="product-home-tab-content active" id="generated-tab">
               <div className="product-home-products-grid">
-                {/* Repeat product-card */}
-                <a
-                  href="product_data.html"
-                  className="product-home-product-card"
-                >
-                  <div className="product-home-product-card__image">
-                    <img
-                      src="https://images.pexels.com/photos/1460838/pexels-photo-1460838.jpeg?auto=compress&cs=tinysrgb&w=600"
-                      alt="Vitamin C Serum"
-                    />
-                  </div>
-                  <div className="product-home-product-card__content">
-                    <h3 className="product-home-product-card__title">
-                      Vitamin C Brightening Serum
-                    </h3>
-                    <p className="product-home-product-card__url">
-                      sephora.com/product/vitamin-c-serum
-                    </p>
-                  </div>
-                </a>
-
-                <a
-                  href="product_data.html"
-                  className="product-home-product-card"
-                >
-                  <div className="product-home-product-card__image">
-                    <img
-                      src="https://images.pexels.com/photos/7262911/pexels-photo-7262911.jpeg?auto=compress&cs=tinysrgb&w=600"
-                      alt="Retinol Night Cream"
-                    />
-                  </div>
-                  <div className="product-home-product-card__content">
-                    <h3 className="product-home-product-card__title">
-                      Retinol Night Renewal Cream
-                    </h3>
-                    <p className="product-home-product-card__url">
-                      amazon.com/product/retinol-cream
-                    </p>
-                  </div>
-                </a>
-                <a
-                  href="product_data.html"
-                  className="product-home-product-card"
-                >
-                  <div className="product-home-product-card__image">
-                    <img
-                      src="https://images.pexels.com/photos/3735782/pexels-photo-3735782.jpeg?auto=compress&cs=tinysrgb&w=600"
-                      alt="Hyaluronic Acid"
-                    />
-                  </div>
-                  <div className="product-home-product-card__content">
-                    <h3 className="product-home-product-card__title">
-                      Hyaluronic Acid Hydrating Serum
-                    </h3>
-                    <p className="product-home-product-card__url">
-                      theordinary.com/product/hyaluronic-acid
-                    </p>
-                  </div>
-                </a>
-                <a
-                  href="product_data.html"
-                  className="product-home-product-card"
-                >
-                  <div className="product-home-product-card__image">
-                    <img
-                      src="https://images.pexels.com/photos/6621328/pexels-photo-6621328.jpeg?auto=compress&cs=tinysrgb&w=600"
-                      alt="Niacinamide"
-                    />
-                  </div>
-                  <div className="product-home-product-card__content">
-                    <h3 className="product-home-product-card__title">
-                      Niacinamide 10% + Zinc Serum
-                    </h3>
-                    <p className="product-home-product-card__url">
-                      paulaschoice.com/product/niacinamide
-                    </p>
-                  </div>
-                </a>
-
-                <a
-                  href="product_data.html"
-                  className="product-home-product-card"
-                >
-                  <div className="product-home-product-card__image">
-                    <img
-                      src="https://images.pexels.com/photos/6620943/pexels-photo-6620943.jpeg?auto=compress&cs=tinysrgb&w=600"
-                      alt="Gentle Cleanser"
-                    />
-                  </div>
-                  <div className="product-home-product-card__content">
-                    <h3 className="product-home-product-card__title">
-                      Gentle Foaming Cleanser
-                    </h3>
-                    <p className="product-home-product-card__url">
-                      cerave.com/product/gentle-cleanser
-                    </p>
-                  </div>
-                </a>
-
-                <a
-                  href="product_data.html"
-                  className="product-home-product-card"
-                >
-                  <div className="product-home-product-card__image">
-                    <img
-                      src="https://images.pexels.com/photos/6621472/pexels-photo-6621472.jpeg?auto=compress&cs=tinysrgb&w=600"
-                      alt="Daily Moisturizer"
-                    />
-                  </div>
-                  <div className="product-home-product-card__content">
-                    <h3 className="product-home-product-card__title">
-                      Daily Moisturizer SPF 30
-                    </h3>
-                    <p className="product-home-product-card__url">
-                      ultabeauty.com/product/moisturizer-spf30
-                    </p>
-                  </div>
-                </a>
-
-                {/* More cards omitted for brevity */}
+                {paginatedProducts.map((product) => (
+                  <Link
+                    to={`/product-data/${product.product_id}`}
+                    key={product.product_id}
+                    className="product-home-product-card"
+                  >
+                    <div className="product-home-product-card__image">
+                      <img
+                        src={
+                          product.product_image_url ||
+                          "https://images.pexels.com/photos/3683074/pexels-photo-3683074.jpeg"
+                        }
+                        alt={product.product_name || "Product"}
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src =
+                            "https://images.pexels.com/photos/3683074/pexels-photo-3683074.jpeg";
+                        }}
+                      />
+                    </div>
+                    <div className="product-home-product-card__content">
+                      <h3 className="product-home-product-card__title">
+                        {product.product_name || "Unnamed Product"}
+                      </h3>
+                      <p className="product-home-product-card__url">
+                        {product.product_image_url}
+                      </p>
+                    </div>
+                  </Link>
+                ))}
               </div>
+
+              {products.length > 9 && (
+                <div className="pagination-controls">
+                  <button
+                    className="pagination-btn"
+                    onClick={handlePrevPage}
+                    disabled={currentPage === 1}
+                  >
+                    Previous
+                  </button>
+                  <span className="pagination-info">
+                    Page {currentPage} of {totalPages}
+                  </span>
+                  <button
+                    className="pagination-btn"
+                    onClick={handleNextPage}
+                    disabled={currentPage === totalPages}
+                  >
+                    Next
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
           {activeTab === "drafts" && (
-            <div className="product-home-tab-content active" id="drafts-tab">
-              <div className="product-home-products-grid">
-                <a
-                  href="processing_success.html"
-                  className="product-home-product-card"
-                >
-                  <div className="product-home-product-card__image">
-                    <img
-                      src="https://images.pexels.com/photos/8134857/pexels-photo-8134857.jpeg?auto=compress&cs=tinysrgb&w=600"
-                      alt="Collagen Supplement"
-                    />
-                    <span className="product-home-status-tag product-home-status-tag--success">
-                      Success
-                    </span>
-                  </div>
-                  <div className="product-home-product-card__content">
-                    <h3 className="product-home-product-card__title">
-                      Marine Collagen Peptides
-                    </h3>
-                    <p className="product-home-product-card__url">
-                      vitalnaturals.com/marine-collagen
-                    </p>
-                  </div>
-                </a>
+            <>
+              <div className="product-home-tab-content active" id="drafts-tab">
+                <div className="product-home-products-grid">
+                  {draft.length > 0 &&
+                    draft.map((item) => (
+                      <Link
+                        to={`/processing-success?productId=${item.product_id}`}
+                        key={item.product_id}
+                        className="product-home-product-card"
+                      >
+                        <div className="product-home-product-card__image">
+                          <img
+                            src="https://images.pexels.com/photos/8134857/pexels-photo-8134857.jpeg?auto=compress&cs=tinysrgb&w=600"
+                            alt="Collagen Supplement"
+                          />
 
-                <a
-                  href="processing_failed.html"
-                  className="product-home-product-card"
-                >
-                  <div className="product-home-product-card__image">
-                    <img
-                      src="https://images.pexels.com/photos/5938567/pexels-photo-5938567.jpeg?auto=compress&cs=tinysrgb&w=600"
-                      alt="Omega-3 Supplement"
-                    />
-                    <span className="product-home-status-tag product-home-status-tag--error">
-                      Failed
-                    </span>
-                  </div>
-                  <div className="product-home-product-card__content">
-                    <h3 className="product-home-product-card__title">
-                      Omega-3 Fish Oil Capsules
-                    </h3>
-                    <p className="product-home-product-card__url">
-                      nordicnaturals.com/omega-3
-                    </p>
-                  </div>
-                </a>
-                <a
-                  href="processing_success.html"
-                  className="product-home-product-card"
-                >
-                  <div className="product-home-product-card__image">
-                    <img
-                      src="https://images.pexels.com/photos/6620945/pexels-photo-6620945.jpeg?auto=compress&cs=tinysrgb&w=600"
-                      alt="Probiotic"
-                    />
-                    <span className="product-home-status-tag product-home-status-tag--success">
-                      Success
-                    </span>
-                  </div>
-                  <div className="product-home-product-card__content">
-                    <h3 className="product-home-product-card__title">
-                      Daily Probiotic 50 Billion CFU
-                    </h3>
-                    <p className="product-home-product-card__url">
-                      gardenoflife.com/probiotic-daily
-                    </p>
-                  </div>
-                </a>
-                <a
-                  href="processing_success.html"
-                  className="product-home-product-card"
-                >
-                  <div className="product-home-product-card__image">
-                    <img
-                      src="https://www.leiamoon.com/product/order-leiamoon-steam-seat/"
-                      alt="LEIAMOON Steam Seat"
-                    />
-                    <span className="product-home-status-tag product-home-status-tag--success">
-                      Success
-                    </span>
-                  </div>
-                  <div className="product-home-product-card__content">
-                    <h3 className="product-home-product-card__title">
-                      LEIAMOON Steam Seat
-                    </h3>
-                    <p className="product-home-product-card__url">
-                      leiamoon.com/product/order-leiamoon-steam-seat
-                    </p>
-                  </div>
-                </a>
+                          {item.product_info.error ? (
+                            <span className="product-home-status-tag product-home-status-tag--error">
+                              Failed
+                            </span>
+                          ) : (
+                            <span className="product-home-status-tag product-home-status-tag--success">
+                              Success
+                            </span>
+                          )}
+                        </div>
+                        <div className="product-home-product-card__content">
+                          <h3 className="product-home-product-card__title">
+                            {item.product_info.product_name ||
+                              item.product_info.raw_product_text}
+                          </h3>
+                          <p className="product-home-product-card__url">
+                            {item.product_url}
+                          </p>
+                        </div>
+                      </Link>
+                    ))}
+                </div>
               </div>
-            </div>
+            </>
           )}
         </div>
       </main>

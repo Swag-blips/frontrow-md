@@ -55,6 +55,14 @@
       "destination": "https://65.108.49.212/product_metadata_extraction/save_regenerated_review"
     },
     {
+      "source": "/product_management/get_all_product_drafts",
+      "destination": "https://65.108.49.212/product_management/get_all_product_drafts"
+    },
+    {
+      "source": "/frontrowmd/batch_extract_product_info",
+      "destination": "https://65.108.49.212/product_metadata_extraction/batch_extract_product_info"
+    },
+    {
       "source": "/((?!frontrowmd).*)",
       "destination": "/index.html"
     }

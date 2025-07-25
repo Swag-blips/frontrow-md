@@ -35,6 +35,12 @@ export default defineConfig({
             "/product_management/get_all_products"
           ),
       },
+      "/product_management/get_all_product_drafts": {
+        target: "https://65.108.49.212/",
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path,
+      },
       "/frontrowmd/product_metadata_extraction": {
         target: "https://65.108.49.212/",
         changeOrigin: true,
@@ -112,6 +118,16 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path, // Keep the full path
+      },
+      "/frontrowmd/batch_extract_product_info": {
+        target: "https://65.108.49.212/",
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) =>
+          path.replace(
+            "/frontrowmd/batch_extract_product_info",
+            "/product_metadata_extraction/batch_extract_product_info"
+          ),
       },
     },
   },

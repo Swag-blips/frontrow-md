@@ -1,11 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import "./styles/ProductInputV2.css";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 type Product = {
-  originalUrl: string;
-  formattedUrl: string;
-  text: string;
-  timestamp: string; // ISO format
+  product_url: string;
+  raw_product_text: string;
 };
 
 export default function ProductInputV2() {
@@ -46,17 +45,49 @@ export default function ProductInputV2() {
     }
 
     const formattedUrl = formatUrl(url);
-    const product = {
-      originalUrl: url,
-      formattedUrl,
-      text,
-      timestamp: new Date().toISOString(),
+    const product: Product = {
+      product_url: formattedUrl,
+      raw_product_text: text,
     };
 
     setSavedProducts((prev) => [...prev, product]);
-    console.log("Product saved:", product);
     setShowSuccess(true);
   };
+
+  async function batchExtractProductInfo() {
+    console.log("Saved proucts here", savedProducts);
+    if (!savedProducts.length) return;
+    toast.loading("sending data for processing", {
+      id: "124",
+    });
+    try {
+      const response = await fetch("/frontrowmd/batch_extract_product_info", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          product_metadata_list: [...savedProducts],
+        }),
+        signal: AbortSignal.timeout(30000),
+      });
+
+      const data = await response.json();
+
+      console.log(data);
+      if (data.success) {
+        toast.dismiss("124");
+        handleDone();
+      } else {
+        toast.dismiss("124");
+        toast.error(data.error_message || "an error occured please try again");
+      }
+    } catch (error: any) {
+      toast.dismiss("124");
+      console.error(error);
+      toast.error(error.message);
+    }
+  }
 
   const handleDone = () => {
     setShowSuccess(false);
@@ -201,7 +232,7 @@ export default function ProductInputV2() {
                 <button
                   type="button"
                   className="btn btn-success"
-                  onClick={handleDone}
+                  onClick={batchExtractProductInfo}
                 >
                   Done
                 </button>
