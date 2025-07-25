@@ -18,7 +18,6 @@ export default function ProductHome() {
     isLoading,
   } = useProductInput();
 
-
   const fetchProductDrafts = async () => {
     try {
       const response = await fetch(
@@ -46,7 +45,7 @@ export default function ProductHome() {
   useEffect(() => {
     fetchProductDrafts();
   }, []);
-
+  console.log(draft);
   return (
     <>
       <header className="product-home-header">
@@ -163,7 +162,7 @@ export default function ProductHome() {
                       >
                         <div className="product-home-product-card__image">
                           <img
-                            src="https://images.pexels.com/photos/8134857/pexels-photo-8134857.jpeg?auto=compress&cs=tinysrgb&w=600"
+                            src={item.product_info.product_image_url}
                             alt="Collagen Supplement"
                           />
 
