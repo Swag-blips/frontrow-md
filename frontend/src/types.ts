@@ -4,3 +4,4 @@ export interface Product {
   url: string;
   imageUrl: string;
 }
+ 

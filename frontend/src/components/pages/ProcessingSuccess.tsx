@@ -32,6 +32,7 @@ interface ProductData {
   }>;
   health_claims?: HealthClaim[];
   key_terms?: KeyTerm[];
+  product_url: string;
 }
 
 const ProcessingSuccess: React.FC = () => {
@@ -87,7 +88,9 @@ const ProcessingSuccess: React.FC = () => {
         }
 
         const product = data.product;
-        console.log("prduct", product.product_info.health_claims);
+
+        console.log("product from api", product);
+        console.log("product", product.product_info.health_claims);
 
         setProductData({
           product_name: product.product_info.product_name || "Unknown Product",
@@ -97,6 +100,7 @@ const ProcessingSuccess: React.FC = () => {
           clinician_reviews: product.product_info.clinician_reviews || [],
           health_claims: product.product_info.health_claims || [],
           key_terms: product.product_info.key_terms || [],
+          product_url: product.product_url,
         });
 
         // Check if the data is minimal
@@ -212,6 +216,7 @@ const ProcessingSuccess: React.FC = () => {
     );
   }
 
+  console.log("product data", productData);
   return (
     <div className="processing-success-wrapper">
       <header className="header">
@@ -383,17 +388,14 @@ const ProcessingSuccess: React.FC = () => {
               tab. Compare it with the extracted data on the left to ensure
               accuracy.
             </p>
-            <a
-              href={
-                url ||
-                "https://www.mateandme.com/products/prenatal-gummies-for-him-her"
-              }
+            <Link
+              to={productData.product_url}
               target="_blank"
               rel="noopener noreferrer"
               className="external-link-button"
             >
               Open Page in New Tab
-            </a>
+            </Link>
           </div>
         </main>
       </div>
